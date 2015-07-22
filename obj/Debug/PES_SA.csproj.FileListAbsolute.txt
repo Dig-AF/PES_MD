@@ -1,0 +1,10 @@
+C:\Users\gschaefer\Documents\Visual Studio 2012\Projects\ClassLibrary\PES_SA\obj\Debug\PES_SA.csprojResolveAssemblyReference.cache
+C:\Users\gschaefer\Documents\Visual Studio 2012\Projects\ClassLibrary\PES_SA\bin\Debug\PES_SA.dll
+C:\Users\gschaefer\Documents\Visual Studio 2012\Projects\ClassLibrary\PES_SA\bin\Debug\PES_SA.pdb
+C:\Users\gschaefer\Documents\Visual Studio 2012\Projects\ClassLibrary\PES_SA\obj\Debug\PES_SA.dll
+C:\Users\gschaefer\Documents\Visual Studio 2012\Projects\ClassLibrary\PES_SA\obj\Debug\PES_SA.pdb
+C:\Users\gschaefer\Documents\Visual Studio 2012\Projects\PES_SA\bin\Debug\PES_SA.dll
+C:\Users\gschaefer\Documents\Visual Studio 2012\Projects\PES_SA\bin\Debug\PES_SA.pdb
+C:\Users\gschaefer\Documents\Visual Studio 2012\Projects\PES_SA\obj\Debug\PES_SA.csprojResolveAssemblyReference.cache
+C:\Users\gschaefer\Documents\Visual Studio 2012\Projects\PES_SA\obj\Debug\PES_SA.dll
+C:\Users\gschaefer\Documents\Visual Studio 2012\Projects\PES_SA\obj\Debug\PES_SA.pdb
