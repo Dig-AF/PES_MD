@@ -18,14 +18,14 @@ namespace ConsoleApplication
             bool test;
 
             input = @"C:\GitHub\test\IBM_SAR_Tgt4_ChildDiags_SubordDefs.xml";
-            test = NEAR.PES_MD.SA2PES(File.ReadAllBytes(input),ref output, ref errors);
+            test = NEAR.PES_MD.MD2PES(File.ReadAllBytes(input),ref output, ref errors);
             if (!test)
                 System.IO.File.WriteAllText(@"C:\GitHub\test\error.csv", errors);
                 
             System.IO.File.WriteAllText(@"C:\GitHub\test\1_out.xml", output);    
 
             //input = @"C:\test\1_out.xml";
-            //XML_2 = NEAR.PES.PES2SA(File.ReadAllBytes(input));
+            //XML_2 = NEAR.PES.PES2MD(File.ReadAllBytes(input));
             //System.IO.File.WriteAllText(@"C:\test\2_out.xml", XML_2);
 
             //input = @"C:\test\UPIA Model.emx";

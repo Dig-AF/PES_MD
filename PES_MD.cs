@@ -61,7 +61,7 @@ namespace NEAR
                             new string[] { "Site", "Site (DM2)", "IndividualType","", "1354","default" },
                             };
 
-        static string[][] SA_Element_View_Lookup = new string[][] { 
+        static string[][] MD_Element_View_Lookup = new string[][] { 
                             new string[] { "AV-01 Overview and Summary (DM2)", "RealProperty (DM2)", "Location (DM2)", "1161" },
                             new string[] { "AV-01 Overview and Summary (DM2)", "Facility (DM2)", "Location (DM2)", "1161" },
                             new string[] { "OV-02 Operational Resource Flow (DM2)", "Organization (DM2)", "Resource (DM2)", "1160" },
@@ -115,7 +115,7 @@ namespace NEAR
                             new string[] { "ruleConstrainsActivity", "ruleConstrainsActivity", "CoupleType", "2", "Activity (DM2)", "Activity" },
                             };
 
-        static string[][] SA_Element_Lookup = new string[][] {
+        static string[][] MD_Element_Lookup = new string[][] {
                             new string[] { "Needline", "Need Line (DM2rx)", "CoupleType","1244", "1402","default" },
                             new string[] { "SysRF", "System Resource Flow (DM2rx)", "CoupleType","1245", "1403","default" },
                             new string[] { "PRF", "Physical Resource Flow (DM2rx)", "CoupleType","1475", "1462","default" },
@@ -860,7 +860,7 @@ namespace NEAR
             return null;
         }
         
-        private static string Find_View_SA_Minor_Type(string input)
+        private static string Find_View_MD_Minor_Type(string input)
         {
 
             foreach (string[] current_lookup in View_Lookup)
@@ -871,14 +871,14 @@ namespace NEAR
             return null;
         }
 
-        private static string Find_Symbol_Element_SA_Minor_Type(ref string input, string view)
+        private static string Find_Symbol_Element_MD_Minor_Type(ref string input, string view)
         {
 
             foreach (string[] first_lookup in Element_Lookup)
             {
                 if (input == first_lookup[1])
                 {
-                    foreach (string[] second_lookup in SA_Element_View_Lookup)
+                    foreach (string[] second_lookup in MD_Element_View_Lookup)
                     {
                         if (view == second_lookup[0] && input == second_lookup[1])
                         {
@@ -890,7 +890,7 @@ namespace NEAR
                 }
                     
             }
-            foreach (string[] current_lookup in SA_Element_Lookup)
+            foreach (string[] current_lookup in MD_Element_Lookup)
             {
                 if (input == current_lookup[1])
                     return current_lookup[3];
@@ -898,7 +898,7 @@ namespace NEAR
             return null;
         }
 
-        private static string Find_Definition_Element_SA_Minor_Type(string input)
+        private static string Find_Definition_Element_MD_Minor_Type(string input)
         {
 
             foreach (string[] current_lookup in Element_Lookup)
@@ -906,7 +906,7 @@ namespace NEAR
                 if (input == current_lookup[1])
                     return current_lookup[4];
             }
-            foreach (string[] current_lookup in SA_Element_Lookup)
+            foreach (string[] current_lookup in MD_Element_Lookup)
             {
                 if (input == current_lookup[1])
                     return current_lookup[4];
@@ -914,7 +914,7 @@ namespace NEAR
             return null;
         }
 
-        private static string Find_SA_Relationship_Type(string rela_type, string thing_type, string place)
+        private static string Find_MD_Relationship_Type(string rela_type, string thing_type, string place)
         {
 
             foreach (string[] current_lookup in Tuple_Lookup)
@@ -1137,7 +1137,7 @@ namespace NEAR
 
                     if (input.id == rela.place1)
                     {
-                        results.Add(new Thing { id = rela.id, type = Find_SA_Relationship_Type(rela.type, input.type,"1"), place1 = input.id, place2 = rela.place2, value = input, value_type = "$Thing$" });
+                        results.Add(new Thing { id = rela.id, type = Find_MD_Relationship_Type(rela.type, input.type,"1"), place1 = input.id, place2 = rela.place2, value = input, value_type = "$Thing$" });
                     }                    
             }
 
@@ -1153,7 +1153,7 @@ namespace NEAR
 
                 if (input.id == rela.place2)
                 {
-                    results.Add(new Thing { id = rela.id, type = Find_SA_Relationship_Type(rela.type, input.type,"2"), place1 = input.id, place2 = rela.place1, value = input, value_type = "$Thing$" });
+                    results.Add(new Thing { id = rela.id, type = Find_MD_Relationship_Type(rela.type, input.type,"2"), place1 = input.id, place2 = rela.place1, value = input, value_type = "$Thing$" });
                 }
             }
 
@@ -1180,7 +1180,7 @@ namespace NEAR
         ////////////////////
         ////////////////////
 
-        public static bool SA2PES(byte[] input, ref string output, ref string errors)
+        public static bool MD2PES(byte[] input, ref string output, ref string errors)
         {
             IEnumerable<Thing> things = new List<Thing>();
             IEnumerable<Thing> tuple_types = new List<Thing>();
@@ -1248,12 +1248,12 @@ namespace NEAR
             //Diagram Type
 
             results =
-                from result in root.Elements("Class").Elements("SADiagram")
+                from result in root.Elements("Class").Elements("MDDiagram")
                 select new Thing
                             {
-                                type = (string)result.Attribute("SAObjMinorTypeName"),
-                                id = (string)result.Attribute("SAObjId"),
-                                name = ((string)result.Attribute("SAObjName")).Replace("&", " And "),
+                                type = (string)result.Attribute("MDObjMinorTypeName"),
+                                id = (string)result.Attribute("MDObjId"),
+                                name = ((string)result.Attribute("MDObjName")).Replace("&", " And "),
                                 value = "$none$",
                                 place1 = "$none$",
                                 place2 = "$none$",
@@ -1283,17 +1283,17 @@ namespace NEAR
             //Doc Block
 
             results_dic =
-                (from result in root.Elements("Class").Elements("SADiagram").Elements("SASymbol")
-                where (string)result.Attribute("SAObjMinorTypeName") == "Doc Block"
+                (from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
+                where (string)result.Attribute("MDObjMinorTypeName") == "Doc Block"
                 select new
                 {
-                        key = (string)result.Parent.Attribute("SAObjId"),
+                        key = (string)result.Parent.Attribute("MDObjId"),
                         value = new List<Thing> {new Thing
                         {
                         type = "Information",
-                        id = (string)result.Attribute("SAObjId")+"_1",
+                        id = (string)result.Attribute("MDObjId")+"_1",
                         name = "Doc Block Comment",
-                        value = (string)result.Attribute("SASymZPDesc"),
+                        value = (string)result.Attribute("MDSymZPDesc"),
                         place1 = "$none$",
                         place2 = "$none$",
                         foundation = "IndividualType",
@@ -1301,9 +1301,9 @@ namespace NEAR
                         },new Thing
                     {
                         type = "Information",
-                        id = (string)result.Attribute("SAObjId")+"_2",
+                        id = (string)result.Attribute("MDObjId")+"_2",
                         name = "Doc Block Type",
-                        value = (string)result.Parent.Attribute("SAObjMinorTypeName"),
+                        value = (string)result.Parent.Attribute("MDObjMinorTypeName"),
                         place1 = "$none$",
                         place2 = "$none$",
                         foundation = "IndividualType",
@@ -1311,9 +1311,9 @@ namespace NEAR
                     },new Thing
                     {
                         type = "Information",
-                        id = (string)result.Attribute("SAObjId")+"_3",
+                        id = (string)result.Attribute("MDObjId")+"_3",
                         name = "Doc Block Date",
-                        value = (string)result.Parent.Attribute("SAObjUpdateDate"),
+                        value = (string)result.Parent.Attribute("MDObjUpdateDate"),
                         place1 = "$none$",
                         place2 = "$none$",
                         foundation = "IndividualType",
@@ -1321,9 +1321,9 @@ namespace NEAR
                     },new Thing
                     {
                         type = "Information",
-                        id = (string)result.Attribute("SAObjId")+"_4",
+                        id = (string)result.Attribute("MDObjId")+"_4",
                         name = "Doc Block Time",
-                        value = (string)result.Parent.Attribute("SAObjUpdateTime"),
+                        value = (string)result.Parent.Attribute("MDObjUpdateTime"),
                         place1 = "$none$",
                         place2 = "$none$",
                         foundation = "IndividualType",
@@ -1352,16 +1352,16 @@ namespace NEAR
                 }
 
                 results_dic =
-                    (from result in root.Elements("Class").Elements("SADiagram").Elements("SASymbol")
-                        where (string)result.Attribute("SAObjMinorTypeName") == "Doc Block"
+                    (from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
+                        where (string)result.Attribute("MDObjMinorTypeName") == "Doc Block"
                         select new
                         {
-                            key = (string)result.Parent.Attribute("SAObjId"),
+                            key = (string)result.Parent.Attribute("MDObjId"),
                             value = new List<Thing> {new Thing
                             {
                                 type = "Thing",
-                                id = (string)result.Attribute("SAObjId"),
-                                name = ((string)result.Parent.Attribute("SAObjName")).Replace("&", " And "),
+                                id = (string)result.Attribute("MDObjId"),
+                                name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
                                 value = "$none$",
                                 place1 = "$none$",
                                 place2 = "$none$",
@@ -1383,13 +1383,13 @@ namespace NEAR
             {
 
                 results =
-                    from result in root.Elements("Class").Elements("SADefinition")
-                    where (string)result.Attribute("SAObjMinorTypeName") == current_lookup[1]
+                    from result in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result.Attribute("MDObjMinorTypeName") == current_lookup[1]
                     select new Thing
                     {
                         type = current_lookup[0],
-                        id = (string)result.Attribute("SAObjId"),
-                        name = ((string)result.Attribute("SAObjName")).Replace("&", " And "),
+                        id = (string)result.Attribute("MDObjId"),
+                        name = ((string)result.Attribute("MDObjName")).Replace("&", " And "),
                         value = "$none$",
                         place1 = "$none$",
                         place2 = "$none$",
@@ -1402,21 +1402,21 @@ namespace NEAR
                 if (current_lookup[1] != "Entity" && current_lookup[1] != "Access Path" && current_lookup[1] != "Index" && current_lookup[1] != "Table")
                 {
                     results_dic =
-                        (from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty")
-                         where (string)result.Parent.Attribute("SAObjMinorTypeName") == current_lookup[1]
-                         where (string)result.Attribute("SAPrpName") == "Description"
+                        (from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty")
+                         where (string)result.Parent.Attribute("MDObjMinorTypeName") == current_lookup[1]
+                         where (string)result.Attribute("MDPrpName") == "Description"
                          select new
                          {
-                             key = (string)result.Parent.Attribute("SAObjId"),
+                             key = (string)result.Parent.Attribute("MDObjId"),
                              value = new List<Thing> {
                             new Thing
                             {
                                 type = "Information",
-                                id = (string)result.Parent.Attribute("SAObjId") + "_9",
-                                name = ((string)result.Parent.Attribute("SAObjName")).Replace("&", " And ") + " Description",
-                                value = ((string)result.Attribute("SAPrpValue")).Replace("@", " At ").Replace("\"","'").Replace("&", " And "),
-                                place1 = (string)result.Parent.Attribute("SAObjId"),
-                                place2 = (string)result.Parent.Attribute("SAObjId") + "_9",
+                                id = (string)result.Parent.Attribute("MDObjId") + "_9",
+                                name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And ") + " Description",
+                                value = ((string)result.Attribute("MDPrpValue")).Replace("@", " At ").Replace("\"","'").Replace("&", " And "),
+                                place1 = (string)result.Parent.Attribute("MDObjId"),
+                                place2 = (string)result.Parent.Attribute("MDObjId") + "_9",
                                 foundation = "IndividualType",
                                 value_type = "exemplar"
                             }
@@ -1447,18 +1447,18 @@ namespace NEAR
                 else if (current_lookup[1] == "Index")
                 {
                     results =
-                        from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                         where (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") == current_lookup[1]
-                         where (string)result.Parent.Attribute("SAPrpName") == "Description"
+                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                         where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == current_lookup[1]
+                         where (string)result.Parent.Attribute("MDPrpName") == "Description"
                          
                          select new Thing
                             {
                                 type = "Information",
-                                id = (string)result.Parent.Parent.Attribute("SAObjId") + (string)result.Attribute("SALinkIdentity") + "_9",
-                                name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And ") + " Primary Key",
-                                value = (string)result.Attribute("SALinkIdentity"),
-                                place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                                place2 = (string)result.Parent.Parent.Attribute("SAObjId") + (string)result.Attribute("SALinkIdentity") + "_9",
+                                id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity") + "_9",
+                                name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And ") + " Primary Key",
+                                value = (string)result.Attribute("MDLinkIdentity"),
+                                place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                                place2 = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity") + "_9",
                                 foundation = "IndividualType",
                                 value_type = "exemplar"
                             };
@@ -1497,21 +1497,21 @@ namespace NEAR
             //OV-1 Picture
 
             results =
-                from result in root.Elements("Class").Elements("SADiagram").Elements("SASymbol").Elements("SAPicture")
-                where (string)result.Parent.Attribute("SAObjMinorTypeName") == "Picture"
-                where (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") == "OV-01 High Level Operational Concept (DM2)"
+                from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol").Elements("MDPicture")
+                where (string)result.Parent.Attribute("MDObjMinorTypeName") == "Picture"
+                where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "OV-01 High Level Operational Concept (DM2)"
                 select 
                 //new {
-                //    key = (string)result.Parent.Parent.Attribute("SAObjId"),
+                //    key = (string)result.Parent.Parent.Attribute("MDObjId"),
                 //    value = new List<Thing> {
                         new Thing
                     {
                     type = "ArchitecturalDescription",
-                    id = (string)result.Parent.Attribute("SAObjId"),
-                    name = ((string)result.Parent.Attribute("SAObjName")).Replace("&", " And "),
-                    value = (string)result.Attribute("SAPictureData"),
-                    place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                    place2 = (string)result.Parent.Attribute("SAObjId"),
+                    id = (string)result.Parent.Attribute("MDObjId"),
+                    name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
+                    value = (string)result.Attribute("MDPictureData"),
+                    place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                    place2 = (string)result.Parent.Attribute("MDObjId"),
                     foundation = "IndividualType",
                     value_type = "exemplar"
                     };
@@ -1549,16 +1549,16 @@ namespace NEAR
                 if (current_lookup[3] == "1")
                 {
                     results =
-                        from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                        where (string)result.Parent.Attribute("SAPrpName") == current_lookup[1]
+                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
                         select new Thing
                         {
                             type = current_lookup[0],
-                            id = (string)result.Parent.Parent.Attribute("SAObjId") + (string)result.Attribute("SALinkIdentity"),
+                            id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
                             name = "$none$",
                             value = "$none$",
-                            place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                            place2 = (string)result.Attribute("SALinkIdentity"),
+                            place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                            place2 = (string)result.Attribute("MDLinkIdentity"),
                             foundation = current_lookup[2],
                             value_type = "$none$"
                         };
@@ -1566,16 +1566,16 @@ namespace NEAR
                 else
                 {
                     results =
-                        from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                        where (string)result.Parent.Attribute("SAPrpName") == current_lookup[1]
+                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
                         select new Thing
                         {
                             type = current_lookup[0],
-                            id = (string)result.Attribute("SALinkIdentity") + (string)result.Parent.Parent.Attribute("SAObjId"),
+                            id = (string)result.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
                             name = "$none$",
                             value = "$none$",
-                            place2 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                            place1 = (string)result.Attribute("SALinkIdentity"),
+                            place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                            place1 = (string)result.Attribute("MDLinkIdentity"),
                             foundation = current_lookup[2],
                             value_type = "$none$"
                         };
@@ -1592,16 +1592,16 @@ namespace NEAR
                 if (current_lookup[3] == "1")
                 {
                     results =
-                        from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                        where (string)result.Parent.Attribute("SAPrpName") == current_lookup[1]
+                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
                         select new Thing
                         {
                             type = current_lookup[0],
-                            id = (string)result.Parent.Parent.Attribute("SAObjId") + (string)result.Attribute("SALinkIdentity"),
+                            id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
                             name = "$none$",
                             value = "$none$",
-                            place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                            place2 = (string)result.Attribute("SALinkIdentity"),
+                            place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                            place2 = (string)result.Attribute("MDLinkIdentity"),
                             foundation = current_lookup[2],
                             value_type = "$none$"
                         };
@@ -1612,16 +1612,16 @@ namespace NEAR
                 else if (current_lookup[3] == "2")
                 {
                     results =
-                        from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                        where (string)result.Parent.Attribute("SAPrpName") == current_lookup[1]
+                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
                         select new Thing
                         {
                             type = current_lookup[0],
-                            id = (string)result.Attribute("SALinkIdentity") + (string)result.Parent.Parent.Attribute("SAObjId"),
+                            id = (string)result.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
                             name = "$none$",
                             value = "$none$",
-                            place2 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                            place1 = (string)result.Attribute("SALinkIdentity"),
+                            place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                            place1 = (string)result.Attribute("MDLinkIdentity"),
                             foundation = current_lookup[2],
                             value_type = "$none$"
                         };
@@ -1632,17 +1632,17 @@ namespace NEAR
                 else if (current_lookup[3] == "4")
                 {
                     results =
-                        from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                        where (string)result.Parent.Attribute("SAPrpName") == current_lookup[1]
-                        where (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") == current_lookup[4]
+                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
+                        where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == current_lookup[4]
                         select new Thing
                         {
                             type = current_lookup[0],
-                            id = (string)result.Attribute("SALinkIdentity") + (string)result.Parent.Parent.Attribute("SAObjId"),
+                            id = (string)result.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
                             name = "$none$",
                             value = "$none$",
-                            place2 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                            place1 = (string)result.Attribute("SALinkIdentity"),
+                            place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                            place1 = (string)result.Attribute("MDLinkIdentity"),
                             foundation = current_lookup[2],
                             value_type = "$none$"
                         };
@@ -1653,17 +1653,17 @@ namespace NEAR
                 else if (current_lookup[3] == "5")
                 {
                     results =
-                        from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                        where (string)result.Parent.Attribute("SAPrpName") == current_lookup[1]
-                        where (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") == current_lookup[4]
+                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
+                        where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == current_lookup[4]
                         select new Thing
                         {
                             type = current_lookup[0],
-                            id = (string)result.Parent.Parent.Attribute("SAObjId") + (string)result.Attribute("SALinkIdentity"),
+                            id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
                             name = "$none$",
                             value = "$none$",
-                            place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                            place2 = (string)result.Attribute("SALinkIdentity"),
+                            place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                            place2 = (string)result.Attribute("MDLinkIdentity"),
                             foundation = current_lookup[2],
                             value_type = "$none$"
                         };
@@ -1679,17 +1679,17 @@ namespace NEAR
             //CV-1
 
             results =
-                    from result in root.Elements("Class").Elements("SADiagram").Elements("SASymbol")
-                    where (string)result.Parent.Attribute("SAObjMinorTypeName") == "CV-01 Vision (DM2)"
-                    where (string)result.Attribute("SAObjMinorTypeName") == "Capability (DM2)"
+                    from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
+                    where (string)result.Parent.Attribute("MDObjMinorTypeName") == "CV-01 Vision (DM2)"
+                    where (string)result.Attribute("MDObjMinorTypeName") == "Capability (DM2)"
                     select new Thing
                     {
                         type = "CV-01 View",
                         id = "$none$",
-                        name = ((string)result.Parent.Attribute("SAObjName")).Replace("&", " And "),
-                        value = ((string)result.Attribute("SAObjName")).Replace("&", " And "),
-                        place1 = (string)result.Parent.Attribute("SAObjId"),
-                        place2 = (string)result.Attribute("SASymIdDef"),
+                        name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
+                        value = ((string)result.Attribute("MDObjName")).Replace("&", " And "),
+                        place1 = (string)result.Parent.Attribute("MDObjId"),
+                        place2 = (string)result.Attribute("MDSymIdDef"),
                         foundation = "$none$",
                         value_type = "$Capability Name$"
                     };
@@ -1909,17 +1909,17 @@ namespace NEAR
             //CV-4
 
             results =
-                from result in root.Elements("Class").Elements("SADiagram").Elements("SASymbol")
-                where (string)result.Parent.Attribute("SAObjMinorTypeName") == "CV-04 Capability Dependencies (DM2)"
-                where (string)result.Attribute("SAObjMinorTypeName") == "Capability (DM2)"
+                from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
+                where (string)result.Parent.Attribute("MDObjMinorTypeName") == "CV-04 Capability Dependencies (DM2)"
+                where (string)result.Attribute("MDObjMinorTypeName") == "Capability (DM2)"
                 select new Thing
                 {
                     type = "CV-04 View",
                     id = "$none$",
-                    name = ((string)result.Parent.Attribute("SAObjName")).Replace("&", " And "),
-                    value = ((string)result.Attribute("SAObjName")).Replace("&", " And "),
-                    place1 = (string)result.Parent.Attribute("SAObjId"),
-                    place2 = (string)result.Attribute("SASymIdDef"),
+                    name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
+                    value = ((string)result.Attribute("MDObjName")).Replace("&", " And "),
+                    place1 = (string)result.Parent.Attribute("MDObjId"),
+                    place2 = (string)result.Attribute("MDSymIdDef"),
                     foundation = "$none$",
                     value_type = "$Capability Name$"
                 };
@@ -2001,18 +2001,18 @@ namespace NEAR
             things_dic = things.ToDictionary(x => x.id, x => x);
 
             results =
-                from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                where (string)result.Parent.Attribute("SAPrpName") == "Resources"
-                where (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") == "Data Store (DM2x)"
+                from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                where (string)result.Parent.Attribute("MDPrpName") == "Resources"
+                where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "Data Store (DM2x)"
 
                 select new Thing
                 {
                     type = "WholePartType",
-                    id = (string)result.Parent.Parent.Attribute("SAObjId") + (string)result.Attribute("SALinkIdentity"),
+                    id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
                     name = "$none$",
                     value = "$none$",
-                    place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                    place2 = (string)result.Attribute("SALinkIdentity"),
+                    place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                    place2 = (string)result.Attribute("MDLinkIdentity"),
                     foundation = "WholePartType",
                     value_type = "$none$"
                 };
@@ -2045,25 +2045,25 @@ namespace NEAR
             //ARO
 
             results =
-                   from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                   where (string)result.Parent.Attribute("SAPrpName") == "consumingActivity"
-                   from result3 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                   where (string)result3.Parent.Attribute("SAPrpName") == "Resources"
-                   where (string)result.Parent.Parent.Attribute("SAObjId") == (string)result3.Parent.Parent.Attribute("SAObjId")
-                   from result2 in root.Elements("Class").Elements("SADefinition")
-                   where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
-                   from result4 in root.Elements("Class").Elements("SADefinition")
-                   where (string)result3.Attribute("SALinkIdentity") == (string)result4.Attribute("SAObjId")
+                   from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                   where (string)result.Parent.Attribute("MDPrpName") == "consumingActivity"
+                   from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                   where (string)result3.Parent.Attribute("MDPrpName") == "Resources"
+                   where (string)result.Parent.Parent.Attribute("MDObjId") == (string)result3.Parent.Parent.Attribute("MDObjId")
+                   from result2 in root.Elements("Class").Elements("MDDefinition")
+                   where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+                   from result4 in root.Elements("Class").Elements("MDDefinition")
+                   where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
                    
 
                    select new Thing
                    {
                        type = "activityConsumesResource",
-                       id = (string)result.Parent.Parent.Attribute("SAObjId") + "_2",
-                       name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
-                       value = (string)result.Parent.Parent.Attribute("SAObjId"),
-                       place1 = (string)result3.Attribute("SALinkIdentity"),
-                       place2 = (string)result.Attribute("SALinkIdentity"),
+                       id = (string)result.Parent.Parent.Attribute("MDObjId") + "_2",
+                       name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+                       value = (string)result.Parent.Parent.Attribute("MDObjId"),
+                       place1 = (string)result3.Attribute("MDLinkIdentity"),
+                       place2 = (string)result.Attribute("MDLinkIdentity"),
                        foundation = "CoupleType",
                        value_type = "$id$"
                    };
@@ -2087,18 +2087,18 @@ namespace NEAR
             }
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    from result2 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result.Parent.Attribute("SAPrpName") == "consumingActivity"
-                    where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    from result2 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result.Parent.Attribute("MDPrpName") == "consumingActivity"
+                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
                     select new Thing
                     {
                         type = "activityConsumesResource",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
                         value = "$none$",
-                        place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        place2 = (string)result.Attribute("SALinkIdentity"),
+                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        place2 = (string)result.Attribute("MDLinkIdentity"),
                         foundation = "CoupleType",
                         value_type = "$none$"
                     };
@@ -2176,24 +2176,24 @@ namespace NEAR
             }
 
             results =
-                   from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                   where (string)result.Parent.Attribute("SAPrpName") == "producingActivity"
-                   from result3 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                   where (string)result3.Parent.Attribute("SAPrpName") == "Resources"
-                   where (string)result.Parent.Parent.Attribute("SAObjId") == (string)result3.Parent.Parent.Attribute("SAObjId")
-                   from result4 in root.Elements("Class").Elements("SADefinition")
-                   where (string)result3.Attribute("SALinkIdentity") == (string)result4.Attribute("SAObjId")
-                   from result2 in root.Elements("Class").Elements("SADefinition")
-                   where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
+                   from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                   where (string)result.Parent.Attribute("MDPrpName") == "producingActivity"
+                   from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                   where (string)result3.Parent.Attribute("MDPrpName") == "Resources"
+                   where (string)result.Parent.Parent.Attribute("MDObjId") == (string)result3.Parent.Parent.Attribute("MDObjId")
+                   from result4 in root.Elements("Class").Elements("MDDefinition")
+                   where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
+                   from result2 in root.Elements("Class").Elements("MDDefinition")
+                   where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
 
                    select new Thing
                    {
                        type = "activityProducesResource",
-                       id = (string)result.Parent.Parent.Attribute("SAObjId") + "_3",
-                       name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
-                       value = (string)result.Parent.Parent.Attribute("SAObjId"),
-                       place2 = (string)result3.Attribute("SALinkIdentity"),
-                       place1 = (string)result.Attribute("SALinkIdentity"),
+                       id = (string)result.Parent.Parent.Attribute("MDObjId") + "_3",
+                       name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+                       value = (string)result.Parent.Parent.Attribute("MDObjId"),
+                       place2 = (string)result3.Attribute("MDLinkIdentity"),
+                       place1 = (string)result.Attribute("MDLinkIdentity"),
                        foundation = "CoupleType",
                        value_type = "$id$"
                    };
@@ -2205,18 +2205,18 @@ namespace NEAR
             MergeDictionaries(OV6c_aro_optional_views, aro2);
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    from result2 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result.Parent.Attribute("SAPrpName") == "producingActivity"
-                    where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    from result2 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result.Parent.Attribute("MDPrpName") == "producingActivity"
+                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
                     select new Thing
                     {
                         type = "activityProducesResource",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
                         value = "$none$",
-                        place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        place2 = (string)result.Attribute("SALinkIdentity"),
+                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        place2 = (string)result.Attribute("MDLinkIdentity"),
                         foundation = "CoupleType",
                         value_type = "$none$"
                     };
@@ -2255,17 +2255,17 @@ namespace NEAR
             //activityChangesResource
 
             results_dic =
-                    (from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty")
-                     where (string)result.Attribute("SAPrpName") == "Behavior"
+                    (from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty")
+                     where (string)result.Attribute("MDPrpName") == "Behavior"
                      select new
                      {
-                         key = (string)result.Parent.Attribute("SAObjId"),
+                         key = (string)result.Parent.Attribute("MDObjId"),
                          value = new List<Thing> {new Thing
                                             {
                                                 type = "ActivityChangesResource",
-                                                id = (string)result.Parent.Attribute("SAObjId"),
-                                                name = ((string)result.Parent.Attribute("SAObjName")).Replace("&", " And "),
-                                                value = (string)result.Attribute("SAPrpValue"),
+                                                id = (string)result.Parent.Attribute("MDObjId"),
+                                                name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
+                                                value = (string)result.Attribute("MDPrpValue"),
                                                 place1 = "$none$",
                                                 place2 = "$none$",
                                                 foundation = "$none$",
@@ -2276,23 +2276,23 @@ namespace NEAR
             if (results_dic.Count() > 0)
             {
                 results =
-                        from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                        where (string)result.Parent.Attribute("SAPrpName") == "Activity"
-                        from result3 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                        where (string)result3.Parent.Attribute("SAPrpName") == "Resource"
-                        where (string)result3.Parent.Parent.Attribute("SAObjId") == (string)result.Parent.Parent.Attribute("SAObjId")
-                        from result2 in root.Elements("Class").Elements("SADefinition")
-                        where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
-                        from result4 in root.Elements("Class").Elements("SADefinition")
-                        where (string)result3.Attribute("SALinkIdentity") == (string)result4.Attribute("SAObjId")
+                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                        where (string)result.Parent.Attribute("MDPrpName") == "Activity"
+                        from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                        where (string)result3.Parent.Attribute("MDPrpName") == "Resource"
+                        where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+                        from result2 in root.Elements("Class").Elements("MDDefinition")
+                        where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+                        from result4 in root.Elements("Class").Elements("MDDefinition")
+                        where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
                         select new Thing
                         {
-                            type = (((string)(results_dic[(string)result.Parent.Parent.Attribute("SAObjId")].First().value) == "Consumes") ? "activityConsumesResource" : "activityProducesResource"),
-                            id = (string)result.Parent.Parent.Attribute("SAObjId"),
-                            name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
+                            type = (((string)(results_dic[(string)result.Parent.Parent.Attribute("MDObjId")].First().value) == "Consumes") ? "activityConsumesResource" : "activityProducesResource"),
+                            id = (string)result.Parent.Parent.Attribute("MDObjId"),
+                            name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
                             value = "$none$",
-                            place1 = (((string)(results_dic[(string)result.Parent.Parent.Attribute("SAObjId")].First().value) == "Consumes") ? (string)result3.Attribute("SALinkIdentity") : (string)result.Attribute("SALinkIdentity")),
-                            place2 = (((string)(results_dic[(string)result.Parent.Parent.Attribute("SAObjId")].First().value) == "Consumes") ? (string)result.Attribute("SALinkIdentity") : (string)result3.Attribute("SALinkIdentity")),
+                            place1 = (((string)(results_dic[(string)result.Parent.Parent.Attribute("MDObjId")].First().value) == "Consumes") ? (string)result3.Attribute("MDLinkIdentity") : (string)result.Attribute("MDLinkIdentity")),
+                            place2 = (((string)(results_dic[(string)result.Parent.Parent.Attribute("MDObjId")].First().value) == "Consumes") ? (string)result.Attribute("MDLinkIdentity") : (string)result3.Attribute("MDLinkIdentity")),
                             foundation = "CoupleType",
                             value_type = "$none$"
                         };
@@ -2312,25 +2312,25 @@ namespace NEAR
             //activityPerformedByPerformer
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result.Parent.Attribute("SAPrpName") == "Activity"
-                    from result3 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result3.Parent.Attribute("SAPrpName") == "Performer"
-                    where (string)result3.Parent.Parent.Attribute("SAObjId") == (string)result.Parent.Parent.Attribute("SAObjId")
-                    from result2 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
-                    from result4 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result3.Attribute("SALinkIdentity") == (string)result4.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result.Parent.Attribute("MDPrpName") == "Activity"
+                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result3.Parent.Attribute("MDPrpName") == "Performer"
+                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+                    from result2 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+                    from result4 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
 
 
                     select new Thing
                     {
                         type = "activityPerformedByPerformer",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
                         value = "$none$",
-                        place1 = (string)result3.Attribute("SALinkIdentity"),
-                        place2 = (string)result.Attribute("SALinkIdentity"),
+                        place1 = (string)result3.Attribute("MDLinkIdentity"),
+                        place2 = (string)result.Attribute("MDLinkIdentity"),
                         foundation = "CoupleType",
                         value_type = "$none$"
                     };
@@ -2340,25 +2340,25 @@ namespace NEAR
             values_dic = results.ToDictionary(a => a.id, a => a);
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result.Parent.Attribute("SAPrpName") == "Activity"
-                    from result3 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result3.Parent.Attribute("SAPrpName") == "Performer"
-                    where (string)result3.Parent.Parent.Attribute("SAObjId") == (string)result.Parent.Parent.Attribute("SAObjId")
-                    //from result2 in root.Elements("Class").Elements("SADefinition")
-                    //from result4 in root.Elements("Class").Elements("SADefinition")
-                    //where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
-                    //where (string)result3.Attribute("SALinkIdentity") == (string)result4.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result.Parent.Attribute("MDPrpName") == "Activity"
+                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result3.Parent.Attribute("MDPrpName") == "Performer"
+                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+                    //from result2 in root.Elements("Class").Elements("MDDefinition")
+                    //from result4 in root.Elements("Class").Elements("MDDefinition")
+                    //where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+                    //where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
 
 
                     select new Thing
                     {
                         type = "activityPerformedByPerformer",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
-                        value = (string)result3.Parent.Attribute("SAPrpValue"),
-                        place1 = (string)result3.Attribute("SALinkIdentity"),
-                        place2 = (string)result.Attribute("SALinkIdentity"),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+                        value = (string)result3.Parent.Attribute("MDPrpValue"),
+                        place1 = (string)result3.Attribute("MDLinkIdentity"),
+                        place2 = (string)result.Attribute("MDLinkIdentity"),
                         foundation = "CoupleType",
                         value_type = "$view name$"
                     };
@@ -2488,20 +2488,20 @@ namespace NEAR
             values_dic2 = tuple_types.Where(x => x.type == "activityConsumesResource").GroupBy(x => x.place2).Select(x => x.First()).ToDictionary(x => x.place2, x => x);
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    from result2 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") != "System Exchange (DM2rx)" && (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") != "Operational Exchange (DM2rx)"
-                        && (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") != "System Data Flow (DM2rx)" && (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") != "Service Data Flow (DM2rx)"
-                    where (string)result.Parent.Attribute("SAPrpName") == "performerTarget" || (string)result.Parent.Attribute("SAPrpName") == "Target" || (string)result.Parent.Attribute("SAPrpName") == "Destination" 
-                    where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    from result2 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "System Exchange (DM2rx)" && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "Operational Exchange (DM2rx)"
+                        && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "System Data Flow (DM2rx)" && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "Service Data Flow (DM2rx)"
+                    where (string)result.Parent.Attribute("MDPrpName") == "performerTarget" || (string)result.Parent.Attribute("MDPrpName") == "Target" || (string)result.Parent.Attribute("MDPrpName") == "Destination" 
+                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
                     select new Thing
                     {
                         type = "Resource Flow",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
-                        value = (string)result.Parent.Attribute("SAPrpName") + "_" + (string)result.Parent.Parent.Attribute("SAObjMinorTypeName"),
-                        place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        place2 = (string)result.Attribute("SALinkIdentity"),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+                        value = (string)result.Parent.Attribute("MDPrpName") + "_" + (string)result.Parent.Parent.Attribute("MDObjMinorTypeName"),
+                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        place2 = (string)result.Attribute("MDLinkIdentity"),
                         foundation = "CoupleType",
                         value_type = "$none$"
                     };
@@ -2645,20 +2645,20 @@ namespace NEAR
             }
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") != "System Exchange (DM2rx)" && (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") != "Operational Exchange (DM2rx)"
-                        && (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") != "System Data Flow (DM2rx)" && (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") != "Service Data Flow (DM2rx)"
-                    where (string)result.Parent.Attribute("SAPrpName") == "performerSource" || (string)result.Parent.Attribute("SAPrpName") == "Source"
-                    from result2 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "System Exchange (DM2rx)" && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "Operational Exchange (DM2rx)"
+                        && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "System Data Flow (DM2rx)" && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "Service Data Flow (DM2rx)"
+                    where (string)result.Parent.Attribute("MDPrpName") == "performerSource" || (string)result.Parent.Attribute("MDPrpName") == "Source"
+                    from result2 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
                     select new Thing
                     {
                         type = "Resource Flow",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
-                        value = (string)result.Parent.Attribute("SAPrpName") + "_" + (string)result.Parent.Parent.Attribute("SAObjMinorTypeName"),
-                        place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        place2 = (string)result.Attribute("SALinkIdentity"),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+                        value = (string)result.Parent.Attribute("MDPrpName") + "_" + (string)result.Parent.Parent.Attribute("MDObjMinorTypeName"),
+                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        place2 = (string)result.Attribute("MDLinkIdentity"),
                         foundation = "CoupleType",
                         value_type = "$none$"
                     };
@@ -2777,18 +2777,18 @@ namespace NEAR
             //Supports
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    from result2 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result.Parent.Attribute("SAPrpName") == "SupportedBy"
-                    where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    from result2 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result.Parent.Attribute("MDPrpName") == "SupportedBy"
+                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
                     select new Thing
                     {
                         type = "activityPerformedByPerformer",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId") + (string)result.Attribute("SALinkIdentity"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
                         value = "$none$",
-                        place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        place2 = (string)result.Attribute("SALinkIdentity"),
+                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        place2 = (string)result.Attribute("MDLinkIdentity"),
                         foundation = "CoupleType",
                         value_type = "$none$"
                     };
@@ -2961,18 +2961,18 @@ namespace NEAR
             }
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    from result2 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result.Parent.Attribute("SAPrpName") == "Supports"
-                    where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    from result2 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result.Parent.Attribute("MDPrpName") == "Supports"
+                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
                     select new Thing
                     {
                         type = "activityPerformedByPerformer",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId") + (string)result.Attribute("SALinkIdentity"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
                         value = "$none$",
-                        place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        place2 = (string)result.Attribute("SALinkIdentity"),
+                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        place2 = (string)result.Attribute("MDLinkIdentity"),
                         foundation = "CoupleType",
                         value_type = "$none$"
                     };
@@ -3080,14 +3080,14 @@ namespace NEAR
             //Constraint
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty")
-                    where (string)result.Attribute("SAPrpName") == "To Cardinality"
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty")
+                    where (string)result.Attribute("MDPrpName") == "To Cardinality"
 
                     select new Thing
                     {
                         type = "Rule",
-                        id = (string)result.Parent.Attribute("SAObjId"),
-                        name = (string)result.Attribute("SAPrpValue"),
+                        id = (string)result.Parent.Attribute("MDObjId"),
+                        name = (string)result.Attribute("MDPrpValue"),
                         value = "$none$",
                         place1 = "$none$",
                         place2 = "$none$",
@@ -3100,31 +3100,31 @@ namespace NEAR
             //DIV-3 Relationship
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") == "Constraint"
-                    where (string)result.Parent.Attribute("SAPrpName") == "From Table"
-                    from result3 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result3.Parent.Attribute("SAPrpName") == "To Table"
-                    where (string)result3.Parent.Parent.Attribute("SAObjId") == (string)result.Parent.Parent.Attribute("SAObjId")
-                    from result5 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result5.Parent.Attribute("SAPrpName") == "Foreign Keys and Roles"
-                    where (string)result5.Parent.Parent.Attribute("SAObjId") == (string)result.Parent.Parent.Attribute("SAObjId")
-                    from result2 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
-                    from result4 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result3.Attribute("SALinkIdentity") == (string)result4.Attribute("SAObjId")
-                    from result6 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result5.Attribute("SALinkIdentity") == (string)result6.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "Constraint"
+                    where (string)result.Parent.Attribute("MDPrpName") == "From Table"
+                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result3.Parent.Attribute("MDPrpName") == "To Table"
+                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+                    from result5 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result5.Parent.Attribute("MDPrpName") == "Foreign Keys and Roles"
+                    where (string)result5.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+                    from result2 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+                    from result4 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
+                    from result6 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result5.Attribute("MDLinkIdentity") == (string)result6.Attribute("MDObjId")
 
                     select new Thing
                     {
                         type = "temp",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId") + (string)result5.Attribute("SALinkIdentity"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
-                        value = (string)result5.Attribute("SALinkIdentity"),
-                        place1 = (string)result.Attribute("SALinkIdentity"),
-                        place2 = (string)result3.Attribute("SALinkIdentity"),
-                        foundation = (string)result.Parent.Parent.Attribute("SAObjId"),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result5.Attribute("MDLinkIdentity"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+                        value = (string)result5.Attribute("MDLinkIdentity"),
+                        place1 = (string)result.Attribute("MDLinkIdentity"),
+                        place2 = (string)result3.Attribute("MDLinkIdentity"),
+                        foundation = (string)result.Parent.Parent.Attribute("MDObjId"),
                         value_type = "$FK ID$"
                     };
 
@@ -3132,25 +3132,25 @@ namespace NEAR
             values_dic = values3.GroupBy(x => x.foundation).Select(grp => grp.First()).ToDictionary(x => x.foundation, x => x);
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") == "Constraint"
-                    where (string)result.Parent.Attribute("SAPrpName") == "From Table"
-                    from result3 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result3.Parent.Attribute("SAPrpName") == "To Table"
-                    where (string)result3.Parent.Parent.Attribute("SAObjId") == (string)result.Parent.Parent.Attribute("SAObjId")
-                    from result2 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
-                    from result4 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result3.Attribute("SALinkIdentity") == (string)result4.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "Constraint"
+                    where (string)result.Parent.Attribute("MDPrpName") == "From Table"
+                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result3.Parent.Attribute("MDPrpName") == "To Table"
+                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+                    from result2 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+                    from result4 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
 
                     select new Thing
                     {
                         type = "temp",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
                         value = "$none$",
-                        place1 = (string)result.Attribute("SALinkIdentity"),
-                        place2 = (string)result3.Attribute("SALinkIdentity"),
+                        place1 = (string)result.Attribute("MDLinkIdentity"),
+                        place2 = (string)result3.Attribute("MDLinkIdentity"),
                         foundation = "$none$",
                         value_type = "$PK ID$"
                     };
@@ -3581,25 +3581,25 @@ namespace NEAR
             //State transition
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result.Parent.Attribute("SAPrpName") == "To"
-                    from result3 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result3.Parent.Attribute("SAPrpName") == "From"
-                    where (string)result3.Parent.Parent.Attribute("SAObjId") == (string)result.Parent.Parent.Attribute("SAObjId")
-                    from result2 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
-                    from result4 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result3.Attribute("SALinkIdentity") == (string)result4.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result.Parent.Attribute("MDPrpName") == "To"
+                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result3.Parent.Attribute("MDPrpName") == "From"
+                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+                    from result2 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+                    from result4 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
 
 
                     select new Thing
                     {
                         type = "BeforeAfterType",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
                         value = "$none$",
-                        place1 = (string)result3.Attribute("SALinkIdentity"),
-                        place2 = (string)result.Attribute("SALinkIdentity"),
+                        place1 = (string)result3.Attribute("MDLinkIdentity"),
+                        place2 = (string)result.Attribute("MDLinkIdentity"),
                         foundation = "CoupleType",
                         value_type = "$none$"
                     };
@@ -3609,25 +3609,25 @@ namespace NEAR
             //Capability Dependency
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result.Parent.Attribute("SAPrpName") == "To Capability"
-                    from result3 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result3.Parent.Attribute("SAPrpName") == "From Capability"
-                    where (string)result3.Parent.Parent.Attribute("SAObjId") == (string)result.Parent.Parent.Attribute("SAObjId")
-                    from result2 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
-                    from result4 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result3.Attribute("SALinkIdentity") == (string)result4.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result.Parent.Attribute("MDPrpName") == "To Capability"
+                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result3.Parent.Attribute("MDPrpName") == "From Capability"
+                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+                    from result2 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+                    from result4 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
 
 
                     select new Thing
                     {
                         type = "BeforeAfterType",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
                         value = "$none$",
-                        place1 = (string)result3.Attribute("SALinkIdentity"),
-                        place2 = (string)result.Attribute("SALinkIdentity"),
+                        place1 = (string)result3.Attribute("MDLinkIdentity"),
+                        place2 = (string)result.Attribute("MDLinkIdentity"),
                         foundation = "CoupleType",
                         value_type = "$none$"
                     };
@@ -3637,25 +3637,25 @@ namespace NEAR
             //System Milestone Dependency
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result.Parent.Attribute("SAPrpName") == "To Milestone"
-                    from result3 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result3.Parent.Attribute("SAPrpName") == "From Milestone"
-                    where (string)result3.Parent.Parent.Attribute("SAObjId") == (string)result.Parent.Parent.Attribute("SAObjId")
-                    from result2 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
-                    from result4 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result3.Attribute("SALinkIdentity") == (string)result4.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result.Parent.Attribute("MDPrpName") == "To Milestone"
+                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result3.Parent.Attribute("MDPrpName") == "From Milestone"
+                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+                    from result2 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+                    from result4 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
 
 
                     select new Thing
                     {
                         type = "BeforeAfterType",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
                         value = "$none$",
-                        place1 = (string)result3.Attribute("SALinkIdentity"),
-                        place2 = (string)result.Attribute("SALinkIdentity"),
+                        place1 = (string)result3.Attribute("MDLinkIdentity"),
+                        place2 = (string)result.Attribute("MDLinkIdentity"),
                         foundation = "CoupleType",
                         value_type = "$none$"
                     };
@@ -3665,16 +3665,16 @@ namespace NEAR
             //activityPartOfProjectType
 
             results =
-                        from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                        where (string)result.Parent.Attribute("SAPrpName") == "Milestones"
+                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                        where (string)result.Parent.Attribute("MDPrpName") == "Milestones"
                         select new Thing
                         {
                             type = "activityPartOfProjectType",
-                            id = (string)result.Parent.Parent.Attribute("SAObjId") + (string)result.Attribute("SALinkIdentity"),
+                            id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
                             name = "$none$",
                             value = "$none$",
-                            place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                            place2 = (string)result.Attribute("SALinkIdentity"),
+                            place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                            place2 = (string)result.Attribute("MDLinkIdentity"),
                             foundation = "WholePartType",
                             value_type = "$none$"
                         };
@@ -3682,16 +3682,16 @@ namespace NEAR
                 values = results.ToList();
 
                 results =
-                            from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                            where (string)result.Parent.Attribute("SAPrpName") == "Project"
+                            from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                            where (string)result.Parent.Attribute("MDPrpName") == "Project"
                             select new Thing
                             {
                                 type = "activityPartOfProjectType",
-                                id = (string)result.Attribute("SALinkIdentity") + (string)result.Parent.Parent.Attribute("SAObjId"),
+                                id = (string)result.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
                                 name = "$none$",
                                 value = "$none$",
-                                place2 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                                place1 = (string)result.Attribute("SALinkIdentity"),
+                                place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                                place1 = (string)result.Attribute("MDLinkIdentity"),
                                 foundation = "WholePartType",
                                 value_type = "$none$"
                             };
@@ -3703,16 +3703,16 @@ namespace NEAR
             //activityPerformedByPerformer - Milestones
 
             results =
-                        from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                        where (string)result.Parent.Attribute("SAPrpName") == "Milestones"
+                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                        where (string)result.Parent.Attribute("MDPrpName") == "Milestones"
                         select new Thing
                         {
                             type = "activityPerformedByPerformer",
-                            id = (string)result.Parent.Parent.Attribute("SAObjId") + (string)result.Attribute("SALinkIdentity"),
+                            id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
                             name = "$none$",
                             value = "$none$",
-                            place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                            place2 = (string)result.Attribute("SALinkIdentity"),
+                            place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                            place2 = (string)result.Attribute("MDLinkIdentity"),
                             foundation = "CoupleType",
                             value_type = "$none$"
                         };
@@ -3720,16 +3720,16 @@ namespace NEAR
             values = results.ToList();
 
             results =
-                        from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                        where (string)result.Parent.Attribute("SAPrpName") == "In Item"
+                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                        where (string)result.Parent.Attribute("MDPrpName") == "In Item"
                         select new Thing
                         {
                             type = "activityPerformedByPerformer",
-                            id = (string)result.Attribute("SALinkIdentity") + (string)result.Parent.Parent.Attribute("SAObjId"),
+                            id = (string)result.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
                             name = "$none$",
                             value = "$none$",
-                            place2 = (string)result.Parent.Parent.Attribute("SAObjId"),
-                            place1 = (string)result.Attribute("SALinkIdentity"),
+                            place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
+                            place1 = (string)result.Attribute("MDLinkIdentity"),
                             foundation = "CoupleType",
                             value_type = "$none$"
                         };
@@ -3741,17 +3741,17 @@ namespace NEAR
             //Milestone Date
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty")
-                    where (string)result.Attribute("SAPrpName") == "Milestone Date"
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty")
+                    where (string)result.Attribute("MDPrpName") == "Milestone Date"
 
                     select new Thing
                     {
                         type = "HappensInType",
-                        id = (string)result.Parent.Attribute("SAObjId") + "_t2",
+                        id = (string)result.Parent.Attribute("MDObjId") + "_t2",
                         name = "$none$",
-                        value = (string)result.Attribute("SAPrpValue"),
-                        place1 = (string)result.Parent.Attribute("SAObjId") + "_t1",
-                        place2 = (string)result.Parent.Attribute("SAObjId"),
+                        value = (string)result.Attribute("MDPrpValue"),
+                        place1 = (string)result.Parent.Attribute("MDObjId") + "_t1",
+                        place2 = (string)result.Parent.Attribute("MDObjId"),
                         foundation = "WholePartType",
                         value_type = "$period$"
                     };
@@ -3798,17 +3798,17 @@ namespace NEAR
             //Data Type
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty")
-                    where (string)result.Attribute("SAPrpName") == "SQL Data Type"
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty")
+                    where (string)result.Attribute("MDPrpName") == "SQL Data Type"
 
                     select new Thing
                     {
                         type = "typeInstance",
-                        id = (string)result.Parent.Attribute("SAObjId") + "_12",
+                        id = (string)result.Parent.Attribute("MDObjId") + "_12",
                         name = "$none$",
-                        value = (string)result.Attribute("SAPrpValue"),
-                        place1 = (string)result.Parent.Attribute("SAObjId") + "_11",
-                        place2 = (string)result.Parent.Attribute("SAObjId"),
+                        value = (string)result.Attribute("MDPrpValue"),
+                        place1 = (string)result.Parent.Attribute("MDObjId") + "_11",
+                        place2 = (string)result.Parent.Attribute("MDObjId"),
                         foundation = "typeInstance",
                         value_type = "$datatype$"
                     };
@@ -3856,25 +3856,25 @@ namespace NEAR
             //activityPartOfCapability
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result.Parent.Attribute("SAPrpName") == "Activity"
-                    from result3 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result3.Parent.Attribute("SAPrpName") == "Capability"
-                    where (string)result3.Parent.Parent.Attribute("SAObjId") == (string)result.Parent.Parent.Attribute("SAObjId")
-                    from result2 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
-                    from result4 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result3.Attribute("SALinkIdentity") == (string)result4.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result.Parent.Attribute("MDPrpName") == "Activity"
+                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result3.Parent.Attribute("MDPrpName") == "Capability"
+                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+                    from result2 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+                    from result4 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
                     
 
                     select new Thing
                     {
                         type = "activityPartOfCapability",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
                         value = "$none$",
-                        place1 = (string)result3.Attribute("SALinkIdentity"),
-                        place2 = (string)result.Attribute("SALinkIdentity"),
+                        place1 = (string)result3.Attribute("MDLinkIdentity"),
+                        place2 = (string)result.Attribute("MDLinkIdentity"),
                         foundation = "WholePartType",
                         value_type = "$none$"
                     };
@@ -3884,25 +3884,25 @@ namespace NEAR
             //DIV-2 Relationship
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result.Parent.Attribute("SAPrpName") == "From Entity"
-                    from result3 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result3.Parent.Attribute("SAPrpName") == "To Entity"
-                    where (string)result3.Parent.Parent.Attribute("SAObjId") == (string)result.Parent.Parent.Attribute("SAObjId")
-                    from result2 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
-                    from result4 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result3.Attribute("SALinkIdentity") == (string)result4.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result.Parent.Attribute("MDPrpName") == "From Entity"
+                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result3.Parent.Attribute("MDPrpName") == "To Entity"
+                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+                    from result2 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+                    from result4 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
 
 
                     select new Thing
                     {
                         type = "OverlapType",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
                         value = "$none$",
-                        place1 = (string)result3.Attribute("SALinkIdentity"),
-                        place2 = (string)result.Attribute("SALinkIdentity"),
+                        place1 = (string)result3.Attribute("MDLinkIdentity"),
+                        place2 = (string)result.Attribute("MDLinkIdentity"),
                         foundation = "CoupleType",
                         value_type = "$none$"
                     };
@@ -3916,21 +3916,21 @@ namespace NEAR
             //System Exchange (DM2rx)
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result.Parent.Attribute("SAPrpName") == "Source"
-                    from result3 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result3.Parent.Attribute("SAPrpName") == "Target"
-                    where (string)result3.Parent.Parent.Attribute("SAObjId") == (string)result.Parent.Parent.Attribute("SAObjId")
-                    where (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") == "System Exchange (DM2rx)"
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result.Parent.Attribute("MDPrpName") == "Source"
+                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result3.Parent.Attribute("MDPrpName") == "Target"
+                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "System Exchange (DM2rx)"
 
                     select new Thing
                     {
                         type = "temp",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
                         value = "$none$",
-                        place1 = (string)result.Attribute("SALinkIdentity"),
-                        place2 = (string)result3.Attribute("SALinkIdentity"),
+                        place1 = (string)result.Attribute("MDLinkIdentity"),
+                        place2 = (string)result3.Attribute("MDLinkIdentity"),
                         foundation = "$none$",
                         value_type = "$none$"
                     };
@@ -4017,27 +4017,27 @@ namespace NEAR
             //System Data Flow (DM2rx)
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result.Parent.Attribute("SAPrpName") == "Source"
-                    where (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") == "System Data Flow (DM2rx)"
-                    from result2 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result2.Parent.Attribute("SAPrpName") == "Destination"
-                    where (string)result2.Parent.Parent.Attribute("SAObjId") == (string)result.Parent.Parent.Attribute("SAObjId")
-                    from result3 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result3.Parent.Attribute("SAPrpName") == "Resources"
-                    where (string)result3.Parent.Parent.Attribute("SAObjId") == (string)result2.Parent.Parent.Attribute("SAObjId")
-                    from result4 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result3.Attribute("SALinkIdentity") == (string)result4.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result.Parent.Attribute("MDPrpName") == "Source"
+                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "System Data Flow (DM2rx)"
+                    from result2 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result2.Parent.Attribute("MDPrpName") == "Destination"
+                    where (string)result2.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result3.Parent.Attribute("MDPrpName") == "Resources"
+                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result2.Parent.Parent.Attribute("MDObjId")
+                    from result4 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
 
                     select new Thing
                     {
                         type = "temp",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
-                        value = (string)result3.Attribute("SALinkIdentity"),
-                        place1 = (string)result.Attribute("SALinkIdentity"),
-                        place2 = (string)result2.Attribute("SALinkIdentity"),
-                        //foundation = (string)result4.Attribute("SAObjId"),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+                        value = (string)result3.Attribute("MDLinkIdentity"),
+                        place1 = (string)result.Attribute("MDLinkIdentity"),
+                        place2 = (string)result2.Attribute("MDLinkIdentity"),
+                        //foundation = (string)result4.Attribute("MDObjId"),
                         value_type = "$resources$"
                     };
 
@@ -4238,27 +4238,27 @@ namespace NEAR
             //Service Data Flow (DM2rx)
 
             results =
-                    from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result.Parent.Attribute("SAPrpName") == "Source"
-                    where (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") == "Service Data Flow (DM2rx)"
-                    from result2 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result2.Parent.Attribute("SAPrpName") == "Destination"
-                    where (string)result2.Parent.Parent.Attribute("SAObjId") == (string)result.Parent.Parent.Attribute("SAObjId")
-                    from result3 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                    where (string)result3.Parent.Attribute("SAPrpName") == "Resources"
-                    where (string)result3.Parent.Parent.Attribute("SAObjId") == (string)result2.Parent.Parent.Attribute("SAObjId")
-                    from result4 in root.Elements("Class").Elements("SADefinition")
-                    where (string)result3.Attribute("SALinkIdentity") == (string)result4.Attribute("SAObjId")
+                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result.Parent.Attribute("MDPrpName") == "Source"
+                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "Service Data Flow (DM2rx)"
+                    from result2 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result2.Parent.Attribute("MDPrpName") == "Destination"
+                    where (string)result2.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                    where (string)result3.Parent.Attribute("MDPrpName") == "Resources"
+                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result2.Parent.Parent.Attribute("MDObjId")
+                    from result4 in root.Elements("Class").Elements("MDDefinition")
+                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
 
                     select new Thing
                     {
                         type = "temp",
-                        id = (string)result.Parent.Parent.Attribute("SAObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
-                        value = (string)result3.Attribute("SALinkIdentity"),
-                        place1 = (string)result.Attribute("SALinkIdentity"),
-                        place2 = (string)result2.Attribute("SALinkIdentity"),
-                        //foundation = (string)result4.Attribute("SAObjId"),
+                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+                        value = (string)result3.Attribute("MDLinkIdentity"),
+                        place1 = (string)result.Attribute("MDLinkIdentity"),
+                        place2 = (string)result2.Attribute("MDLinkIdentity"),
+                        //foundation = (string)result4.Attribute("MDObjId"),
                         value_type = "$resources$"
                     };
 
@@ -4459,20 +4459,20 @@ namespace NEAR
             //Organization Owns Projects and PV-1
 
             //results =
-            //            from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-            //            where (string)result.Parent.Attribute("SAPrpName") == "Organization Owns Projects"
-            //            from result2 in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-            //            where (string)result2.Parent.Attribute("SAPrpName") == "Milestones"
-            //            where (string)result.Attribute("SALinkIdentity") == (string)result2.Parent.Parent.Attribute("SAObjId")
+            //            from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+            //            where (string)result.Parent.Attribute("MDPrpName") == "Organization Owns Projects"
+            //            from result2 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+            //            where (string)result2.Parent.Attribute("MDPrpName") == "Milestones"
+            //            where (string)result.Attribute("MDLinkIdentity") == (string)result2.Parent.Parent.Attribute("MDObjId")
 
             //            select new Thing
             //            {
             //                type = "activityPerformedByPerformer",
-            //                id = (string)result2.Attribute("SALinkIdentity") + (string)result.Parent.Parent.Attribute("SAObjId"),
-            //                name = ((string)result2.Attribute("SALinkName")).Replace("&quot", "").Replace("\"",""),
-            //                value = new Tuple<string, string>((string)result.Parent.Parent.Parent.Element("SADiagram").Attribute("SAObjId"), (string)result2.Parent.Parent.Attribute("SAObjId")),
-            //                place2 = (string)result.Parent.Parent.Attribute("SAObjId"),
-            //                place1 = (string)result2.Attribute("SALinkIdentity"),
+            //                id = (string)result2.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
+            //                name = ((string)result2.Attribute("MDLinkName")).Replace("&quot", "").Replace("\"",""),
+            //                value = new Tuple<string, string>((string)result.Parent.Parent.Parent.Element("MDDiagram").Attribute("MDObjId"), (string)result2.Parent.Parent.Attribute("MDObjId")),
+            //                place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
+            //                place1 = (string)result2.Attribute("MDLinkIdentity"),
             //                foundation = "CoupleType",
             //                value_type = "$view and project$"
             //            };
@@ -4480,20 +4480,20 @@ namespace NEAR
             //    IEnumerable<Thing> tuple_types_temp = results.ToList();
 
             results =
-                        from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-                        where (string)result.Parent.Attribute("SAPrpName") == "Project Owned By Organization"
-                        from result2 in result.Parent.Parent.Elements("SAProperty").Elements("SALink")
-                        where (string)result2.Parent.Attribute("SAPrpName") == "Milestones"
+                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+                        where (string)result.Parent.Attribute("MDPrpName") == "Project Owned By Organization"
+                        from result2 in result.Parent.Parent.Elements("MDProperty").Elements("MDLink")
+                        where (string)result2.Parent.Attribute("MDPrpName") == "Milestones"
 
                         select new Thing
                         {
                             type = "activityPerformedByPerformer",
-                            id = (string)result2.Attribute("SALinkIdentity") + (string)result.Attribute("SALinkIdentity"),
-                            name = ((string)result2.Attribute("SALinkName")).Replace("&quot","").Replace("\"",""),
-                            //value = new Tuple<string, string>((string)result.Parent.Parent.Parent.Element("SADiagram").Attribute("SAObjId"), (string)result.Parent.Parent.Attribute("SAObjId")),
-                            value = (string)result.Parent.Parent.Attribute("SAObjId"),
-                            place2 = (string)result.Attribute("SALinkIdentity"),
-                            place1 = (string)result2.Attribute("SALinkIdentity"),
+                            id = (string)result2.Attribute("MDLinkIdentity") + (string)result.Attribute("MDLinkIdentity"),
+                            name = ((string)result2.Attribute("MDLinkName")).Replace("&quot","").Replace("\"",""),
+                            //value = new Tuple<string, string>((string)result.Parent.Parent.Parent.Element("MDDiagram").Attribute("MDObjId"), (string)result.Parent.Parent.Attribute("MDObjId")),
+                            value = (string)result.Parent.Parent.Attribute("MDObjId"),
+                            place2 = (string)result.Attribute("MDLinkIdentity"),
+                            place1 = (string)result2.Attribute("MDLinkIdentity"),
                             foundation = "CoupleType",
                             value_type = "$view and project$"
                         };
@@ -4561,16 +4561,16 @@ namespace NEAR
                 }
 
                 results =
-                           from result in root.Elements("Class").Elements("SADiagram").Elements("SASymbol")
-                           where (string)result.Parent.Attribute("SAObjMinorTypeName") == "PV-01 Project Portfolio Relationships (DM2)" || (string)result.Parent.Attribute("SAObjMinorTypeName") == "PV-01 Project Portfolio Relationships At Time (DM2)"
-                           where (string)result.Attribute("SAObjMinorTypeName") == "Project (DM2)"
+                           from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
+                           where (string)result.Parent.Attribute("MDObjMinorTypeName") == "PV-01 Project Portfolio Relationships (DM2)" || (string)result.Parent.Attribute("MDObjMinorTypeName") == "PV-01 Project Portfolio Relationships At Time (DM2)"
+                           where (string)result.Attribute("MDObjMinorTypeName") == "Project (DM2)"
 
                            select new Thing
                            {
                                type = "temp",
-                               id = (string)result.Parent.Attribute("SAObjId") + "_" + (string)result.Attribute("SASymIdDef"),
-                               place1 = (string)result.Parent.Attribute("SAObjId"),
-                               place2 = (string)result.Attribute("SASymIdDef")
+                               id = (string)result.Parent.Attribute("MDObjId") + "_" + (string)result.Attribute("MDSymIdDef"),
+                               place1 = (string)result.Parent.Attribute("MDObjId"),
+                               place2 = (string)result.Attribute("MDSymIdDef")
                            };
 
                 results_dic = results2.GroupBy(y => (string)y.value).ToDictionary(z => z.Key, z => z.ToList());
@@ -4896,17 +4896,17 @@ namespace NEAR
             //Diagramming
 
             locations =
-                    from result in root.Elements("Class").Elements("SADiagram").Elements("SASymbol")
-                    where (string)result.Attribute("SASymIdDef") != null
-                        || (string)result.Attribute("SAObjMinorTypeName") == "Picture" || (string)result.Attribute("SAObjMinorTypeName") == "Doc Block"
+                    from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
+                    where (string)result.Attribute("MDSymIdDef") != null
+                        || (string)result.Attribute("MDObjMinorTypeName") == "Picture" || (string)result.Attribute("MDObjMinorTypeName") == "Doc Block"
                     select new Location
                     {
-                        id = ((string)result.Attribute("SAObjMinorTypeName") == "Picture" || (string)result.Attribute("SAObjMinorTypeName") == "Doc Block") ? (string)result.Parent.Attribute("SAObjId") + (string)result.Attribute("SAObjId") : (string)result.Parent.Attribute("SAObjId") + (string)result.Attribute("SAObjId"),
-                        top_left_x = (string)result.Attribute("SASymLocX"),
-                        top_left_y = (string)result.Attribute("SASymLocY"),
-                        bottom_right_x = ((int)result.Attribute("SASymLocX") + (int)result.Attribute("SASymSizeX")).ToString(),
-                        bottom_right_y = ((int)result.Attribute("SASymLocY") - (int)result.Attribute("SASymSizeY")).ToString(),
-                        element_id = ((string)result.Attribute("SAObjMinorTypeName") == "Picture" || (string)result.Attribute("SAObjMinorTypeName") == "Doc Block") ? (string)result.Attribute("SAObjId") : (string)result.Attribute("SASymIdDef")
+                        id = ((string)result.Attribute("MDObjMinorTypeName") == "Picture" || (string)result.Attribute("MDObjMinorTypeName") == "Doc Block") ? (string)result.Parent.Attribute("MDObjId") + (string)result.Attribute("MDObjId") : (string)result.Parent.Attribute("MDObjId") + (string)result.Attribute("MDObjId"),
+                        top_left_x = (string)result.Attribute("MDSymLocX"),
+                        top_left_y = (string)result.Attribute("MDSymLocY"),
+                        bottom_right_x = ((int)result.Attribute("MDSymLocX") + (int)result.Attribute("MDSymSizeX")).ToString(),
+                        bottom_right_y = ((int)result.Attribute("MDSymLocY") - (int)result.Attribute("MDSymSizeY")).ToString(),
+                        element_id = ((string)result.Attribute("MDObjMinorTypeName") == "Picture" || (string)result.Attribute("MDObjMinorTypeName") == "Doc Block") ? (string)result.Attribute("MDObjId") : (string)result.Attribute("MDSymIdDef")
                     };
 
             foreach (Location location in locations)
@@ -5204,20 +5204,20 @@ namespace NEAR
                 sorted_results = new List<List<Thing>>();
 
                 results =
-                    from result in root.Elements("Class").Elements("SADiagram").Elements("SASymbol")
-                    where (string)result.Parent.Attribute("SAObjMinorTypeName") == current_lookup[1]
-                    where (string)result.Attribute("SASymIdDef") != null
-                        || ((string)result.Attribute("SAObjMinorTypeName") == "Picture"
-                        || (string)result.Attribute("SAObjMinorTypeName") == "Doc Block")
+                    from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
+                    where (string)result.Parent.Attribute("MDObjMinorTypeName") == current_lookup[1]
+                    where (string)result.Attribute("MDSymIdDef") != null
+                        || ((string)result.Attribute("MDObjMinorTypeName") == "Picture"
+                        || (string)result.Attribute("MDObjMinorTypeName") == "Doc Block")
                     select new Thing
                     {
                         type = current_lookup[0],
-                        id = (string)result.Parent.Attribute("SAObjId") + (string)result.Attribute("SASymIdDef"),
-                        name = ((string)result.Parent.Attribute("SAObjName")).Replace("&", " And "),
-                        place1 = (string)result.Parent.Attribute("SAObjId"),
-                        place2 = (string)result.Attribute("SASymIdDef"),
-                        value = (string)result.Attribute("SASymIdDef"),
-                        //value = Find_Def_DM2_Type((string)result.Attribute("SASymIdDef"),ref values5),
+                        id = (string)result.Parent.Attribute("MDObjId") + (string)result.Attribute("MDSymIdDef"),
+                        name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
+                        place1 = (string)result.Parent.Attribute("MDObjId"),
+                        place2 = (string)result.Attribute("MDSymIdDef"),
+                        value = (string)result.Attribute("MDSymIdDef"),
+                        //value = Find_Def_DM2_Type((string)result.Attribute("MDSymIdDef"),ref values5),
                         foundation = "$none$",
                         value_type = "$element_type$"
                     };
@@ -5802,17 +5802,17 @@ namespace NEAR
                 //if (current_lookup[0] == "ArchitecturalDescription")
                 //{
                 //    results =
-                //      from result in root.Elements("Class").Elements("SADiagram").Elements("SASymbol").Elements("SAPicture")
-                //      where (string)result.Parent.Attribute("SAObjMinorTypeName") == "Picture"
-                //      where (from diagram in result.Parent.Parent.Parent.Elements("SADefinition")
-                //             where (string)diagram.Attribute("SAObjId") == (string)result.Parent.Attribute("SASymIdDef")
+                //      from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol").Elements("MDPicture")
+                //      where (string)result.Parent.Attribute("MDObjMinorTypeName") == "Picture"
+                //      where (from diagram in result.Parent.Parent.Parent.Elements("MDDefinition")
+                //             where (string)diagram.Attribute("MDObjId") == (string)result.Parent.Attribute("MDSymIdDef")
                 //             select diagram
                 //         ).Any()
                 //      select new Thing
                 //      {
                 //          type = "ArchitecturalDescription",
-                //          id = (string)result.Parent.Attribute("SASymIdDef"),
-                //          name = (string)result.Parent.Attribute("SAObjName"),
+                //          id = (string)result.Parent.Attribute("MDSymIdDef"),
+                //          name = (string)result.Parent.Attribute("MDObjName"),
                 //          value = (string)result.Attribute("SAPictureData"),
                 //          place1 = "$none$",
                 //          place2 = "$none$",
@@ -5838,7 +5838,7 @@ namespace NEAR
                             place1 = "$none$",
                             place2 = "$none$",
                             foundation = (string)result.Parent.Attribute(ns + "FoundationCategory"),
-                            value_type = "SAObjMinorTypeName"
+                            value_type = "MDObjMinorTypeName"
                         };
 
                 results_dic =
@@ -5856,7 +5856,7 @@ namespace NEAR
                              place1 = "$none$",
                              place2 = "$none$",
                              foundation = (string)result.Parent.Attribute(ns + "FoundationCategory"),
-                             value_type = "SAObjMinorTypeName"
+                             value_type = "MDObjMinorTypeName"
                          }
                      }).ToDictionary(a => a.key, a => a.value);
                 //}
@@ -6279,9 +6279,9 @@ namespace NEAR
                         view_GUID = Guid.NewGuid();
                         minor_type = Find_View_SA_Minor_Type(view.type);
 
-                        writer.WriteRaw("<Class><SADiagram SAObjId=\"" + view.id + "\" SAObjName=\"" + view.name + "\" SAObjMinorTypeName=\"" + view.type
-                            + "\" SAObjMinorTypeNum=\"" + minor_type + "\" SAObjMajorTypeNum=\"1\" SAObjAuditId=\"NEAR\" SAObjUpdateDate=\""
-                            + date + "\" SAObjUpdateTime=\"" + time + "\" SAObjFQName=\"" + view.name + "\" "
+                        writer.WriteRaw("<Class><MDDiagram MDObjId=\"" + view.id + "\" MDObjName=\"" + view.name + "\" MDObjMinorTypeName=\"" + view.type
+                            + "\" MDObjMinorTypeNum=\"" + minor_type + "\" MDObjMajorTypeNum=\"1\" MDObjAuditId=\"NEAR\" MDObjUpdateDate=\""
+                            + date + "\" MDObjUpdateTime=\"" + time + "\" MDObjFQName=\"" + view.name + "\" "
                             + "SADgmCLevelNumber=\"\" SADgmSnapGridEnt=\"0\" SADgmSnapGridLin=\"0\" SADgmPGridNumEnt=\"4 4\" SADgmPGridNumLin=\"10 10\""
                             + " SADgmPGridSizeEnt=\"25 25\" SADgmPGridSizeLin=\"10 10\" SADgmGridUnit100=\"100 100\" SADgmBPresentationMenu=\"0\""
                             + " SADgmBShowPages=\"0\" SADgmBShowRuler=\"0\" SADgmBShowGrid=\"-1\" SADgmBShowScroll=\"-1\" SADgmBShowNodeShadow=\"-1\""
@@ -6290,32 +6290,32 @@ namespace NEAR
                             + " SADgmIDgmForm=\"0\" SADgmWOrientation=\"0x0003\" SADgmBDgmPDefault=\"1\" SADgmBIsHierarchy=\"0\" SADgmBBackgroundColorOn=\"0\""
                             + " SADgmRGBBackgroundColor=\"0x00ffffff\" SADgmWLinePenStyle=\"0x0103\">");
 
-                        writer.WriteRaw("<SAProperty SAPrpName=\"~C~\" SAPrpValue=\"1\" SAPrpEditType=\"0\" SAPrpLength=\"0\"/>"
-                            + "<SAProperty SAPrpName=\"~T~\" SAPrpValue=\"" + minor_type + "\" SAPrpEditType=\"0\" SAPrpLength=\"0\"/>"
-                            + "<SAProperty SAPrpName=\"Use Automatic Gradient Fills\" SAPrpValue=\"T\" SAPrpEditType=\"4\" SAPrpLength=\"1\"/>"
-                            + "<SAProperty SAPrpName=\"DGX File Name\" SAPrpValue=\"D" + count.ToString("D7") + ".DGX\" SAPrpEditType=\"0\" SAPrpLength=\"0\"/>"
-                            //+ ((minor_type == "283") ? "" : "<SAProperty SAPrpName=\"Hierarchical Numbering\" SAPrpValue=\"F\" SAPrpEditType=\"4\" SAPrpLength=\"1\"/>") 
-                            + "<SAProperty SAPrpName=\"Initial Date\" SAPrpValue=\"" + prop_date + "\" SAPrpEditType=\"2\" SAPrpLength=\"10\"/>"
-                            + "<SAProperty SAPrpName=\"Initial Time\" SAPrpValue=\"" + prop_time + "\" SAPrpEditType=\"7\" SAPrpLength=\"11\"/>"
-                            + "<SAProperty SAPrpName=\"Initial Audit\" SAPrpValue=\"NEAR\" SAPrpEditType=\"1\" SAPrpLength=\"8\"/>"
-                            + "<SAProperty SAPrpName=\"GUID\" SAPrpValue=\"" + view_GUID + "\" SAPrpEditType=\"1\" SAPrpLength=\"64\"/>"
-                            // + "<SAProperty SAPrpName=\"Description\" SAPrpValue=\"\" SAPrpEditType=\"1\" SAPrpLength=\"4074\"/>"
-                            //+ "<SAProperty SAPrpName=\"Vertical Pools and Lanes\" SAPrpValue=\"F\" SAPrpEditType=\"4\" SAPrpLength=\"1\"/>"
-                            //+ "<SAProperty SAPrpName=\"Check Connections\" SAPrpValue=\"F\" SAPrpEditType=\"4\" SAPrpLength=\"1\"/>"
-                            //+ "<SAProperty SAPrpName=\"Auto-create/update 1380\" SAPrpValue=\"T\" SAPrpEditType=\"4\" SAPrpLength=\"1\"/>"
-                            //+ "<SAProperty SAPrpName=\"Auto-populate Where of APBP\" SAPrpValue=\"T\" SAPrpEditType=\"4\" SAPrpLength=\"1\"/>"
-                            //+ "<SAProperty SAPrpName=\"Peers\" SAPrpValue=\"\" SAPrpEditType=\"14\" SAPrpLength=\"1200\" SAPrpEditDefMajorType=\"Diagram\"" 
+                        writer.WriteRaw("<MDProperty MDPrpName=\"~C~\" MDPrpValue=\"1\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
+                            + "<MDProperty MDPrpName=\"~T~\" MDPrpValue=\"" + minor_type + "\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
+                            + "<MDProperty MDPrpName=\"Use Automatic Gradient Fills\" MDPrpValue=\"T\" SAPrpEditType=\"4\" MDPrpLength=\"1\"/>"
+                            + "<MDProperty MDPrpName=\"DGX File Name\" MDPrpValue=\"D" + count.ToString("D7") + ".DGX\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
+                            //+ ((minor_type == "283") ? "" : "<MDProperty MDPrpName=\"Hierarchical Numbering\" MDPrpValue=\"F\" SAPrpEditType=\"4\" MDPrpLength=\"1\"/>") 
+                            + "<MDProperty MDPrpName=\"Initial Date\" MDPrpValue=\"" + prop_date + "\" SAPrpEditType=\"2\" MDPrpLength=\"10\"/>"
+                            + "<MDProperty MDPrpName=\"Initial Time\" MDPrpValue=\"" + prop_time + "\" SAPrpEditType=\"7\" MDPrpLength=\"11\"/>"
+                            + "<MDProperty MDPrpName=\"Initial Audit\" MDPrpValue=\"NEAR\" SAPrpEditType=\"1\" MDPrpLength=\"8\"/>"
+                            + "<MDProperty MDPrpName=\"GUID\" MDPrpValue=\"" + view_GUID + "\" SAPrpEditType=\"1\" MDPrpLength=\"64\"/>"
+                            // + "<MDProperty MDPrpName=\"Description\" MDPrpValue=\"\" SAPrpEditType=\"1\" MDPrpLength=\"4074\"/>"
+                            //+ "<MDProperty MDPrpName=\"Vertical Pools and Lanes\" MDPrpValue=\"F\" SAPrpEditType=\"4\" MDPrpLength=\"1\"/>"
+                            //+ "<MDProperty MDPrpName=\"Check Connections\" MDPrpValue=\"F\" SAPrpEditType=\"4\" MDPrpLength=\"1\"/>"
+                            //+ "<MDProperty MDPrpName=\"Auto-create/update 1380\" MDPrpValue=\"T\" SAPrpEditType=\"4\" MDPrpLength=\"1\"/>"
+                            //+ "<MDProperty MDPrpName=\"Auto-populate Where of APBP\" MDPrpValue=\"T\" SAPrpEditType=\"4\" MDPrpLength=\"1\"/>"
+                            //+ "<MDProperty MDPrpName=\"Peers\" MDPrpValue=\"\" SAPrpEditType=\"14\" MDPrpLength=\"1200\" SAPrpEditDefMajorType=\"Diagram\"" 
                             //+ " SAPrpEditDefMinorType=\"" + view.type + "\"/>"
-                            //+ "<SAProperty SAPrpName=\"Architecture Type\" SAPrpValue=\"\" SAPrpEditType=\"1\" SAPrpLength=\"1200\"/>"
-                            //+ "<SAProperty SAPrpName=\"Related Architecture Description\" SAPrpValue=\"\" SAPrpEditType=\"14\" SAPrpLength=\"1200\""
+                            //+ "<MDProperty MDPrpName=\"Architecture Type\" MDPrpValue=\"\" SAPrpEditType=\"1\" MDPrpLength=\"1200\"/>"
+                            //+ "<MDProperty MDPrpName=\"Related Architecture Description\" MDPrpValue=\"\" SAPrpEditType=\"14\" MDPrpLength=\"1200\""
                             //+ " SAPrpEditDefMajorType=\"Definition\" SAPrpEditDefMinorType=\"ArchitecturalDescription (DM2)\"/>"
-                            //+ "<SAProperty SAPrpName=\"OSLCLink\" SAPrpValue=\"\" SAPrpEditType=\"8\" SAPrpLength=\"4074\" SAPrpEditDefMajorType=\"Definition\""
+                            //+ "<MDProperty MDPrpName=\"OSLCLink\" MDPrpValue=\"\" SAPrpEditType=\"8\" MDPrpLength=\"4074\" SAPrpEditDefMajorType=\"Definition\""
                             //+ " SAPrpEditDefMinorType=\"OSLC Link\"/>"
-                            //+ "<SAProperty SAPrpName=\"Reference Documents\" SAPrpValue=\"\" SAPrpEditType=\"18\" SAPrpLength=\"1024\"/>"
-                            + "<SAProperty SAPrpName=\"SA VISIO Last Modified By\" SAPrpValue=\"SA\" SAPrpEditType=\"0\" SAPrpLength=\"0\"/>"
-                            + "<SAProperty SAPrpName=\"Last Change Date\" SAPrpValue=\"" + DateTime.Now.ToString("yyyyMMdd") + "\" SAPrpEditType=\"2\" SAPrpLength=\"10\"/>"
-                            + "<SAProperty SAPrpName=\"Last Change Time\" SAPrpValue=\"" + DateTime.Now.ToString("HHmmss") + "\" SAPrpEditType=\"7\" SAPrpLength=\"11\"/>"
-                            + "<SAProperty SAPrpName=\"Last Change Audit\" SAPrpValue=\"NEAR\" SAPrpEditType=\"1\" SAPrpLength=\"8\"/>");
+                            //+ "<MDProperty MDPrpName=\"Reference Documents\" MDPrpValue=\"\" SAPrpEditType=\"18\" MDPrpLength=\"1024\"/>"
+                            + "<MDProperty MDPrpName=\"MD VISIO Last Modified By\" MDPrpValue=\"MD\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
+                            + "<MDProperty MDPrpName=\"Last Change Date\" MDPrpValue=\"" + DateTime.Now.ToString("yyyyMMdd") + "\" SAPrpEditType=\"2\" MDPrpLength=\"10\"/>"
+                            + "<MDProperty MDPrpName=\"Last Change Time\" MDPrpValue=\"" + DateTime.Now.ToString("HHmmss") + "\" SAPrpEditType=\"7\" MDPrpLength=\"11\"/>"
+                            + "<MDProperty MDPrpName=\"Last Change Audit\" MDPrpValue=\"NEAR\" SAPrpEditType=\"1\" MDPrpLength=\"8\"/>");
 
                         List<Thing> thing_list = new List<Thing>(view.mandatory);
                         thing_list.AddRange(view.optional);
@@ -6347,35 +6347,35 @@ namespace NEAR
                             minor_type_name = thing.type;
                             minor_type = Find_Symbol_Element_SA_Minor_Type(ref minor_type_name, view.type);
 
-                            writer.WriteRaw("<SASymbol SAObjId=\"" + thing.id + view.id.Substring(1) + "\" SAObjName=\"" + thing.name + "\" SAObjMinorTypeName=\"" + minor_type_name + "\""
-                                + " SAObjMinorTypeNum=\"" + minor_type + "\" SAObjMajorTypeNum=\"2\" SAObjAuditId=\"NEAR\" SAObjUpdateDate=\"" + date + "\""
-                                + " SAObjUpdateTime=\"" + time + "\" SAObjFQName=\"&quot;" + thing_GUID + "&quot;.&quot;" + thing.name + "&quot;\" SASymIdDgm=\"" + view.id + "\" SASymIdDef=\"" + thing.id + "\""
+                            writer.WriteRaw("<MDSymbol MDObjId=\"" + thing.id + view.id.Substring(1) + "\" MDObjName=\"" + thing.name + "\" MDObjMinorTypeName=\"" + minor_type_name + "\""
+                                + " MDObjMinorTypeNum=\"" + minor_type + "\" MDObjMajorTypeNum=\"2\" MDObjAuditId=\"NEAR\" MDObjUpdateDate=\"" + date + "\""
+                                + " MDObjUpdateTime=\"" + time + "\" MDObjFQName=\"&quot;" + thing_GUID + "&quot;.&quot;" + thing.name + "&quot;\" MDSymIdDgm=\"" + view.id + "\" MDSymIdDef=\"" + thing.id + "\""
                                 //other
-                                + " SASymArrangement=\"0\" SASymOtherSymbology=\"0\" SASymProperties=\"0x0000\" SASymOrder=\"0\" SASymXPEntity=\"" + count2 + "\""
-                                + " SASymXPLink=\"65535\" SASymXPGroup=\"65535\" SASymXPSibling=\"65535\" SASymXPSubordinate=\"65535\" SASymPenStyle=\"0x0010\""
-                                + " SASymFontName=\"\" SASymFontHeight=\"0x0000\" SASymFontFlags=\"0x0000\" SASymLineStyle=\"0x0103\" SASymFlags=\"0x0002\""
-                                + " SASymFlags2=\"0x0000\" SASymFlags3=\"0x0000\" SASymTextFlags=\"0x082a\" SASymStyle=\"0\" SASymAuxStyle=\"0x0000\""
-                                + " SASymOccurs=\"0x01\" SASymOccOffset=\"0x00\" SASymBGColor=\"0x00\" SASymFGColor=\"0x00\" SASymPrompt=\"0x00\""
-                                + " SASymFrExArcChar=\"0x00\" SASymToExArcChar=\"0x00\" SASymUncleCount=\"0x00\" SASymStyleFlags=\"0x0007\" SASymSeqNum=\"0\""
-                                + " SASymRotation=\"0\" SASymError1=\"0x00\" SASymError2=\"0x00\" SASymHideProgeny=\"0\" SASymHidden=\"0\" SASymOtherForm=\"0\""
-                                + " SASymHasDspMode=\"0\" SASymDspMode=\"0x0000\" SASymDspModeExt=\"0x00000000\" SASymCLevelNumber=\"0\" SASymPenColorOn=\"1\""
-                                + " SASymPenColorRed=\"0\" SASymPenColorGreen=\"130\" SASymPenColorBlue=\"236\" SASymFillColorOn=\"1\" SASymFillColorRed=\"176\""
-                                + " SASymFillColorGreen=\"213\" SASymFillColorBlue=\"255\" SASymFontColorOn=\"1\" SASymFontColorRed=\"0\" SASymFontColorGreen=\"0\""
-                                + " SASymFontColorBlue=\"0\" SASymLocX=\"" + loc_x + "\" SASymLocY=\"" + loc_y + "\" SASymSizeX=\"" + size_x + "\" SASymSizeY=\"" + size_y + "\" SASymNameLocX=\"572\""
-                                + " SASymNameLocY=\"168\" SASymNameSizeX=\"121\" SASymNameSizeY=\"18\" SASymDescLocX=\"0\" SASymDescLocY=\"0\" SASymDescSizeX=\"0\""
-                                + " SASymDescSizeY=\"0\">");
+                                + " MDSymArrangement=\"0\" MDSymOtherSymbology=\"0\" MDSymProperties=\"0x0000\" MDSymOrder=\"0\" MDSymXPEntity=\"" + count2 + "\""
+                                + " MDSymXPLink=\"65535\" MDSymXPGroup=\"65535\" MDSymXPSibling=\"65535\" MDSymXPSubordinate=\"65535\" MDSymPenStyle=\"0x0010\""
+                                + " MDSymFontName=\"\" MDSymFontHeight=\"0x0000\" MDSymFontFlags=\"0x0000\" MDSymLineStyle=\"0x0103\" MDSymFlags=\"0x0002\""
+                                + " MDSymFlags2=\"0x0000\" MDSymFlags3=\"0x0000\" MDSymTextFlags=\"0x082a\" MDSymStyle=\"0\" MDSymAuxStyle=\"0x0000\""
+                                + " MDSymOccurs=\"0x01\" MDSymOccOffset=\"0x00\" MDSymBGColor=\"0x00\" MDSymFGColor=\"0x00\" MDSymPrompt=\"0x00\""
+                                + " MDSymFrExArcChar=\"0x00\" MDSymToExArcChar=\"0x00\" MDSymUncleCount=\"0x00\" MDSymStyleFlags=\"0x0007\" MDSymSeqNum=\"0\""
+                                + " MDSymRotation=\"0\" MDSymError1=\"0x00\" MDSymError2=\"0x00\" MDSymHideProgeny=\"0\" MDSymHidden=\"0\" MDSymOtherForm=\"0\""
+                                + " MDSymHasDspMode=\"0\" MDSymDspMode=\"0x0000\" MDSymDspModeExt=\"0x00000000\" MDSymCLevelNumber=\"0\" MDSymPenColorOn=\"1\""
+                                + " MDSymPenColorRed=\"0\" MDSymPenColorGreen=\"130\" MDSymPenColorBlue=\"236\" MDSymFillColorOn=\"1\" MDSymFillColorRed=\"176\""
+                                + " MDSymFillColorGreen=\"213\" MDSymFillColorBlue=\"255\" MDSymFontColorOn=\"1\" MDSymFontColorRed=\"0\" MDSymFontColorGreen=\"0\""
+                                + " MDSymFontColorBlue=\"0\" MDSymLocX=\"" + loc_x + "\" MDSymLocY=\"" + loc_y + "\" MDSymSizeX=\"" + size_x + "\" MDSymSizeY=\"" + size_y + "\" MDSymNameLocX=\"572\""
+                                + " MDSymNameLocY=\"168\" MDSymNameSizeX=\"121\" MDSymNameSizeY=\"18\" MDSymDescLocX=\"0\" MDSymDescLocY=\"0\" MDSymDescSizeX=\"0\""
+                                + " MDSymDescSizeY=\"0\">");
 
-                            writer.WriteRaw("<SAProperty SAPrpName=\"~C~\" SAPrpValue=\"2\" SAPrpEditType=\"0\" SAPrpLength=\"0\"/>"
-                                + "<SAProperty SAPrpName=\"~T~\" SAPrpValue=\"" + minor_type + "\" SAPrpEditType=\"0\" SAPrpLength=\"0\"/>"
-                                + "<SAProperty SAPrpName=\"Object Class Number\" SAPrpValue=\"3\" SAPrpEditType=\"0\" SAPrpLength=\"0\"/>"
-                                + "<SAProperty SAPrpName=\"Object Type Number\" SAPrpValue=\"" + Find_Definition_Element_SA_Minor_Type(thing.type) + "\" SAPrpEditType=\"0\" SAPrpLength=\"0\"/>"
-                                + "<SAProperty SAPrpName=\"Symbol Represents\" SAPrpValue=\"" + thing.type + "\" SAPrpEditType=\"1\" SAPrpLength=\"4074\"/>"
-                                + "<SAProperty SAPrpName=\"KeyGUID\" SAPrpValue=\"" + thing_GUID + "\" SAPrpEditType=\"0\" SAPrpLength=\"0\"/>"
+                            writer.WriteRaw("<MDProperty MDPrpName=\"~C~\" MDPrpValue=\"2\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
+                                + "<MDProperty MDPrpName=\"~T~\" MDPrpValue=\"" + minor_type + "\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
+                                + "<MDProperty MDPrpName=\"Object Class Number\" MDPrpValue=\"3\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
+                                + "<MDProperty MDPrpName=\"Object Type Number\" MDPrpValue=\"" + Find_Definition_Element_SA_Minor_Type(thing.type) + "\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
+                                + "<MDProperty MDPrpName=\"Symbol Represents\" MDPrpValue=\"" + thing.type + "\" SAPrpEditType=\"1\" MDPrpLength=\"4074\"/>"
+                                + "<MDProperty MDPrpName=\"KeyGUID\" MDPrpValue=\"" + thing_GUID + "\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
                                 //+ "<SARelation SARelId=\"_1982\" SARelTypeNum=\"6\" SARelTypeName=\"connects\"/>"
                                 //+ "<SARelation SARelId=\"_1980\" SARelTypeNum=\"8\" SARelTypeName=\"connects\"/>"
                                 //+ "<SARelation SARelId=\"_1979\" SARelTypeNum=\"28\" SARelTypeName=\"embeds\"/>"
                                 //+ "<SARelation SARelId=\"_1991\" SARelTypeNum=\"28\" SARelTypeName=\"embeds\"/>"
-                                + "</SASymbol>");
+                                + "</MDSymbol>");
                             
                             count2++;
                         }
@@ -6398,20 +6398,20 @@ namespace NEAR
                                 size_y = "55";
                             }
 
-                            writer.WriteRaw("<SASymbol SAObjId=\"" + value.id + "\" SAObjName=\"" + value.name + "\" SAObjMinorTypeName=\"Picture\" SAObjMinorTypeNum=\"11\" SAObjMajorTypeNum=\"2\" SAObjAuditId=\"ir\""
-                                + " SAObjUpdateDate=\"2/5/2015\" SAObjUpdateTime=\"10:00:16 AM\" SAObjFQName=\"&quot;&quot;\" SASymIdDgm=\"" + view.id + "\" SASymArrangement=\"0\" SASymOtherSymbology=\"0\""
-                                + " SASymProperties=\"0x0000\" SASymOrder=\"0\" SASymXPEntity=\"1\" SASymXPLink=\"65535\" SASymXPGroup=\"65535\" SASymXPSibling=\"65535\" SASymXPSubordinate=\"65535\""
-                                + " SASymPenStyle=\"0x0010\" SASymFontName=\"\" SASymFontHeight=\"0x0000\" SASymFontFlags=\"0x0000\" SASymLineStyle=\"0x0103\" SASymFlags=\"0x0002\" SASymFlags2=\"0x0000\""
-                                + " SASymFlags3=\"0x0000\" SASymTextFlags=\"0x003a\" SASymStyle=\"0\" SASymAuxStyle=\"0x0000\" SASymOccurs=\"0x01\" SASymOccOffset=\"0x00\" SASymBGColor=\"0x00\" SASymFGColor=\"0x00\""
-                                + " SASymPrompt=\"0x00\" SASymFrExArcChar=\"0x00\" SASymToExArcChar=\"0x00\" SASymUncleCount=\"0x00\" SASymStyleFlags=\"0x0003\" SASymSeqNum=\"0\" SASymRotation=\"0\" SASymError1=\"0x00\""
-                                + " SASymError2=\"0x00\" SASymHideProgeny=\"0\" SASymHidden=\"0\" SASymOtherForm=\"0\" SASymHasDspMode=\"0\" SASymDspMode=\"0x0000\" SASymDspModeExt=\"0x00000000\" SASymCLevelNumber=\"0\""
-                                + " SASymPenColorOn=\"1\" SASymPenColorRed=\"0\" SASymPenColorGreen=\"130\" SASymPenColorBlue=\"236\" SASymFillColorOn=\"1\" SASymFillColorRed=\"176\" SASymFillColorGreen=\"213\""
-                                + " SASymFillColorBlue=\"255\" SASymFontColorOn=\"0\" SASymFontColorRed=\"0\" SASymFontColorGreen=\"0\" SASymFontColorBlue=\"0\" SASymLocX=\"" + loc_x + "\" SASymLocY=\"" + loc_y + "\" SASymSizeX=\"" + size_x + "\""
-                                + " SASymSizeY=\"" + size_y + "\" SASymNameLocX=\"-150\" SASymNameLocY=\"-100\" SASymNameSizeX=\"0\" SASymNameSizeY=\"0\" SASymDescLocX=\"0\" SASymDescLocY=\"0\" SASymDescSizeX=\"0\" SASymDescSizeY=\"0\""
-                                + " SASymZPPicFile=\"P" + count.ToString("D7") + ".BMP\" SASymZPPicType=\"0x0101\">");
+                            writer.WriteRaw("<MDSymbol MDObjId=\"" + value.id + "\" MDObjName=\"" + value.name + "\" MDObjMinorTypeName=\"Picture\" MDObjMinorTypeNum=\"11\" MDObjMajorTypeNum=\"2\" MDObjAuditId=\"ir\""
+                                + " MDObjUpdateDate=\"2/5/2015\" MDObjUpdateTime=\"10:00:16 AM\" MDObjFQName=\"&quot;&quot;\" MDSymIdDgm=\"" + view.id + "\" MDSymArrangement=\"0\" MDSymOtherSymbology=\"0\""
+                                + " MDSymProperties=\"0x0000\" MDSymOrder=\"0\" MDSymXPEntity=\"1\" MDSymXPLink=\"65535\" MDSymXPGroup=\"65535\" MDSymXPSibling=\"65535\" MDSymXPSubordinate=\"65535\""
+                                + " MDSymPenStyle=\"0x0010\" MDSymFontName=\"\" MDSymFontHeight=\"0x0000\" MDSymFontFlags=\"0x0000\" MDSymLineStyle=\"0x0103\" MDSymFlags=\"0x0002\" MDSymFlags2=\"0x0000\""
+                                + " MDSymFlags3=\"0x0000\" MDSymTextFlags=\"0x003a\" MDSymStyle=\"0\" MDSymAuxStyle=\"0x0000\" MDSymOccurs=\"0x01\" MDSymOccOffset=\"0x00\" MDSymBGColor=\"0x00\" MDSymFGColor=\"0x00\""
+                                + " MDSymPrompt=\"0x00\" MDSymFrExArcChar=\"0x00\" MDSymToExArcChar=\"0x00\" MDSymUncleCount=\"0x00\" MDSymStyleFlags=\"0x0003\" MDSymSeqNum=\"0\" MDSymRotation=\"0\" MDSymError1=\"0x00\""
+                                + " MDSymError2=\"0x00\" MDSymHideProgeny=\"0\" MDSymHidden=\"0\" MDSymOtherForm=\"0\" MDSymHasDspMode=\"0\" MDSymDspMode=\"0x0000\" MDSymDspModeExt=\"0x00000000\" MDSymCLevelNumber=\"0\""
+                                + " MDSymPenColorOn=\"1\" MDSymPenColorRed=\"0\" MDSymPenColorGreen=\"130\" MDSymPenColorBlue=\"236\" MDSymFillColorOn=\"1\" MDSymFillColorRed=\"176\" MDSymFillColorGreen=\"213\""
+                                + " MDSymFillColorBlue=\"255\" MDSymFontColorOn=\"0\" MDSymFontColorRed=\"0\" MDSymFontColorGreen=\"0\" MDSymFontColorBlue=\"0\" MDSymLocX=\"" + loc_x + "\" MDSymLocY=\"" + loc_y + "\" MDSymSizeX=\"" + size_x + "\""
+                                + " MDSymSizeY=\"" + size_y + "\" MDSymNameLocX=\"-150\" MDSymNameLocY=\"-100\" MDSymNameSizeX=\"0\" MDSymNameSizeY=\"0\" MDSymDescLocX=\"0\" MDSymDescLocY=\"0\" MDSymDescSizeX=\"0\" MDSymDescSizeY=\"0\""
+                                + " MDSymZPPicFile=\"P" + count.ToString("D7") + ".BMP\" MDSymZPPicType=\"0x0101\">");
 
-                            writer.WriteRaw("<SAPicture SAPictureEncodingMethod=\"Hex\" SAPictureEncodingVersion=\"1.0\" SAOriginalFile=\"P" + count.ToString("D7") + ".BMP\" SAOriginalFileLength=\"152054\" SAPictureData=\"" + value.value + "\"/>"
-                                + " <SAProperty SAPrpName=\"~C~\" SAPrpValue=\"2\" SAPrpEditType=\"0\" SAPrpLength=\"0\"/><SAProperty SAPrpName=\"~T~\" SAPrpValue=\"11\" SAPrpEditType=\"0\" SAPrpLength=\"0\"/></SASymbol>");
+                            writer.WriteRaw("<MDPicture SAPictureEncodingMethod=\"Hex\" SAPictureEncodingVersion=\"1.0\" SAOriginalFile=\"P" + count.ToString("D7") + ".BMP\" SAOriginalFileLength=\"152054\" SAPictureData=\"" + value.value + "\"/>"
+                                + " <MDProperty MDPrpName=\"~C~\" MDPrpValue=\"2\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/><MDProperty MDPrpName=\"~T~\" MDPrpValue=\"11\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/></MDSymbol>");
                         }
 
                         if (doc_block_views.TryGetValue(view.id, out value))
@@ -6431,18 +6431,18 @@ namespace NEAR
                                 size_y = "55";
                             }
 
-                            writer.WriteRaw("<SASymbol SAObjId=\"" + value.id + "\" SAObjName=\"\" SAObjMinorTypeName=\"Doc Block\" SAObjMinorTypeNum=\"4\" SAObjMajorTypeNum=\"2\" SAObjAuditId=\"SAS\" SAObjUpdateDate=\"1/29/2015\" SAObjUpdateTime=\"3:01:32 PM\""
-                            + " SAObjFQName=\"&quot;&quot;\" SASymIdDgm=\"" + view.id + "\" SASymArrangement=\"0\" SASymOtherSymbology=\"0\" SASymProperties=\"0x0000\" SASymOrder=\"0\" SASymXPEntity=\"3\" SASymXPLink=\"65535\" SASymXPGroup=\"65535\" SASymXPSibling=\"0\""
-                            + " SASymXPSubordinate=\"65535\" SASymPenStyle=\"0x0010\" SASymFontName=\"\" SASymFontHeight=\"0x0000\" SASymFontFlags=\"0x0000\" SASymLineStyle=\"0x0103\" SASymFlags=\"0x0002\" SASymFlags2=\"0x0000\" SASymFlags3=\"0x0000\" SASymTextFlags=\"0x000a\""
-                            + " SASymStyle=\"0\" SASymAuxStyle=\"0x0000\" SASymOccurs=\"0x01\" SASymOccOffset=\"0x00\" SASymBGColor=\"0x00\" SASymFGColor=\"0x00\" SASymPrompt=\"0x00\" SASymFrExArcChar=\"0x00\" SASymToExArcChar=\"0x00\" SASymUncleCount=\"0x00\""
-                            + " SASymStyleFlags=\"0x0003\" SASymSeqNum=\"0\" SASymRotation=\"0\" SASymError1=\"0x00\" SASymError2=\"0x00\" SASymHideProgeny=\"0\" SASymHidden=\"0\" SASymOtherForm=\"0\" SASymHasDspMode=\"0\" SASymDspMode=\"0x0000\" SASymDspModeExt=\"0x00000000\""
-                            + " SASymCLevelNumber=\"0\" SASymPenColorOn=\"1\" SASymPenColorRed=\"0\" SASymPenColorGreen=\"130\" SASymPenColorBlue=\"236\" SASymFillColorOn=\"1\" SASymFillColorRed=\"176\" SASymFillColorGreen=\"213\" SASymFillColorBlue=\"255\" SASymFontColorOn=\"0\""
-                            + " SASymFontColorRed=\"0\" SASymFontColorGreen=\"0\" SASymFontColorBlue=\"0\" SASymLocX=\"" + loc_x + "\" SASymLocY=\"" + loc_y + "\" SASymSizeX=\"" + size_x + "\" SASymSizeY=\"" + size_y + "\" SASymNameLocX=\"569\" SASymNameLocY=\"166\" SASymNameSizeX=\"393\" SASymNameSizeY=\"51\""
-                            + " SASymDescLocX=\"620\" SASymDescLocY=\"367\" SASymDescSizeX=\"273\" SASymDescSizeY=\"17\" SASymZPDesc=\"" + value.value + "\"><SAProperty SAPrpName=\"~C~\" SAPrpValue=\"2\" SAPrpEditType=\"0\" SAPrpLength=\"0\"/>"
-                            + "<SAProperty SAPrpName=\"~T~\" SAPrpValue=\"4\" SAPrpEditType=\"0\" SAPrpLength=\"0\"/><SAProperty SAPrpName=\"Description\" SAPrpValue=\"" + value.value + "\" SAPrpEditType=\"1\" SAPrpLength=\"4074\"/></SASymbol>");
+                            writer.WriteRaw("<MDSymbol MDObjId=\"" + value.id + "\" MDObjName=\"\" MDObjMinorTypeName=\"Doc Block\" MDObjMinorTypeNum=\"4\" MDObjMajorTypeNum=\"2\" MDObjAuditId=\"MDS\" MDObjUpdateDate=\"1/29/2015\" MDObjUpdateTime=\"3:01:32 PM\""
+                            + " MDObjFQName=\"&quot;&quot;\" MDSymIdDgm=\"" + view.id + "\" MDSymArrangement=\"0\" MDSymOtherSymbology=\"0\" MDSymProperties=\"0x0000\" MDSymOrder=\"0\" MDSymXPEntity=\"3\" MDSymXPLink=\"65535\" MDSymXPGroup=\"65535\" MDSymXPSibling=\"0\""
+                            + " MDSymXPSubordinate=\"65535\" MDSymPenStyle=\"0x0010\" MDSymFontName=\"\" MDSymFontHeight=\"0x0000\" MDSymFontFlags=\"0x0000\" MDSymLineStyle=\"0x0103\" MDSymFlags=\"0x0002\" MDSymFlags2=\"0x0000\" MDSymFlags3=\"0x0000\" MDSymTextFlags=\"0x000a\""
+                            + " MDSymStyle=\"0\" MDSymAuxStyle=\"0x0000\" MDSymOccurs=\"0x01\" MDSymOccOffset=\"0x00\" MDSymBGColor=\"0x00\" MDSymFGColor=\"0x00\" MDSymPrompt=\"0x00\" MDSymFrExArcChar=\"0x00\" MDSymToExArcChar=\"0x00\" MDSymUncleCount=\"0x00\""
+                            + " MDSymStyleFlags=\"0x0003\" MDSymSeqNum=\"0\" MDSymRotation=\"0\" MDSymError1=\"0x00\" MDSymError2=\"0x00\" MDSymHideProgeny=\"0\" MDSymHidden=\"0\" MDSymOtherForm=\"0\" MDSymHasDspMode=\"0\" MDSymDspMode=\"0x0000\" MDSymDspModeExt=\"0x00000000\""
+                            + " MDSymCLevelNumber=\"0\" MDSymPenColorOn=\"1\" MDSymPenColorRed=\"0\" MDSymPenColorGreen=\"130\" MDSymPenColorBlue=\"236\" MDSymFillColorOn=\"1\" MDSymFillColorRed=\"176\" MDSymFillColorGreen=\"213\" MDSymFillColorBlue=\"255\" MDSymFontColorOn=\"0\""
+                            + " MDSymFontColorRed=\"0\" MDSymFontColorGreen=\"0\" MDSymFontColorBlue=\"0\" MDSymLocX=\"" + loc_x + "\" MDSymLocY=\"" + loc_y + "\" MDSymSizeX=\"" + size_x + "\" MDSymSizeY=\"" + size_y + "\" MDSymNameLocX=\"569\" MDSymNameLocY=\"166\" MDSymNameSizeX=\"393\" MDSymNameSizeY=\"51\""
+                            + " MDSymDescLocX=\"620\" MDSymDescLocY=\"367\" MDSymDescSizeX=\"273\" MDSymDescSizeY=\"17\" MDSymZPDesc=\"" + value.value + "\"><MDProperty MDPrpName=\"~C~\" MDPrpValue=\"2\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
+                            + "<MDProperty MDPrpName=\"~T~\" MDPrpValue=\"4\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/><MDProperty MDPrpName=\"Description\" MDPrpValue=\"" + value.value + "\" SAPrpEditType=\"1\" MDPrpLength=\"4074\"/></MDSymbol>");
                         }
 
-                        writer.WriteRaw(@"</SADiagram>");
+                        writer.WriteRaw(@"</MDDiagram>");
 
                         foreach (Thing thing in thing_list)
                         {
@@ -6453,31 +6453,31 @@ namespace NEAR
 
                                 minor_type = Find_Definition_Element_SA_Minor_Type(thing.type);
 
-                                writer.WriteRaw("<SADefinition SAObjId=\"" + thing.id + "\" SAObjName=\"" + thing.name + "\" SAObjMinorTypeName=\"" + thing.type + "\" "
-                                    + "SAObjMinorTypeNum=\"" + minor_type + "\" SAObjMajorTypeNum=\"3\" SAObjAuditId=\"NEAR\" SAObjUpdateDate=\"" + date + "\" "
-                                    + "SAObjUpdateTime=\"" + time + "\" SAObjFQName=\"&quot;" + thing_GUID + "&quot;." + thing.name + "\">"
-                                    + "<SAProperty SAPrpName=\"~C~\" SAPrpValue=\"3\" SAPrpEditType=\"0\" SAPrpLength=\"0\"/>"
-                                    + "<SAProperty SAPrpName=\"~T~\" SAPrpValue=\"" + minor_type + "\" SAPrpEditType=\"0\" SAPrpLength=\"0\"/>"
-                                    + "<SAProperty SAPrpName=\"GUID\" SAPrpValue=\"" + thing_GUID + "\" SAPrpEditType=\"1\" SAPrpLength=\"64\"/>"
-                                    + "<SAProperty SAPrpName=\"KeyGUID\" SAPrpValue=\"" + thing_GUID + "\" SAPrpEditType=\"1\" SAPrpLength=\"80\"/>"
-                                    + "<SAProperty SAPrpName=\"Is Instance\" SAPrpValue=\"F\" SAPrpEditType=\"4\" SAPrpLength=\"1\"/>"
-                                    + ((minor_type == "1327") ? "" : "<SAProperty SAPrpName=\"To Line End\" SAPrpValue=\"LineEnd1\" SAPrpEditType=\"1\" SAPrpLength=\"1200\"/>"));
+                                writer.WriteRaw("<MDDefinition MDObjId=\"" + thing.id + "\" MDObjName=\"" + thing.name + "\" MDObjMinorTypeName=\"" + thing.type + "\" "
+                                    + "MDObjMinorTypeNum=\"" + minor_type + "\" MDObjMajorTypeNum=\"3\" MDObjAuditId=\"NEAR\" MDObjUpdateDate=\"" + date + "\" "
+                                    + "MDObjUpdateTime=\"" + time + "\" MDObjFQName=\"&quot;" + thing_GUID + "&quot;." + thing.name + "\">"
+                                    + "<MDProperty MDPrpName=\"~C~\" MDPrpValue=\"3\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
+                                    + "<MDProperty MDPrpName=\"~T~\" MDPrpValue=\"" + minor_type + "\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
+                                    + "<MDProperty MDPrpName=\"GUID\" MDPrpValue=\"" + thing_GUID + "\" SAPrpEditType=\"1\" MDPrpLength=\"64\"/>"
+                                    + "<MDProperty MDPrpName=\"KeyGUID\" MDPrpValue=\"" + thing_GUID + "\" SAPrpEditType=\"1\" MDPrpLength=\"80\"/>"
+                                    + "<MDProperty MDPrpName=\"Is Instance\" MDPrpValue=\"F\" SAPrpEditType=\"4\" MDPrpLength=\"1\"/>"
+                                    + ((minor_type == "1327") ? "" : "<MDProperty MDPrpName=\"To Line End\" MDPrpValue=\"LineEnd1\" SAPrpEditType=\"1\" MDPrpLength=\"1200\"/>"));
 
                                 //
 
-                                //<SAProperty SAPrpName="Parent Of Capability" SAPrpValue="Definition:&quot;Capability (DM2)&quot;:&quot;99be13e4-03b9-43f1-bf82-0d508bea5cc3&quot;.&quot;(JCA 1.0) Force Support&quot;
+                                //<MDProperty MDPrpName="Parent Of Capability" MDPrpValue="Definition:&quot;Capability (DM2)&quot;:&quot;99be13e4-03b9-43f1-bf82-0d508bea5cc3&quot;.&quot;(JCA 1.0) Force Support&quot;
                                 //    Definition:&quot;Capability (DM2)&quot;:a697273a-8c0e-4f84-b18e-7c6876dd0742.&quot;(JCA 2.0) Battlespace Awareness&quot;
                                 //    Definition:&quot;Capability (DM2)&quot;:&quot;3f98f92e-fe73-43e6-b506-7e4e86f861db&quot;.&quot;(JCA 3.0) Force Application&quot;
                                 //    Definition:&quot;Capability (DM2)&quot;:cd8cef3b-87a6-402f-9205-70e0794766c8.&quot;(JCA 4.0) Logistics&quot;
                                 //    Definition:&quot;Capability (DM2)&quot;:c5376ccf-5b8f-4a10-9d94-ef39ae03b453.&quot;(JCA 5.0) Command and Control&quot;
-                                //    Definition:&quot;Capability (DM2)&quot;:&quot;0f6cfd54-7aca-4c75-98b2-c7a785ad9fb6&quot;.&quot;(JCA 6.0) Net-Centric&quot;" SAPrpEditType="14" SAPrpLength="1200" SAPrpEditDefMajorType="Definition" SAPrpEditDefMinorType="Capability (DM2)">
-                                //    <SALink SALinkName="&quot;(JCA 1.0) Force Support&quot;" SALinkIdentity="_15647"/>
-                                //    <SALink SALinkName="&quot;(JCA 2.0) Battlespace Awareness&quot;" SALinkIdentity="_15639"/>
-                                //    <SALink SALinkName="&quot;(JCA 3.0) Force Application&quot;" SALinkIdentity="_15644"/>
-                                //    <SALink SALinkName="&quot;(JCA 4.0) Logistics&quot;" SALinkIdentity="_15648"/>
-                                //    <SALink SALinkName="&quot;(JCA 5.0) Command and Control&quot;" SALinkIdentity="_15643"/>
-                                //    <SALink SALinkName="&quot;(JCA 6.0) Net-Centric&quot;" SALinkIdentity="_15642"/>
-                                //</SAProperty>
+                                //    Definition:&quot;Capability (DM2)&quot;:&quot;0f6cfd54-7aca-4c75-98b2-c7a785ad9fb6&quot;.&quot;(JCA 6.0) Net-Centric&quot;" SAPrpEditType="14" MDPrpLength="1200" SAPrpEditDefMajorType="Definition" SAPrpEditDefMinorType="Capability (DM2)">
+                                //    <MDLink MDLinkName="&quot;(JCA 1.0) Force Support&quot;" MDLinkIdentity="_15647"/>
+                                //    <MDLink MDLinkName="&quot;(JCA 2.0) Battlespace Awareness&quot;" MDLinkIdentity="_15639"/>
+                                //    <MDLink MDLinkName="&quot;(JCA 3.0) Force Application&quot;" MDLinkIdentity="_15644"/>
+                                //    <MDLink MDLinkName="&quot;(JCA 4.0) Logistics&quot;" MDLinkIdentity="_15648"/>
+                                //    <MDLink MDLinkName="&quot;(JCA 5.0) Command and Control&quot;" MDLinkIdentity="_15643"/>
+                                //    <MDLink MDLinkName="&quot;(JCA 6.0) Net-Centric&quot;" MDLinkIdentity="_15642"/>
+                                //</MDProperty>
 
                                 //
 
@@ -6506,7 +6506,7 @@ namespace NEAR
                                             {
                                                 if (count2 == 0)
                                                 {
-                                                    temp = "<SAProperty SAPrpName=\"" + list.First().type + "\" SAPrpValue=\"";
+                                                    temp = "<MDProperty MDPrpName=\"" + list.First().type + "\" MDPrpValue=\"";
                                                     temp3 = "";
                                                     temp2 = "";
                                                     count2++;
@@ -6515,26 +6515,26 @@ namespace NEAR
                                                 if (things.TryGetValue(rela.place2, out value))
                                                 {
                                                     temp = temp + "Definition:&quot;" + value.value + "&quot;:&quot;" + temp_GUID + ".&quot;" + value.name + "&quot;";
-                                                    temp2 = "\" SAPrpEditType=\"14\" SAPrpLength=\"1200\" SAPrpEditDefMajorType=\"Definition\" SAPrpEditDefMinorType=\"" + value.value + "\">";
-                                                    temp3 = temp3 + "<SALink SALinkName=\"&quot;" + value.name + "&quot;\" SALinkIdentity=\"" + value.id + "\"/>";
+                                                    temp2 = "\" SAPrpEditType=\"14\" MDPrpLength=\"1200\" SAPrpEditDefMajorType=\"Definition\" SAPrpEditDefMinorType=\"" + value.value + "\">";
+                                                    temp3 = temp3 + "<MDLink MDLinkName=\"&quot;" + value.name + "&quot;\" MDLinkIdentity=\"" + value.id + "\"/>";
                                                 }
                                             }
                                         }
 
                                         if (count2 > 0)
-                                            writer.WriteRaw(temp + temp2 + temp3 + "</SAProperty>");  
+                                            writer.WriteRaw(temp + temp2 + temp3 + "</MDProperty>");  
                                     }
                                 }
 
                                 //
 
-                                writer.WriteRaw("<SAProperty SAPrpName=\"Initial Date\" SAPrpValue=\"" + prop_date + "\" SAPrpEditType=\"2\" SAPrpLength=\"10\"/>"
-                               + "<SAProperty SAPrpName=\"Initial Time\" SAPrpValue=\"" + prop_time + "\" SAPrpEditType=\"7\" SAPrpLength=\"11\"/>"
-                               + "<SAProperty SAPrpName=\"Initial Audit\" SAPrpValue=\"NEAR\" SAPrpEditType=\"1\" SAPrpLength=\"8\"/>"
-                               + "<SAProperty SAPrpName=\"Last Change Date\" SAPrpValue=\"" + prop_date + "\" SAPrpEditType=\"2\" SAPrpLength=\"10\"/>"
-                               + "<SAProperty SAPrpName=\"Last Change Time\" SAPrpValue=\"" + prop_time + "\" SAPrpEditType=\"7\" SAPrpLength=\"11\"/>"
-                               + "<SAProperty SAPrpName=\"Last Change Audit\" SAPrpValue=\"NEAR\" SAPrpEditType=\"1\" SAPrpLength=\"8\"/>"
-                               + "</SADefinition>");
+                                writer.WriteRaw("<MDProperty MDPrpName=\"Initial Date\" MDPrpValue=\"" + prop_date + "\" SAPrpEditType=\"2\" MDPrpLength=\"10\"/>"
+                               + "<MDProperty MDPrpName=\"Initial Time\" MDPrpValue=\"" + prop_time + "\" SAPrpEditType=\"7\" MDPrpLength=\"11\"/>"
+                               + "<MDProperty MDPrpName=\"Initial Audit\" MDPrpValue=\"NEAR\" SAPrpEditType=\"1\" MDPrpLength=\"8\"/>"
+                               + "<MDProperty MDPrpName=\"Last Change Date\" MDPrpValue=\"" + prop_date + "\" SAPrpEditType=\"2\" MDPrpLength=\"10\"/>"
+                               + "<MDProperty MDPrpName=\"Last Change Time\" MDPrpValue=\"" + prop_time + "\" SAPrpEditType=\"7\" MDPrpLength=\"11\"/>"
+                               + "<MDProperty MDPrpName=\"Last Change Audit\" MDPrpValue=\"NEAR\" SAPrpEditType=\"1\" MDPrpLength=\"8\"/>"
+                               + "</MDDefinition>");
                             }
                         }
                         //writer.WriteRaw(@"<MandatoryElements>");
@@ -7176,7 +7176,7 @@ namespace NEAR
             string thing_GUID_2;
             string thing_GUID_3;
             Dictionary<string, string> thing_GUIDs = new Dictionary<string, string>();
-            List<string> SA_Def_elements = new List<string>();
+            List<string> MD_Def_elements = new List<string>();
             XElement root = XElement.Load(new MemoryStream(input));
             List<List<Thing>> sorted_results;
             //bool representation_scheme = false;
@@ -7207,7 +7207,7 @@ namespace NEAR
                                 place1 = "$none$",
                                 place2 = "$none$",
                                 foundation = (string)result.Parent.Attribute(ns + "FoundationCategory"),
-                                value_type = "SAObjMinorTypeName"
+                                value_type = "MDObjMinorTypeName"
                             }
                         }).ToDictionary(a => a.key, a => a.value);
 
