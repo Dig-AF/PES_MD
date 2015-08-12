@@ -61,14 +61,6 @@ namespace NEAR
                             new string[] { "Site", "Site (DM2)", "IndividualType","", "1354","default" },
                             };
 
-        static string[][] MD_Element_View_Lookup = new string[][] { 
-                            new string[] { "AV-01 Overview and Summary (DM2)", "RealProperty (DM2)", "Location (DM2)", "1161" },
-                            new string[] { "AV-01 Overview and Summary (DM2)", "Facility (DM2)", "Location (DM2)", "1161" },
-                            new string[] { "OV-02 Operational Resource Flow (DM2)", "Organization (DM2)", "Resource (DM2)", "1160" },
-                            new string[] { "OV-02 Operational Resource Flow (DM2)", "Person (DM2)", "Performer (DM2)", "1178" },
-
-                            }; 
-
         static string[][] RSA_Element_Lookup = new string[][] { 
                             new string[] { "Activity", "OperationalNodeSpecification", "IndividualType", "", "", "default" },
                             new string[] { "Capability", "Capability", "IndividualType", "", "", "default" },
@@ -116,15 +108,29 @@ namespace NEAR
                             };
 
         static string[][] MD_Element_Lookup = new string[][] {
-                            new string[] { "Needline", "Need Line (DM2rx)", "CoupleType","1244", "1402","default" },
-                            new string[] { "SysRF", "System Resource Flow (DM2rx)", "CoupleType","1245", "1403","default" },
-                            new string[] { "PRF", "Physical Resource Flow (DM2rx)", "CoupleType","1475", "1462","default" },
-                            new string[] { "SvcRF", "Service Resource Flow (DM2rx)", "CoupleType","1236", "1394","default" },
-                            new string[] { "SDF", "System Data Flow (DM2rx)", "CoupleType","1215", "1386","default" },
-                            new string[] { "SvcDF", "Service Data Flow (DM2rx)", "CoupleType","1239", "1396","default" },
-                            new string[] { "CapabilityDependency", "Capability Dependency (DM2rx)", "CoupleType","1433", "1449","default" },
-                            new string[] { "ARO", "ActivityResourceOverlap (DM2r)", "CoupleType","1208", "1383","default" },
+                            // DM2 Class, UPDM_Profile Element
+                            new string[] { "System", "System", "IndividualType" },
+                            new string[] { "Activity", "OperationalActivity", "IndividualType" },
+                            new string[] { "Performer", "Performer", "IndividualType" },
+                            new string[] { "Activity", "Function", "IndividualType" },
+                            new string[] { "Activity", "ActualProjectMilestone", "IndividualType" }, // revisit activityPartOfProject
+                            new string[] { "Capability", "Capability", "IndividualType" },
+                            new string[] { "PersonType", "PersonType", "IndividualType" },
+                            new string[] { "Project", "VersionOfConfiguration", "Individual" }, // revisit subType of Project
+                            new string[] { "Project", "Project", "Individual" }, // revisit ProjectType?
+                            new string[] { "Capability", "CapabilityConfiguration", "IndividualType" }, // revisit subType of Capability
+                            new string[] { "Project", "ProjectMilestone", "Individual" }, // revisit subType of Project
+                            new string[] { "Vision", "Vision", "IndividualType" },
+                            new string[] { "MeasureType", "MeasureType", "IndividualTypeType" },
+                            new string[] { "Resource", "ResourceInteraction", "IndividualType" }, // revisit
+                            new string[] { "Resource", "ExchangeElement", "IndividualType" }, // revisit
                             };
+
+        static string[][] MD_View_Lookup = new string[][] { 
+                            new string[] {"DIV-1", "DIV-1 Conceptual Data Model"},
+                            new string[] {"DIV-2", "DIV-2 Logical Data Model"},
+                            new string[] {"OV-6c", "OV-6c Operational Event-Trace Description (BPD)"},
+                            }; 
 
         static string[][] View_Lookup = new string[][] {  
                             new string[] {"AV-1", "AV-01 Overview and Summary (DM2)", "289", "default"}, 
@@ -878,7 +884,7 @@ namespace NEAR
             {
                 if (input == first_lookup[1])
                 {
-                    foreach (string[] second_lookup in MD_Element_View_Lookup)
+                    foreach (string[] second_lookup in MD_Element_Lookup)
                     {
                         if (view == second_lookup[0] && input == second_lookup[1])
                         {
@@ -1180,7 +1186,7 @@ namespace NEAR
         ////////////////////
         ////////////////////
 
-        public static bool MD2PES(byte[] input, ref string output, ref string errors)
+        public static bool MD2PES_HighLevel(byte[] input, ref string output, ref string errors)
         {
             IEnumerable<Thing> things = new List<Thing>();
             IEnumerable<Thing> tuple_types = new List<Thing>();
@@ -5752,839 +5758,7 @@ namespace NEAR
         ////////////////////
         ////////////////////
 
-        public static string PES2SA(byte[] input)
-        {
-            Dictionary<string,Thing> things = new Dictionary<string,Thing>();
-            Dictionary<string, Thing> results_dic;
-            Dictionary<string, Location> location_dic = new Dictionary<string, Location>();
-            IEnumerable<Thing> tuple_types = new List<Thing>();
-            IEnumerable<Thing> tuples = new List<Thing>();
-            IEnumerable<Thing> results;
-            List<View> views = new List<View>();
-            string temp="";
-            string temp2="";
-            string temp3="";
-            string date = DateTime.Now.ToString("d");
-            string time = DateTime.Now.ToString("T");
-            string prop_date = DateTime.Now.ToString("yyyyMMdd");
-            string prop_time = DateTime.Now.ToString("HHmmss");
-            string minor_type;
-            string minor_type_name;
-            Guid view_GUID;
-            Guid thing_GUID;
-            Guid temp_GUID;
-            Dictionary<string, Guid> thing_GUIDs = new Dictionary<string, Guid>();
-            Dictionary<string, Thing> OV1_pic_views;
-            Dictionary<string, List<Thing>> CV4_CD_views;
-            Dictionary<string, List<Thing>> ARO_views;
-            Dictionary<string, Thing> doc_block_views;
-            Dictionary<string, List<Thing>> support_views;
-            Dictionary<string, List<Thing>> needline_views;
-            List<string> SA_Def_elements = new List<string>();
-            XElement root = XElement.Load(new MemoryStream(input));
-            List<List<Thing>> sorted_results;
-            //bool representation_scheme = false;
-            int count = 0;
-            int count2 = 0;
-            string loc_x, loc_y, size_x, size_y;
-            Thing value;
-            List<Thing> values;
-            XNamespace ns = "http://www.ideasgroup.org/xsd";
-            Location location;
-            List<string> errors_list = new List<string>();
-
-            // regular Things
-
-            foreach (string[] current_lookup in Element_Lookup)
-            {
-                if (current_lookup[5] != "default")
-                    continue;
-                //if (current_lookup[0] == "ArchitecturalDescription")
-                //{
-                //    results =
-                //      from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol").Elements("MDPicture")
-                //      where (string)result.Parent.Attribute("MDObjMinorTypeName") == "Picture"
-                //      where (from diagram in result.Parent.Parent.Parent.Elements("MDDefinition")
-                //             where (string)diagram.Attribute("MDObjId") == (string)result.Parent.Attribute("MDSymIdDef")
-                //             select diagram
-                //         ).Any()
-                //      select new Thing
-                //      {
-                //          type = "ArchitecturalDescription",
-                //          id = (string)result.Parent.Attribute("MDSymIdDef"),
-                //          name = (string)result.Parent.Attribute("MDObjName"),
-                //          value = (string)result.Attribute("SAPictureData"),
-                //          place1 = "$none$",
-                //          place2 = "$none$",
-                //          foundation = "IndividualType",
-                //          value_type = "exemplar"
-                //      };
-
-                //    //if (results.Count() > 0)
-                //        //representation_scheme = true;
-                //}
-                //else
-                //{
-
-                results =
-                    from result in root.Elements("IdeasData").Descendants().Elements(ns + "Name")
-                    where (string)result.Parent.Name.ToString() == current_lookup[0]
-                    select new Thing
-                        {
-                            type = current_lookup[0],
-                            id = ((string)result.Parent.Attribute("id")).Substring(2),
-                            name = (string)result.Attribute("exemplarText"),
-                            value = current_lookup[1],
-                            place1 = "$none$",
-                            place2 = "$none$",
-                            foundation = (string)result.Parent.Attribute(ns + "FoundationCategory"),
-                            value_type = "MDObjMinorTypeName"
-                        };
-
-                results_dic =
-                    (from result in root.Elements("IdeasData").Descendants().Elements(ns + "Name")
-                     where (string)result.Parent.Name.ToString() == current_lookup[0]
-                     select new
-                     {
-                         key = ((string)result.Parent.Attribute("id")).Substring(2),
-                         value = new Thing
-                         {
-                             type = current_lookup[0],
-                             id = ((string)result.Parent.Attribute("id")).Substring(2),
-                             name = (string)result.Attribute("exemplarText"),
-                             value = current_lookup[1],
-                             place1 = "$none$",
-                             place2 = "$none$",
-                             foundation = (string)result.Parent.Attribute(ns + "FoundationCategory"),
-                             value_type = "MDObjMinorTypeName"
-                         }
-                     }).ToDictionary(a => a.key, a => a.value);
-                //}
-
-                if (results_dic.Count() > 0)
-                    MergeDictionaries(things, results_dic);
-            }
-
-            //  diagramming
-
-            results =
-                     from result in root.Elements("IdeasData").Elements("SpatialMeasure").Elements(ns + "Name")
-                     select new Thing
-                         {
-                             id = ((string)result.Parent.Attribute("id")).Substring(2,((string)result.Parent.Attribute("id")).Length-5),
-                             name = (string)result.Attribute("exemplarText"),
-                             value = (string)result.Parent.Attribute("numericValue"),
-                             place1 = "$none$",
-                             place2 = "$none$",
-                             foundation = "$none$",
-                             value_type = "diagramming"
-                         };
-
-            sorted_results = results.GroupBy(x => x.id).Select(group => group.OrderBy(x => x.name).ToList()).ToList();
-
-            foreach (List<Thing> coords in sorted_results)
-            {
-                location_dic.Add(coords.First().id, 
-                    new Location {
-                        id = coords.First().id,
-                        bottom_right_x = (string)coords[0].value,
-                        bottom_right_y = (string)coords[1].value,
-                        bottom_right_z ="0",
-                        top_left_x = (string)coords[3].value,
-                        top_left_y = (string)coords[4].value,
-                        top_left_z = "0",
-                    });
-            }
-
-            // doc block
-
-            results =
-                    from result in root.Elements("IdeasData").Elements("Information")
-                    from result2 in root.Elements("IdeasData").Elements("describedBy")
-                    where ((string)result2.Attribute("tuplePlace2")).Substring(2) == ((string)result.Attribute("id")).Substring(2)
-                    select new Thing
-                    {
-                          type = "Information",
-                          id = ((string)result.Attribute("id")).Substring(2),
-                          name = (string)result.Attribute("exemplar"),
-                          value = "$none$",
-                          place1 = "$none$",
-                          place2 = "$none$",
-                          foundation = "IndividualType",
-                          value_type = "$none$"
-                      };
-            if (results.Count() > 0)
-            {
-                foreach (Thing thing in results)
-                {
-                    things.Remove(thing.id);
-                }
-            }
-
-            doc_block_views =
-                   (from result in root.Elements("IdeasData").Descendants().Elements(ns + "Name")
-                    where (string)result.Attribute("exemplarText") == "Doc Block Comment"
-                    from result2 in root.Elements("IdeasViews").Descendants().Descendants().Descendants()
-                    where (string)result2.Parent.Parent.Name.ToString() != "AV-2"
-                    where ((string)result2.Attribute("ref")).Substring(2) == ((string)result.Parent.Attribute("id")).Substring(2)
-                    select new
-                    {
-                        key = ((string)result2.Parent.Parent.Attribute("id")).Substring(2),
-                        value = new Thing
-                        {
-                            type = "$none$",
-                            id = ((string)result.Parent.Attribute("id")).Substring(2),
-                            name = (string)result.Attribute("exemplarText"),
-                            value = ((string)result.Parent.Attribute("exemplar")),
-                            place1 = "$none$",
-                            place2 = "$none$",
-                            foundation = "$none$",
-                            value_type = "Comment"
-                        }
-                    }).ToDictionary(a => a.key, a => a.value);
-
-            //Support
-
-            results =
-                     from result5 in root.Elements("IdeasViews").Descendants().Descendants().Descendants()
-                     where ((string)result5.Parent.Parent.Attribute("id")).Substring(2) != "_1"
-                     where ((string)result5.Parent.Parent.Attribute("id")).Substring(2) != "_2"
-                     from result in root.Elements("IdeasData").Elements("activityPerformedByPerformer")
-                     where ((string)result5.Attribute("ref")).Substring(2) == ((string)result.Attribute("place1Type")).Substring(2)
-                     from result2 in root.Elements("IdeasData").Elements("activityConsumesResource").Elements(ns + "Name")
-                     where ((string)result2.Attribute("exemplarText") == "Support")
-                     where ((string)result.Parent.Attribute("place2Type")).Substring(2) == ((string)result2.Parent.Attribute("place2Type")).Substring(2)
-                     from result6 in root.Elements("IdeasData").Elements("Resource")
-                     where ((string)result6.Attribute("id")).Substring(2) == ((string)result2.Parent.Attribute("place1Type")).Substring(2)
-                     from result3 in root.Elements("IdeasData").Elements("activityProducesResource")
-                     where ((string)result2.Parent.Attribute("place1Type")).Substring(2) == ((string)result3.Attribute("place2Type")).Substring(2)
-                     from result4 in root.Elements("IdeasData").Elements("activityPerformedByPerformer")
-                     where ((string)result3.Attribute("place1Type")).Substring(2) == ((string)result4.Attribute("place2Type")).Substring(2)
-                     
-                     select new Thing
-                    {
-                        type = "SupportedBy",
-                        id = ((string)result.Attribute("place1Type")).Substring(2) + ((string)result4.Attribute("place1Type")).Substring(2),
-                        name = "$none$",
-                        value = ((string)result5.Parent.Parent.Attribute("id")).Substring(2),
-                        place1 = ((string)result.Attribute("place1Type")).Substring(2),
-                        place2 = ((string)result4.Attribute("place1Type")).Substring(2),
-                        foundation = "$none$",
-                        value_type = "View ID"
-                    };
-
-            support_views = results.GroupBy(x => (string)x.value)
-                             .ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
-
-            if (results.Count() > 0)
-            {
-                foreach (Thing thing in results)
-                {
-                    things.Remove(thing.place1 + "_2");
-                    things.Remove(thing.place2 + "_2");
-                    things.Remove(thing.place1 + "_3");
-                    things.Remove(thing.place2 + "_3");
-                }
-            }
-
-            // Needlines and System Resource Flow
-
-            results =
-                     from result5 in root.Elements("IdeasViews").Descendants().Descendants().Descendants()
-                     where ((string)result5.Parent.Parent.Attribute("id")).Substring(2) != "_1"
-                     where ((string)result5.Parent.Parent.Attribute("id")).Substring(2) != "_2"
-                     from result in root.Elements("IdeasData").Elements("activityPerformedByPerformer").Elements(ns + "Name")
-                     where ((string)result5.Attribute("ref")).Substring(2) == ((string)result.Parent.Attribute("place1Type")).Substring(2)
-                     from result2 in root.Elements("IdeasData").Elements("activityConsumesResource").Elements(ns + "Name")
-                     where ((string)result2.Attribute("exemplarText") == "Needline") || ((string)result2.Attribute("exemplarText") == "SF")
-                     where ((string)result.Parent.Attribute("place2Type")).Substring(2) == ((string)result2.Parent.Attribute("place2Type")).Substring(2)
-                     from result6 in root.Elements("IdeasData").Elements("Resource")
-                     where ((string)result6.Attribute("id")).Substring(2) == ((string)result2.Parent.Attribute("place1Type")).Substring(2)
-                     from result3 in root.Elements("IdeasData").Elements("activityProducesResource")
-                     where ((string)result2.Parent.Attribute("place1Type")).Substring(2) == ((string)result3.Attribute("place2Type")).Substring(2)
-                     from result4 in root.Elements("IdeasData").Elements("activityPerformedByPerformer")
-                     where ((string)result3.Attribute("place1Type")).Substring(2) == ((string)result4.Attribute("place2Type")).Substring(2)
-                     
-                     select new Thing
-                     {
-                         type = 
-                         Resource_Flow_Type(
-                         (string)result2.Attribute("exemplarText"), (string)result5.Parent.Parent.Name.ToString(), ((string)result.Parent.Attribute("place1Type")).Substring(2), ((string)result4.Attribute("place1Type")).Substring(2), things
-                         ),
-                         id = ((string)result2.Attribute("id")).Substring(1,((string)result2.Attribute("id")).Length-3),
-                         name = ((string)result.Attribute("exemplarText")),
-                         value = ((string)result5.Parent.Parent.Attribute("id")).Substring(2),
-                         place1 = ((string)result.Parent.Attribute("place1Type")).Substring(2),
-                         place2 = ((string)result4.Attribute("place1Type")).Substring(2),
-                         foundation = "$none$",
-                         value_type = "View ID"
-                     };
-
-            needline_views = results.GroupBy(x => (string)x.value)
-                             .ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
-
-            if (results.Count() > 0)
-            {
-                foreach (Thing thing in needline_views.First().Value)
-                {
-                    things.Remove(thing.id + "_1");
-                    things.Remove(thing.id + "_2");
-                    things.Remove(thing.id + "_4");
-                    things.Add(thing.id,thing);
-                }
-            }
-
-            // Capability Dependency
-
-            results =
-                   from result2 in root.Elements("IdeasViews").Descendants().Descendants().Descendants()
-                   where (string)result2.Name.ToString() == "CV-4_BeforeAfterType"
-                   from result in root.Elements("IdeasData").Descendants().Elements(ns + "Name")
-                   where ((string)result2.Attribute("ref")).Substring(2) == ((string)result.Parent.Attribute("id")).Substring(2)
-                   select new Thing
-                       {
-                           type = "Capability Dependency (DM2rx)",
-                           id = ((string)result.Parent.Attribute("id")).Substring(2),
-                           name = (string)result.Attribute("exemplarText"),
-                           value = ((string)result2.Parent.Parent.Attribute("id")).Substring(2),
-                           place1 = ((string)result.Parent.Attribute("place1Type")).Substring(2),
-                           place2 = ((string)result.Parent.Attribute("place2Type")).Substring(2),
-                           foundation = "$none$",
-                           value_type = "View ID"
-                       };
-                
-            CV4_CD_views = results.GroupBy(x => (string)x.value)
-                             .ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
-            
-            if (CV4_CD_views.Count() > 0)
-            {
-                foreach (Thing thing in CV4_CD_views.First().Value)
-                {
-                    things.Remove(thing.id);
-                }
-            }
-
-            //ARO
-
-            results =
-                   from result5 in root.Elements("IdeasViews").Descendants().Descendants().Descendants()
-                   where ((string)result5.Parent.Parent.Attribute("id")).Substring(2) != "_1"
-                   where ((string)result5.Parent.Parent.Attribute("id")).Substring(2) != "_2"
-                   from result2 in root.Elements("IdeasData").Elements("activityConsumesResource").Elements(ns + "Name")
-                   where ((string)result2.Attribute("exemplarText") == "ARO")
-                   where ((string)result5.Attribute("ref")).Substring(2) == ((string)result2.Parent.Attribute("place1Type")).Substring(2)
-                   from result6 in root.Elements("IdeasData").Elements("Resource").Elements(ns + "Name")
-                   where ((string)result6.Parent.Attribute("id")).Substring(2) == ((string)result2.Parent.Attribute("place1Type")).Substring(2)
-                   from result3 in root.Elements("IdeasData").Elements("activityProducesResource")
-                   where ((string)result2.Parent.Attribute("place1Type")).Substring(2) == ((string)result3.Attribute("place2Type")).Substring(2)
-                   select new Thing
-                   {
-                       type = "ActivityResourceOverlap (DM2r)",
-                       id = ((string)result3.Attribute("id")).Substring(2, ((string)result3.Attribute("id")).Length - 4),
-                       name = ((string)result6.Attribute("exemplarText")),
-                       value = ((string)result5.Parent.Parent.Attribute("id")).Substring(2),
-                       place1 = ((string)result3.Attribute("place1Type")).Substring(2),
-                       place2 = ((string)result2.Parent.Attribute("place2Type")).Substring(2),
-                       foundation = "$none$",
-                       value_type = "View ID"
-                   };
-
-            ARO_views = results.GroupBy(x => (string)x.value)
-                             .ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
-
-            if (ARO_views.Count() > 0)
-            {
-                foreach (Thing thing in ARO_views.First().Value)
-                {
-                    things.Remove(thing.id + "_1");
-                    things.Remove(thing.id + "_2");
-                    things.Remove(thing.id + "_3");
-                }
-            }
-
-            // OV-1 Pic
-
-            OV1_pic_views =
-                   (
-                    from result2 in root.Elements("IdeasViews").Descendants().Descendants().Descendants()
-                    where (string)result2.Name.ToString() == "OV-1_ArchitecturalDescription"
-                    from result in root.Elements("IdeasData").Descendants().Elements(ns + "Name")
-                    where ((string)result2.Attribute("ref")).Substring(2) == ((string)result.Parent.Attribute("id")).Substring(2)
-                    from result3 in root.Elements("IdeasData").Elements("representationSchemeInstance")
-                    //where (string)result.Parent.Name.ToString() == "ArchitecturalDescription"
-                    where ((string)result3.Attribute("tuplePlace2")).Substring(2) == ((string)result.Parent.Attribute("id")).Substring(2)
-                    select new
-                    {
-                        key = ((string)result2.Parent.Parent.Attribute("id")).Substring(2),
-                        value = new Thing
-                        {
-                            type = "ArchitecturalDescription",
-                            id = ((string)result.Parent.Attribute("id")).Substring(2),
-                            name = (string)result.Attribute("exemplarText"),
-                            value = ((string)result.Parent.Attribute("exemplar")),
-                            place1 = "$none$",
-                            place2 = "$none$",
-                            foundation = (string)result.Parent.Attribute(ns + "FoundationCategory"),
-                            value_type = "Picture"
-                        }
-                    }).ToDictionary(a => a.key, a => a.value);
-
-            if (OV1_pic_views.Count() > 0)
-            {
-                foreach (Thing thing in OV1_pic_views.Values.ToList())
-                {
-                    things.Remove(thing.id);
-                }
-            }
-
-            // regular tuples
-
-            foreach (string[] current_lookup in Tuple_Lookup)
-            {
-                if (current_lookup[3] != "1" && current_lookup[3] != "5")
-                    continue;
-
-                results =
-                    from result in root.Elements("IdeasData").Descendants()
-                    where (string)result.Name.ToString() == current_lookup[0]
-                    from result2 in root.Elements("IdeasData").Descendants()
-                    where ((string)result.Attribute("tuplePlace1")) == ((string)result2.Attribute("id"))
-                    where (string)result2.Name.ToString() == current_lookup[5]
-                    select new Thing
-                    {
-                        type = current_lookup[0],
-                        id = ((string)result.Attribute("id")).Substring(2),
-                        name = "$none$",
-                        value = (string)result2.Name.ToString(),
-                        place1 = ((string)result.Attribute("tuplePlace1")).Substring(2),
-                        place2 = ((string)result.Attribute("tuplePlace2")).Substring(2),
-                        foundation = current_lookup[2],
-                        value_type = "element type"
-                    };
-
-                tuples = tuples.Concat(results.ToList());
-            }
-
-            // regular tuple types
-
-            foreach (string[] current_lookup in Tuple_Type_Lookup)
-            {
-
-                if (current_lookup[3] != "1" && current_lookup[3] != "5")
-                    continue;
-
-                results =
-                    from result in root.Elements("IdeasData").Descendants()
-                    where (string)result.Name.ToString() == current_lookup[0]
-                    from result2 in root.Elements("IdeasData").Descendants()
-                    where ((string)result.Attribute("place1Type")) == ((string)result2.Attribute("id"))
-                    where (string)result2.Name.ToString() == current_lookup[5]
-
-                    select new Thing
-                    {
-                        type = current_lookup[0],
-                        id = ((string)result.Attribute("id")).Substring(2),
-                        name = "$none$",
-                        value = (string)result2.Name.ToString(),
-                        place1 = ((string)result.Attribute("place1Type")).Substring(2),
-                        place2 = ((string)result.Attribute("place2Type")).Substring(2),
-                        foundation = current_lookup[2],
-                        value_type = "element type"
-                    };
-
-                tuple_types = tuple_types.Concat(results.ToList());
-            }
-
-            // views
-
-            foreach (string[] current_lookup in View_Lookup)
-            {
-                if (current_lookup[3] != "default")
-                    continue;
-                results =
-                    from result in root.Elements("IdeasViews").Descendants().Descendants().Descendants()
-                    where (string)result.Parent.Parent.Name.ToString() == current_lookup[0]
-                    select new Thing
-                    {
-                        type = current_lookup[0],
-                        id = ((string)result.Parent.Parent.Attribute("id")).Substring(2) + ((string)result.Attribute("ref")).Substring(2),
-                        name = ((string)result.Parent.Parent.Attribute("name")).Replace("&", " And "),
-                        place1 = ((string)result.Parent.Parent.Attribute("id")).Substring(2),
-                        place2 = ((string)result.Attribute("ref")).Substring(2),
-                        value = (things.TryGetValue(((string)result.Attribute("ref")).Substring(2), out value)) ? value : new Thing {type="$none$"},
-                        foundation = "$none$",
-                        value_type = "Thing"
-                    };
-
-
-                sorted_results = results.GroupBy(x => x.name).Select(group => group.Distinct().ToList()).ToList();
-                //sorted_results = Add_Tuples(sorted_results, tuples);
-                //sorted_results = Add_Tuples(sorted_results, tuple_types);
-
-                foreach (List<Thing> view in sorted_results)
-                {
-                    List<Thing> mandatory_list = new List<Thing>();
-                    List<Thing> optional_list = new List<Thing>();
-
-                    foreach (Thing thing in view)
-                    {
-
-                        temp = Find_Mandatory_Optional((string)((Thing)thing.value).type, view.First().name, thing.type, thing.place1, ref errors_list);
-                        if (temp == "Mandatory")
-                        {
-                            mandatory_list.Add(new Thing { id = thing.place2, name = (string)((Thing)thing.value).name, type = (string)((Thing)thing.value).value });
-                        }
-                        if (temp == "Optional")
-                        {
-                            optional_list.Add(new Thing { id = thing.place2, name = (string)((Thing)thing.value).name, type = (string)((Thing)thing.value).value });
-                        }
-                    }
-
-                    mandatory_list = mandatory_list.OrderBy(x => x.type).ToList();
-                    optional_list = optional_list.OrderBy(x => x.type).ToList();
-
-                    if (needline_views.TryGetValue(view.First().place1, out values))
-                        optional_list.AddRange(values);
-
-                    if (CV4_CD_views.TryGetValue(view.First().place1, out values))
-                        optional_list.AddRange(values);
-
-                    if (ARO_views.TryGetValue(view.First().place1, out values))
-                        optional_list.AddRange(values);
-
-                    //if (Proper_View(mandatory_list, view.First().type))
-                    views.Add(new View { type = current_lookup[1], id = view.First().place1, name = view.First().name, mandatory = mandatory_list, optional = optional_list });
-                }
-            }
-
-            // output
-
-            foreach (string thing in things.Keys)
-            {
-                    thing_GUID = Guid.NewGuid();
-                    thing_GUIDs.Add(thing, thing_GUID);
-            }
-
-            using (var sw = new Utf8StringWriter())
-            {
-                using (var writer = XmlWriter.Create(sw))
-                {
-
-                    writer.WriteRaw(@"<Classes>");
-
-                    foreach (View view in views)
-                    {
-                        count2 = 0;
-                        count++;
-                        view_GUID = Guid.NewGuid();
-                        minor_type = Find_View_SA_Minor_Type(view.type);
-
-                        writer.WriteRaw("<Class><MDDiagram MDObjId=\"" + view.id + "\" MDObjName=\"" + view.name + "\" MDObjMinorTypeName=\"" + view.type
-                            + "\" MDObjMinorTypeNum=\"" + minor_type + "\" MDObjMajorTypeNum=\"1\" MDObjAuditId=\"NEAR\" MDObjUpdateDate=\""
-                            + date + "\" MDObjUpdateTime=\"" + time + "\" MDObjFQName=\"" + view.name + "\" "
-                            + "SADgmCLevelNumber=\"\" SADgmSnapGridEnt=\"0\" SADgmSnapGridLin=\"0\" SADgmPGridNumEnt=\"4 4\" SADgmPGridNumLin=\"10 10\""
-                            + " SADgmPGridSizeEnt=\"25 25\" SADgmPGridSizeLin=\"10 10\" SADgmGridUnit100=\"100 100\" SADgmBPresentationMenu=\"0\""
-                            + " SADgmBShowPages=\"0\" SADgmBShowRuler=\"0\" SADgmBShowGrid=\"-1\" SADgmBShowScroll=\"-1\" SADgmBShowNodeShadow=\"-1\""
-                            + " SADgmBShowLineShadow=\"0\" SADgmBShowTextShadow=\"0\" SADgmPShadowDelta=\"5 5\" SADgmRGBShadowColor=\"0x00c0c0c0\""
-                            + " SADgmRMargin=\"50 50 50 50\" SADgmBBorder=\"0\" SADgmBorderOffset=\"-13\" SADgmWBorderPenStyle=\"0x0010\" SADgmBDgmBorder=\"0\""
-                            + " SADgmIDgmForm=\"0\" SADgmWOrientation=\"0x0003\" SADgmBDgmPDefault=\"1\" SADgmBIsHierarchy=\"0\" SADgmBBackgroundColorOn=\"0\""
-                            + " SADgmRGBBackgroundColor=\"0x00ffffff\" SADgmWLinePenStyle=\"0x0103\">");
-
-                        writer.WriteRaw("<MDProperty MDPrpName=\"~C~\" MDPrpValue=\"1\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
-                            + "<MDProperty MDPrpName=\"~T~\" MDPrpValue=\"" + minor_type + "\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
-                            + "<MDProperty MDPrpName=\"Use Automatic Gradient Fills\" MDPrpValue=\"T\" SAPrpEditType=\"4\" MDPrpLength=\"1\"/>"
-                            + "<MDProperty MDPrpName=\"DGX File Name\" MDPrpValue=\"D" + count.ToString("D7") + ".DGX\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
-                            //+ ((minor_type == "283") ? "" : "<MDProperty MDPrpName=\"Hierarchical Numbering\" MDPrpValue=\"F\" SAPrpEditType=\"4\" MDPrpLength=\"1\"/>") 
-                            + "<MDProperty MDPrpName=\"Initial Date\" MDPrpValue=\"" + prop_date + "\" SAPrpEditType=\"2\" MDPrpLength=\"10\"/>"
-                            + "<MDProperty MDPrpName=\"Initial Time\" MDPrpValue=\"" + prop_time + "\" SAPrpEditType=\"7\" MDPrpLength=\"11\"/>"
-                            + "<MDProperty MDPrpName=\"Initial Audit\" MDPrpValue=\"NEAR\" SAPrpEditType=\"1\" MDPrpLength=\"8\"/>"
-                            + "<MDProperty MDPrpName=\"GUID\" MDPrpValue=\"" + view_GUID + "\" SAPrpEditType=\"1\" MDPrpLength=\"64\"/>"
-                            // + "<MDProperty MDPrpName=\"Description\" MDPrpValue=\"\" SAPrpEditType=\"1\" MDPrpLength=\"4074\"/>"
-                            //+ "<MDProperty MDPrpName=\"Vertical Pools and Lanes\" MDPrpValue=\"F\" SAPrpEditType=\"4\" MDPrpLength=\"1\"/>"
-                            //+ "<MDProperty MDPrpName=\"Check Connections\" MDPrpValue=\"F\" SAPrpEditType=\"4\" MDPrpLength=\"1\"/>"
-                            //+ "<MDProperty MDPrpName=\"Auto-create/update 1380\" MDPrpValue=\"T\" SAPrpEditType=\"4\" MDPrpLength=\"1\"/>"
-                            //+ "<MDProperty MDPrpName=\"Auto-populate Where of APBP\" MDPrpValue=\"T\" SAPrpEditType=\"4\" MDPrpLength=\"1\"/>"
-                            //+ "<MDProperty MDPrpName=\"Peers\" MDPrpValue=\"\" SAPrpEditType=\"14\" MDPrpLength=\"1200\" SAPrpEditDefMajorType=\"Diagram\"" 
-                            //+ " SAPrpEditDefMinorType=\"" + view.type + "\"/>"
-                            //+ "<MDProperty MDPrpName=\"Architecture Type\" MDPrpValue=\"\" SAPrpEditType=\"1\" MDPrpLength=\"1200\"/>"
-                            //+ "<MDProperty MDPrpName=\"Related Architecture Description\" MDPrpValue=\"\" SAPrpEditType=\"14\" MDPrpLength=\"1200\""
-                            //+ " SAPrpEditDefMajorType=\"Definition\" SAPrpEditDefMinorType=\"ArchitecturalDescription (DM2)\"/>"
-                            //+ "<MDProperty MDPrpName=\"OSLCLink\" MDPrpValue=\"\" SAPrpEditType=\"8\" MDPrpLength=\"4074\" SAPrpEditDefMajorType=\"Definition\""
-                            //+ " SAPrpEditDefMinorType=\"OSLC Link\"/>"
-                            //+ "<MDProperty MDPrpName=\"Reference Documents\" MDPrpValue=\"\" SAPrpEditType=\"18\" MDPrpLength=\"1024\"/>"
-                            + "<MDProperty MDPrpName=\"MD VISIO Last Modified By\" MDPrpValue=\"MD\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
-                            + "<MDProperty MDPrpName=\"Last Change Date\" MDPrpValue=\"" + DateTime.Now.ToString("yyyyMMdd") + "\" SAPrpEditType=\"2\" MDPrpLength=\"10\"/>"
-                            + "<MDProperty MDPrpName=\"Last Change Time\" MDPrpValue=\"" + DateTime.Now.ToString("HHmmss") + "\" SAPrpEditType=\"7\" MDPrpLength=\"11\"/>"
-                            + "<MDProperty MDPrpName=\"Last Change Audit\" MDPrpValue=\"NEAR\" SAPrpEditType=\"1\" MDPrpLength=\"8\"/>");
-
-                        List<Thing> thing_list = new List<Thing>(view.mandatory);
-                        thing_list.AddRange(view.optional);
-
-                        foreach (Thing thing in thing_list)
-                        {
-
-                            if (thing_GUIDs.TryGetValue(thing.id, out thing_GUID) == false)
-                            {
-                                thing_GUID = Guid.NewGuid();
-                                thing_GUIDs.Add(thing.id, thing_GUID);
-                            }
-
-                            if (location_dic.TryGetValue(view.id + thing.id, out location) == true)
-                            {
-                                loc_x = location.top_left_x;
-                                loc_y = location.top_left_y;
-                                size_x = (Convert.ToInt32(location.bottom_right_x) - Convert.ToInt32(location.top_left_x)).ToString();
-                                size_y = (Convert.ToInt32(location.top_left_y) - Convert.ToInt32(location.bottom_right_y)).ToString();
-                            }
-                            else
-                            {
-                                loc_x = "574";
-                                loc_y = "203";
-                                size_x = "125";
-                                size_y = "55";
-                            }
-
-                            minor_type_name = thing.type;
-                            minor_type = Find_Symbol_Element_SA_Minor_Type(ref minor_type_name, view.type);
-
-                            writer.WriteRaw("<MDSymbol MDObjId=\"" + thing.id + view.id.Substring(1) + "\" MDObjName=\"" + thing.name + "\" MDObjMinorTypeName=\"" + minor_type_name + "\""
-                                + " MDObjMinorTypeNum=\"" + minor_type + "\" MDObjMajorTypeNum=\"2\" MDObjAuditId=\"NEAR\" MDObjUpdateDate=\"" + date + "\""
-                                + " MDObjUpdateTime=\"" + time + "\" MDObjFQName=\"&quot;" + thing_GUID + "&quot;.&quot;" + thing.name + "&quot;\" MDSymIdDgm=\"" + view.id + "\" MDSymIdDef=\"" + thing.id + "\""
-                                //other
-                                + " MDSymArrangement=\"0\" MDSymOtherSymbology=\"0\" MDSymProperties=\"0x0000\" MDSymOrder=\"0\" MDSymXPEntity=\"" + count2 + "\""
-                                + " MDSymXPLink=\"65535\" MDSymXPGroup=\"65535\" MDSymXPSibling=\"65535\" MDSymXPSubordinate=\"65535\" MDSymPenStyle=\"0x0010\""
-                                + " MDSymFontName=\"\" MDSymFontHeight=\"0x0000\" MDSymFontFlags=\"0x0000\" MDSymLineStyle=\"0x0103\" MDSymFlags=\"0x0002\""
-                                + " MDSymFlags2=\"0x0000\" MDSymFlags3=\"0x0000\" MDSymTextFlags=\"0x082a\" MDSymStyle=\"0\" MDSymAuxStyle=\"0x0000\""
-                                + " MDSymOccurs=\"0x01\" MDSymOccOffset=\"0x00\" MDSymBGColor=\"0x00\" MDSymFGColor=\"0x00\" MDSymPrompt=\"0x00\""
-                                + " MDSymFrExArcChar=\"0x00\" MDSymToExArcChar=\"0x00\" MDSymUncleCount=\"0x00\" MDSymStyleFlags=\"0x0007\" MDSymSeqNum=\"0\""
-                                + " MDSymRotation=\"0\" MDSymError1=\"0x00\" MDSymError2=\"0x00\" MDSymHideProgeny=\"0\" MDSymHidden=\"0\" MDSymOtherForm=\"0\""
-                                + " MDSymHasDspMode=\"0\" MDSymDspMode=\"0x0000\" MDSymDspModeExt=\"0x00000000\" MDSymCLevelNumber=\"0\" MDSymPenColorOn=\"1\""
-                                + " MDSymPenColorRed=\"0\" MDSymPenColorGreen=\"130\" MDSymPenColorBlue=\"236\" MDSymFillColorOn=\"1\" MDSymFillColorRed=\"176\""
-                                + " MDSymFillColorGreen=\"213\" MDSymFillColorBlue=\"255\" MDSymFontColorOn=\"1\" MDSymFontColorRed=\"0\" MDSymFontColorGreen=\"0\""
-                                + " MDSymFontColorBlue=\"0\" MDSymLocX=\"" + loc_x + "\" MDSymLocY=\"" + loc_y + "\" MDSymSizeX=\"" + size_x + "\" MDSymSizeY=\"" + size_y + "\" MDSymNameLocX=\"572\""
-                                + " MDSymNameLocY=\"168\" MDSymNameSizeX=\"121\" MDSymNameSizeY=\"18\" MDSymDescLocX=\"0\" MDSymDescLocY=\"0\" MDSymDescSizeX=\"0\""
-                                + " MDSymDescSizeY=\"0\">");
-
-                            writer.WriteRaw("<MDProperty MDPrpName=\"~C~\" MDPrpValue=\"2\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
-                                + "<MDProperty MDPrpName=\"~T~\" MDPrpValue=\"" + minor_type + "\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
-                                + "<MDProperty MDPrpName=\"Object Class Number\" MDPrpValue=\"3\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
-                                + "<MDProperty MDPrpName=\"Object Type Number\" MDPrpValue=\"" + Find_Definition_Element_SA_Minor_Type(thing.type) + "\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
-                                + "<MDProperty MDPrpName=\"Symbol Represents\" MDPrpValue=\"" + thing.type + "\" SAPrpEditType=\"1\" MDPrpLength=\"4074\"/>"
-                                + "<MDProperty MDPrpName=\"KeyGUID\" MDPrpValue=\"" + thing_GUID + "\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
-                                //+ "<SARelation SARelId=\"_1982\" SARelTypeNum=\"6\" SARelTypeName=\"connects\"/>"
-                                //+ "<SARelation SARelId=\"_1980\" SARelTypeNum=\"8\" SARelTypeName=\"connects\"/>"
-                                //+ "<SARelation SARelId=\"_1979\" SARelTypeNum=\"28\" SARelTypeName=\"embeds\"/>"
-                                //+ "<SARelation SARelId=\"_1991\" SARelTypeNum=\"28\" SARelTypeName=\"embeds\"/>"
-                                + "</MDSymbol>");
-                            
-                            count2++;
-                        }
-
-                        if (OV1_pic_views.TryGetValue(view.id, out value))
-                        {
-                            
-                            if (location_dic.TryGetValue(view.id + value.id, out location) == true)
-                            {
-                                loc_x = location.top_left_x;
-                                loc_y = location.top_left_y;
-                                size_x = (Convert.ToInt32(location.bottom_right_x) - Convert.ToInt32(location.top_left_x)).ToString();
-                                size_y = (Convert.ToInt32(location.top_left_y) - Convert.ToInt32(location.bottom_right_y)).ToString();
-                            }
-                            else
-                            {
-                                loc_x = "574";
-                                loc_y = "203";
-                                size_x = "125";
-                                size_y = "55";
-                            }
-
-                            writer.WriteRaw("<MDSymbol MDObjId=\"" + value.id + "\" MDObjName=\"" + value.name + "\" MDObjMinorTypeName=\"Picture\" MDObjMinorTypeNum=\"11\" MDObjMajorTypeNum=\"2\" MDObjAuditId=\"ir\""
-                                + " MDObjUpdateDate=\"2/5/2015\" MDObjUpdateTime=\"10:00:16 AM\" MDObjFQName=\"&quot;&quot;\" MDSymIdDgm=\"" + view.id + "\" MDSymArrangement=\"0\" MDSymOtherSymbology=\"0\""
-                                + " MDSymProperties=\"0x0000\" MDSymOrder=\"0\" MDSymXPEntity=\"1\" MDSymXPLink=\"65535\" MDSymXPGroup=\"65535\" MDSymXPSibling=\"65535\" MDSymXPSubordinate=\"65535\""
-                                + " MDSymPenStyle=\"0x0010\" MDSymFontName=\"\" MDSymFontHeight=\"0x0000\" MDSymFontFlags=\"0x0000\" MDSymLineStyle=\"0x0103\" MDSymFlags=\"0x0002\" MDSymFlags2=\"0x0000\""
-                                + " MDSymFlags3=\"0x0000\" MDSymTextFlags=\"0x003a\" MDSymStyle=\"0\" MDSymAuxStyle=\"0x0000\" MDSymOccurs=\"0x01\" MDSymOccOffset=\"0x00\" MDSymBGColor=\"0x00\" MDSymFGColor=\"0x00\""
-                                + " MDSymPrompt=\"0x00\" MDSymFrExArcChar=\"0x00\" MDSymToExArcChar=\"0x00\" MDSymUncleCount=\"0x00\" MDSymStyleFlags=\"0x0003\" MDSymSeqNum=\"0\" MDSymRotation=\"0\" MDSymError1=\"0x00\""
-                                + " MDSymError2=\"0x00\" MDSymHideProgeny=\"0\" MDSymHidden=\"0\" MDSymOtherForm=\"0\" MDSymHasDspMode=\"0\" MDSymDspMode=\"0x0000\" MDSymDspModeExt=\"0x00000000\" MDSymCLevelNumber=\"0\""
-                                + " MDSymPenColorOn=\"1\" MDSymPenColorRed=\"0\" MDSymPenColorGreen=\"130\" MDSymPenColorBlue=\"236\" MDSymFillColorOn=\"1\" MDSymFillColorRed=\"176\" MDSymFillColorGreen=\"213\""
-                                + " MDSymFillColorBlue=\"255\" MDSymFontColorOn=\"0\" MDSymFontColorRed=\"0\" MDSymFontColorGreen=\"0\" MDSymFontColorBlue=\"0\" MDSymLocX=\"" + loc_x + "\" MDSymLocY=\"" + loc_y + "\" MDSymSizeX=\"" + size_x + "\""
-                                + " MDSymSizeY=\"" + size_y + "\" MDSymNameLocX=\"-150\" MDSymNameLocY=\"-100\" MDSymNameSizeX=\"0\" MDSymNameSizeY=\"0\" MDSymDescLocX=\"0\" MDSymDescLocY=\"0\" MDSymDescSizeX=\"0\" MDSymDescSizeY=\"0\""
-                                + " MDSymZPPicFile=\"P" + count.ToString("D7") + ".BMP\" MDSymZPPicType=\"0x0101\">");
-
-                            writer.WriteRaw("<MDPicture SAPictureEncodingMethod=\"Hex\" SAPictureEncodingVersion=\"1.0\" SAOriginalFile=\"P" + count.ToString("D7") + ".BMP\" SAOriginalFileLength=\"152054\" SAPictureData=\"" + value.value + "\"/>"
-                                + " <MDProperty MDPrpName=\"~C~\" MDPrpValue=\"2\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/><MDProperty MDPrpName=\"~T~\" MDPrpValue=\"11\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/></MDSymbol>");
-                        }
-
-                        if (doc_block_views.TryGetValue(view.id, out value))
-                        {
-                            if (location_dic.TryGetValue(view.id, out location) == true)
-                            {
-                                loc_x = location.top_left_x;
-                                loc_y = location.top_left_y;
-                                size_x = (Convert.ToInt32(location.bottom_right_x) - Convert.ToInt32(location.top_left_x)).ToString();
-                                size_y = (Convert.ToInt32(location.top_left_y) - Convert.ToInt32(location.bottom_right_y)).ToString();
-                            }
-                            else
-                            {
-                                loc_x = "574";
-                                loc_y = "203";
-                                size_x = "125";
-                                size_y = "55";
-                            }
-
-                            writer.WriteRaw("<MDSymbol MDObjId=\"" + value.id + "\" MDObjName=\"\" MDObjMinorTypeName=\"Doc Block\" MDObjMinorTypeNum=\"4\" MDObjMajorTypeNum=\"2\" MDObjAuditId=\"MDS\" MDObjUpdateDate=\"1/29/2015\" MDObjUpdateTime=\"3:01:32 PM\""
-                            + " MDObjFQName=\"&quot;&quot;\" MDSymIdDgm=\"" + view.id + "\" MDSymArrangement=\"0\" MDSymOtherSymbology=\"0\" MDSymProperties=\"0x0000\" MDSymOrder=\"0\" MDSymXPEntity=\"3\" MDSymXPLink=\"65535\" MDSymXPGroup=\"65535\" MDSymXPSibling=\"0\""
-                            + " MDSymXPSubordinate=\"65535\" MDSymPenStyle=\"0x0010\" MDSymFontName=\"\" MDSymFontHeight=\"0x0000\" MDSymFontFlags=\"0x0000\" MDSymLineStyle=\"0x0103\" MDSymFlags=\"0x0002\" MDSymFlags2=\"0x0000\" MDSymFlags3=\"0x0000\" MDSymTextFlags=\"0x000a\""
-                            + " MDSymStyle=\"0\" MDSymAuxStyle=\"0x0000\" MDSymOccurs=\"0x01\" MDSymOccOffset=\"0x00\" MDSymBGColor=\"0x00\" MDSymFGColor=\"0x00\" MDSymPrompt=\"0x00\" MDSymFrExArcChar=\"0x00\" MDSymToExArcChar=\"0x00\" MDSymUncleCount=\"0x00\""
-                            + " MDSymStyleFlags=\"0x0003\" MDSymSeqNum=\"0\" MDSymRotation=\"0\" MDSymError1=\"0x00\" MDSymError2=\"0x00\" MDSymHideProgeny=\"0\" MDSymHidden=\"0\" MDSymOtherForm=\"0\" MDSymHasDspMode=\"0\" MDSymDspMode=\"0x0000\" MDSymDspModeExt=\"0x00000000\""
-                            + " MDSymCLevelNumber=\"0\" MDSymPenColorOn=\"1\" MDSymPenColorRed=\"0\" MDSymPenColorGreen=\"130\" MDSymPenColorBlue=\"236\" MDSymFillColorOn=\"1\" MDSymFillColorRed=\"176\" MDSymFillColorGreen=\"213\" MDSymFillColorBlue=\"255\" MDSymFontColorOn=\"0\""
-                            + " MDSymFontColorRed=\"0\" MDSymFontColorGreen=\"0\" MDSymFontColorBlue=\"0\" MDSymLocX=\"" + loc_x + "\" MDSymLocY=\"" + loc_y + "\" MDSymSizeX=\"" + size_x + "\" MDSymSizeY=\"" + size_y + "\" MDSymNameLocX=\"569\" MDSymNameLocY=\"166\" MDSymNameSizeX=\"393\" MDSymNameSizeY=\"51\""
-                            + " MDSymDescLocX=\"620\" MDSymDescLocY=\"367\" MDSymDescSizeX=\"273\" MDSymDescSizeY=\"17\" MDSymZPDesc=\"" + value.value + "\"><MDProperty MDPrpName=\"~C~\" MDPrpValue=\"2\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
-                            + "<MDProperty MDPrpName=\"~T~\" MDPrpValue=\"4\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/><MDProperty MDPrpName=\"Description\" MDPrpValue=\"" + value.value + "\" SAPrpEditType=\"1\" MDPrpLength=\"4074\"/></MDSymbol>");
-                        }
-
-                        writer.WriteRaw(@"</MDDiagram>");
-
-                        foreach (Thing thing in thing_list)
-                        {
-                            if (!SA_Def_elements.Contains(thing.id))
-                            {
-                                SA_Def_elements.Add(thing.id);
-                                thing_GUID = thing_GUIDs[thing.id];
-
-                                minor_type = Find_Definition_Element_SA_Minor_Type(thing.type);
-
-                                writer.WriteRaw("<MDDefinition MDObjId=\"" + thing.id + "\" MDObjName=\"" + thing.name + "\" MDObjMinorTypeName=\"" + thing.type + "\" "
-                                    + "MDObjMinorTypeNum=\"" + minor_type + "\" MDObjMajorTypeNum=\"3\" MDObjAuditId=\"NEAR\" MDObjUpdateDate=\"" + date + "\" "
-                                    + "MDObjUpdateTime=\"" + time + "\" MDObjFQName=\"&quot;" + thing_GUID + "&quot;." + thing.name + "\">"
-                                    + "<MDProperty MDPrpName=\"~C~\" MDPrpValue=\"3\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
-                                    + "<MDProperty MDPrpName=\"~T~\" MDPrpValue=\"" + minor_type + "\" SAPrpEditType=\"0\" MDPrpLength=\"0\"/>"
-                                    + "<MDProperty MDPrpName=\"GUID\" MDPrpValue=\"" + thing_GUID + "\" SAPrpEditType=\"1\" MDPrpLength=\"64\"/>"
-                                    + "<MDProperty MDPrpName=\"KeyGUID\" MDPrpValue=\"" + thing_GUID + "\" SAPrpEditType=\"1\" MDPrpLength=\"80\"/>"
-                                    + "<MDProperty MDPrpName=\"Is Instance\" MDPrpValue=\"F\" SAPrpEditType=\"4\" MDPrpLength=\"1\"/>"
-                                    + ((minor_type == "1327") ? "" : "<MDProperty MDPrpName=\"To Line End\" MDPrpValue=\"LineEnd1\" SAPrpEditType=\"1\" MDPrpLength=\"1200\"/>"));
-
-                                //
-
-                                //<MDProperty MDPrpName="Parent Of Capability" MDPrpValue="Definition:&quot;Capability (DM2)&quot;:&quot;99be13e4-03b9-43f1-bf82-0d508bea5cc3&quot;.&quot;(JCA 1.0) Force Support&quot;
-                                //    Definition:&quot;Capability (DM2)&quot;:a697273a-8c0e-4f84-b18e-7c6876dd0742.&quot;(JCA 2.0) Battlespace Awareness&quot;
-                                //    Definition:&quot;Capability (DM2)&quot;:&quot;3f98f92e-fe73-43e6-b506-7e4e86f861db&quot;.&quot;(JCA 3.0) Force Application&quot;
-                                //    Definition:&quot;Capability (DM2)&quot;:cd8cef3b-87a6-402f-9205-70e0794766c8.&quot;(JCA 4.0) Logistics&quot;
-                                //    Definition:&quot;Capability (DM2)&quot;:c5376ccf-5b8f-4a10-9d94-ef39ae03b453.&quot;(JCA 5.0) Command and Control&quot;
-                                //    Definition:&quot;Capability (DM2)&quot;:&quot;0f6cfd54-7aca-4c75-98b2-c7a785ad9fb6&quot;.&quot;(JCA 6.0) Net-Centric&quot;" SAPrpEditType="14" MDPrpLength="1200" SAPrpEditDefMajorType="Definition" SAPrpEditDefMinorType="Capability (DM2)">
-                                //    <MDLink MDLinkName="&quot;(JCA 1.0) Force Support&quot;" MDLinkIdentity="_15647"/>
-                                //    <MDLink MDLinkName="&quot;(JCA 2.0) Battlespace Awareness&quot;" MDLinkIdentity="_15639"/>
-                                //    <MDLink MDLinkName="&quot;(JCA 3.0) Force Application&quot;" MDLinkIdentity="_15644"/>
-                                //    <MDLink MDLinkName="&quot;(JCA 4.0) Logistics&quot;" MDLinkIdentity="_15648"/>
-                                //    <MDLink MDLinkName="&quot;(JCA 5.0) Command and Control&quot;" MDLinkIdentity="_15643"/>
-                                //    <MDLink MDLinkName="&quot;(JCA 6.0) Net-Centric&quot;" MDLinkIdentity="_15642"/>
-                                //</MDProperty>
-
-                                //
-
-                                sorted_results = Get_Tuples_place1(thing, tuples);
-                                sorted_results.AddRange(Get_Tuples_place1(thing, tuple_types));
-                                sorted_results.AddRange(Get_Tuples_place2(thing, tuples));
-                                sorted_results.AddRange(Get_Tuples_place2(thing, tuple_types));
-                                values = new List<Thing>();
-                                if(support_views.TryGetValue(view.id, out values))
-                                    sorted_results.AddRange(Get_Tuples_place1(thing, values));
-                                values = new List<Thing>();
-                                if (needline_views.TryGetValue(view.id, out values))
-                                    sorted_results.AddRange(Get_Tuples_id(thing, values));
-
-
-                                if (sorted_results.Count() > 0)
-                                {
-                                    foreach (List<Thing> list in sorted_results)
-                                    {
-                                        count2 = 0;
-                                        
-                                        foreach (Thing rela in list)
-                                        {
-                                            
-                                            if (thing_GUIDs.TryGetValue(rela.place2, out temp_GUID))
-                                            {
-                                                if (count2 == 0)
-                                                {
-                                                    temp = "<MDProperty MDPrpName=\"" + list.First().type + "\" MDPrpValue=\"";
-                                                    temp3 = "";
-                                                    temp2 = "";
-                                                    count2++;
-                                                }
-
-                                                if (things.TryGetValue(rela.place2, out value))
-                                                {
-                                                    temp = temp + "Definition:&quot;" + value.value + "&quot;:&quot;" + temp_GUID + ".&quot;" + value.name + "&quot;";
-                                                    temp2 = "\" SAPrpEditType=\"14\" MDPrpLength=\"1200\" SAPrpEditDefMajorType=\"Definition\" SAPrpEditDefMinorType=\"" + value.value + "\">";
-                                                    temp3 = temp3 + "<MDLink MDLinkName=\"&quot;" + value.name + "&quot;\" MDLinkIdentity=\"" + value.id + "\"/>";
-                                                }
-                                            }
-                                        }
-
-                                        if (count2 > 0)
-                                            writer.WriteRaw(temp + temp2 + temp3 + "</MDProperty>");  
-                                    }
-                                }
-
-                                //
-
-                                writer.WriteRaw("<MDProperty MDPrpName=\"Initial Date\" MDPrpValue=\"" + prop_date + "\" SAPrpEditType=\"2\" MDPrpLength=\"10\"/>"
-                               + "<MDProperty MDPrpName=\"Initial Time\" MDPrpValue=\"" + prop_time + "\" SAPrpEditType=\"7\" MDPrpLength=\"11\"/>"
-                               + "<MDProperty MDPrpName=\"Initial Audit\" MDPrpValue=\"NEAR\" SAPrpEditType=\"1\" MDPrpLength=\"8\"/>"
-                               + "<MDProperty MDPrpName=\"Last Change Date\" MDPrpValue=\"" + prop_date + "\" SAPrpEditType=\"2\" MDPrpLength=\"10\"/>"
-                               + "<MDProperty MDPrpName=\"Last Change Time\" MDPrpValue=\"" + prop_time + "\" SAPrpEditType=\"7\" MDPrpLength=\"11\"/>"
-                               + "<MDProperty MDPrpName=\"Last Change Audit\" MDPrpValue=\"NEAR\" SAPrpEditType=\"1\" MDPrpLength=\"8\"/>"
-                               + "</MDDefinition>");
-                            }
-                        }
-                        //writer.WriteRaw(@"<MandatoryElements>");
-
-                        //foreach (Thing thing in view.mandatory)
-                        //{
-                        //    writer.WriteRaw("<" + view.type + "_" + thing.type + " ref=\"id" + thing.id + "\"/>");
-                        //}
-
-                        //writer.WriteRaw(@"</MandatoryElements>");
-                        //writer.WriteRaw(@"<OptionalElements>");
-
-                        //foreach (Thing thing in view.optional)
-                        //{
-                        //    writer.WriteRaw("<" + view.type + "_" + thing.type + " ref=\"id" + thing.id + "\"/>");
-                        //}
-
-                        //writer.WriteRaw(@"</OptionalElements>");
-                        //writer.WriteRaw("</" + view.type + ">");
-                        writer.WriteRaw(@"</Class>");
-                    }
-
-                    //foreach (Thing thing in things)
-                    //    writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id + "\" "
-                    //        + (((string)thing.value == "$none$") ? "" : thing.value_type + "=\"" + (string)thing.value + "\"") + ">" + "<ideas:Name exemplarText=\"" + thing.name
-                    //        + "\" namingScheme=\"ns1\" id=\"n" + thing.id + "\"/></" + thing.type + ">");
-
-                    //foreach (Thing thing in tuple_types)
-                    //    writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id
-                    //    + "\" place1Type=\"id" + thing.place1 + "\" place2Type=\"id" + thing.place2 + "\"/>");
-
-                    //foreach (Thing thing in tuples)
-                    //    writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id
-                    //    + "\" tuplePlace1=\"id" + thing.place1 + "\" tuplePlace2=\"id" + thing.place2 + "\"/>");
-
-                    //writer.WriteRaw(@"</IdeasData>");
-
-                    //writer.WriteRaw(@"<IdeasViews frameworkVersion=""DM2.02_Chg_1"" framework=""DoDAF"">");
-
-                    writer.WriteRaw(@"</Classes>");
-
-                    writer.Flush();
-                }
-                return sw.ToString();
-            }
-        }
-
-        /////////RSA
-
-        public static string RSA2PES(byte[] input)
+        public static bool MD2PES(byte[] input, ref string output, ref string errors)
         {
             IEnumerable<Location> locations = new List<Location>();
             IEnumerable<Thing> things = new List<Thing>();
@@ -6597,9 +5771,6 @@ namespace NEAR
             List<Thing> mandatory_list = new List<Thing>();
             List<Thing> optional_list = new List<Thing>();
             string temp;
-           // Dictionary<string, List<Thing>> doc_blocks_data;
-            Dictionary<string, List<Thing>> doc_blocks_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, Thing> OV1_pic_views = new Dictionary<string, Thing>();
             Dictionary<string, List<Thing>> needline_mandatory_views = new Dictionary<string, List<Thing>>();
             Dictionary<string, List<Thing>> needline_optional_views = new Dictionary<string, List<Thing>>();
             //Dictionary<string, List<Thing>> results_dic;
@@ -6608,15 +5779,16 @@ namespace NEAR
             List<List<Thing>> sorted_results_new = new List<List<Thing>>();
             bool representation_scheme = false;
             List<Thing> values = new List<Thing>();
-            XNamespace ns = "http:///schemas/UPIA/_7hv4kEc6Ed-f1uPQXF_0HA/563";
-            XNamespace ns2 = "http://www.omg.org/XMI";
+            XNamespace ns = "http://www.omg.org/spec/UPDM/20121004/UPDM-Profile";
+            XNamespace ns2 = "http://www.omg.org/spec/XMI/20131001";
             XNamespace ns3 = "http://schema.omg.org/spec/UML/2.2";
             Thing value;
             List<string> errors_list = new List<string>();
+            bool test = true;
 
             //Regular Things
 
-            foreach (string[] current_lookup in RSA_Element_Lookup)
+            foreach (string[] current_lookup in MD_Element_Lookup)
             {
 
                 results =
@@ -6634,8 +5806,8 @@ namespace NEAR
                         id = (string)result.LastAttribute,// + "///" +*/ (string)result.LastAttribute,//Attribute("base_Operation"),
                         name = (string)result2.Attribute("name"),//*/ (string)result.FirstAttribute,//Attribute(ns2 + "id"),
                         value = "$none$",
-                        place1 = (string)result.Attribute(ns2 + "id"),
-                        place2 = (string)result.LastAttribute,
+                        //place1 = (string)result.Attribute(ns2 + "id"),
+                        //place2 = (string)result.LastAttribute,
                         foundation = current_lookup[2],
                         value_type = "$none$"
                     };
@@ -6645,400 +5817,376 @@ namespace NEAR
 
             //SuperSubtupe
 
-            results =
-                from result in root.Descendants().Elements("generalization")
-                //from result3 in root.Elements(ns + "View")
-                //from result4 in root.Descendants()
-                //from result2 in root.Descendants()
-                //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
-                //where result2.Attribute("name") != null
-                //where (string)result.Attribute == (string)result2.Attribute(ns2 + "id")
-                //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
-                select new Thing
-                {
-                    type = "superSubtype",
-                    id = (string)result.Attribute("general") + (string)result.Parent.Attribute(ns2 + "id"),
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = (string)result.Attribute("general"),
-                    place2 = (string)result.Parent.Attribute(ns2 + "id"),
-                    foundation = "superSubtype",
-                    value_type = "$none$"
-                };
+            //results =
+            //    from result in root.Descendants().Elements("generalization")
+            //    //from result3 in root.Elements(ns + "View")
+            //    //from result4 in root.Descendants()
+            //    //from result2 in root.Descendants()
+            //    //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+            //    //where result2.Attribute("name") != null
+            //    //where (string)result.Attribute == (string)result2.Attribute(ns2 + "id")
+            //    //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+            //    select new Thing
+            //    {
+            //        type = "superSubtype",
+            //        id = (string)result.Attribute("general") + (string)result.Parent.Attribute(ns2 + "id"),
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = (string)result.Attribute("general"),
+            //        place2 = (string)result.Parent.Attribute(ns2 + "id"),
+            //        foundation = "superSubtype",
+            //        value_type = "$none$"
+            //    };
 
-            tuples = tuples.Concat(results.ToList());
+            //tuples = tuples.Concat(results.ToList());
 
             //WholePartType
 
-            results =
-                from result in root.Descendants().Elements("ownedAttribute")
-                //from result3 in root.Elements(ns + "View")
-                //from result4 in root.Descendants()
-                //from result2 in root.Descendants()
-                //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
-                where (string)result.Attribute("aggregation") == "composite"
-                //where (string)result.Attribute == (string)result2.Attribute(ns2 + "id")
-                //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
-                select new Thing
-                {
-                    type = "WholePartType",
-                    id = (string)result.Attribute("type") + (string)result.Parent.Attribute(ns2 + "id"),
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = (string)result.Attribute("type"),
-                    place2 = (string)result.Parent.Attribute(ns2 + "id"),
-                    foundation = "WholePartType",
-                    value_type = "$none$"
-                };
+            //results =
+            //    from result in root.Descendants().Elements("ownedAttribute")
+            //    //from result3 in root.Elements(ns + "View")
+            //    //from result4 in root.Descendants()
+            //    //from result2 in root.Descendants()
+            //    //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+            //    where (string)result.Attribute("aggregation") == "composite"
+            //    //where (string)result.Attribute == (string)result2.Attribute(ns2 + "id")
+            //    //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+            //    select new Thing
+            //    {
+            //        type = "WholePartType",
+            //        id = (string)result.Attribute("type") + (string)result.Parent.Attribute(ns2 + "id"),
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = (string)result.Attribute("type"),
+            //        place2 = (string)result.Parent.Attribute(ns2 + "id"),
+            //        foundation = "WholePartType",
+            //        value_type = "$none$"
+            //    };
 
-            tuple_types = tuple_types.Concat(results.ToList());
-
-            // OV-1 Pic
-
-            OV1_pic_views =
-                   (
-                    from result in root.Descendants().Elements("styles")
-                    where (string)result.Attribute("figureImageURI") != null
-
-                    select new
-                    {
-                        key = ((string)result.Parent.Parent.Attribute(ns2 + "id")).Substring(2),
-                        value = new Thing
-                        {
-                            type = "ArchitecturalDescription",
-                            id = ((string)result.Attribute(ns2 + "id")).Substring(2),
-                            name = (string)result.Attribute("figureImageURI"),
-                            value = Encode((string)result.Attribute("figureImageURI")),
-                            place1 = "$none$",
-                            place2 = "$none$",
-                            foundation = "IndividualType",
-                            value_type = "Picture"
-                        }
-                    }).ToDictionary(a => a.key, a => a.value);
-
+            //tuple_types = tuple_types.Concat(results.ToList());
             
             //Diagramming
 
-            foreach (Thing thing in things)
-            {
+            //foreach (Thing thing in things)
+            //{
 
-                results_loc =
-                    from result in root.Descendants().Elements("children")
-                    //from result3 in root.Elements(ns + "View")
-                    //from result4 in root.Descendants()
-                    //from result2 in root.Descendants()
-                    from result2 in result.Elements("layoutConstraint")
-                    //where result2.Attribute("name") != null
-                    where (string)result.Attribute("element") == thing.place2
-                    //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
-                    select new Location
-                    {
-                        id = (string)result.Attribute("element"),
-                        top_left_x = (string)result2.Attribute("x"),
-                        top_left_y = ((int)result2.Attribute("y") + ((result2.Attribute("height") == null) ? 1000 : (int)result2.Attribute("height"))).ToString(),
-                        bottom_right_x = ((int)result2.Attribute("x") + ((result2.Attribute("width") == null) ? 1000 : (int)result2.Attribute("width"))).ToString(),
-                        bottom_right_y = (string)result2.Attribute("y")
+            //    results_loc =
+            //        from result in root.Descendants().Elements("children")
+            //        //from result3 in root.Elements(ns + "View")
+            //        //from result4 in root.Descendants()
+            //        //from result2 in root.Descendants()
+            //        from result2 in result.Elements("layoutConstraint")
+            //        //where result2.Attribute("name") != null
+            //        where (string)result.Attribute("element") == thing.place2
+            //        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+            //        select new Location
+            //        {
+            //            id = (string)result.Attribute("element"),
+            //            top_left_x = (string)result2.Attribute("x"),
+            //            top_left_y = ((int)result2.Attribute("y") + ((result2.Attribute("height") == null) ? 1000 : (int)result2.Attribute("height"))).ToString(),
+            //            bottom_right_x = ((int)result2.Attribute("x") + ((result2.Attribute("width") == null) ? 1000 : (int)result2.Attribute("width"))).ToString(),
+            //            bottom_right_y = (string)result2.Attribute("y")
 
-                    };
+            //        };
 
-                locations = locations.Concat(results_loc.ToList());
+            //    locations = locations.Concat(results_loc.ToList());
 
-            }
+            //}
 
-            foreach (Location location in locations)
-            {
-                values = new List<Thing>();
+            //foreach (Location location in locations)
+            //{
+            //    values = new List<Thing>();
 
-                values.Add(new Thing
-                {
-                    type = "Information",
-                    id = location.id + "_12",
-                    name = "Diagramming Information",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "Information",
+            //        id = location.id + "_12",
+            //        name = "Diagramming Information",
+            //        value = "$none$",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "Point",
-                    id = location.id + "_16",
-                    name = "Top Left Location",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "Point",
+            //        id = location.id + "_16",
+            //        name = "Top Left Location",
+            //        value = "$none$",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "PointType",
-                    id = location.id + "_14",
-                    name = "Top Left LocationType",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "PointType",
+            //        id = location.id + "_14",
+            //        name = "Top Left LocationType",
+            //        value = "$none$",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "Point",
-                    id = location.id + "_26",
-                    name = "Bottome Right Location",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "Point",
+            //        id = location.id + "_26",
+            //        name = "Bottome Right Location",
+            //        value = "$none$",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "PointType",
-                    id = location.id + "_24",
-                    name = "Bottome Right LocationType",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "PointType",
+            //        id = location.id + "_24",
+            //        name = "Bottome Right LocationType",
+            //        value = "$none$",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_18",
-                    name = "Top Left X Location",
-                    value = location.top_left_x,
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "SpatialMeasure",
+            //        id = location.id + "_18",
+            //        name = "Top Left X Location",
+            //        value = location.top_left_x,
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "numericValue"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_20",
-                    name = "Top Left Y Location",
-                    value = location.top_left_y,
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "SpatialMeasure",
+            //        id = location.id + "_20",
+            //        name = "Top Left Y Location",
+            //        value = location.top_left_y,
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "numericValue"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_22",
-                    name = "Top Left Z Location",
-                    value = "0",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "SpatialMeasure",
+            //        id = location.id + "_22",
+            //        name = "Top Left Z Location",
+            //        value = "0",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "numericValue"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_28",
-                    name = "Bottom Right X Location",
-                    value = location.bottom_right_x,
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "SpatialMeasure",
+            //        id = location.id + "_28",
+            //        name = "Bottom Right X Location",
+            //        value = location.bottom_right_x,
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "numericValue"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_30",
-                    name = "Bottom Right Y Location",
-                    value = location.bottom_right_y,
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "SpatialMeasure",
+            //        id = location.id + "_30",
+            //        name = "Bottom Right Y Location",
+            //        value = location.bottom_right_y,
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "numericValue"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_32",
-                    name = "Bottom Right Z Location",
-                    value = "0",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "SpatialMeasure",
+            //        id = location.id + "_32",
+            //        name = "Bottom Right Z Location",
+            //        value = "0",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "numericValue"
+            //    });
 
-                things = things.Concat(values);
+            //    things = things.Concat(values);
 
-                values = new List<Thing>();
+            //    values = new List<Thing>();
 
-                values.Add(new Thing
-                {
-                    type = "describedBy",
-                    id = location.id + "_11",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id,
-                    place2 = location.id + "_12",
-                    foundation = "namedBy"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "describedBy",
+            //        id = location.id + "_11",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id,
+            //        place2 = location.id + "_12",
+            //        foundation = "namedBy"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "typeInstance",
-                    id = location.id + "_15",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_14",
-                    place2 = location.id + "_16",
-                    foundation = "typeInstance"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "typeInstance",
+            //        id = location.id + "_15",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_14",
+            //        place2 = location.id + "_16",
+            //        foundation = "typeInstance"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "typeInstance",
-                    id = location.id + "_25",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_24",
-                    place2 = location.id + "_26",
-                    foundation = "typeInstance"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "typeInstance",
+            //        id = location.id + "_25",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_24",
+            //        place2 = location.id + "_26",
+            //        foundation = "typeInstance"
+            //    });
 
 
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_17",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_18",
-                    place2 = location.id + "_16",
-                    foundation = "typeInstance"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "measureOfIndividualPoint",
+            //        id = location.id + "_17",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_18",
+            //        place2 = location.id + "_16",
+            //        foundation = "typeInstance"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_19",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_20",
-                    place2 = location.id + "_16",
-                    foundation = "typeInstance"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "measureOfIndividualPoint",
+            //        id = location.id + "_19",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_20",
+            //        place2 = location.id + "_16",
+            //        foundation = "typeInstance"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_21",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_22",
-                    place2 = location.id + "_16",
-                    foundation = "typeInstance"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "measureOfIndividualPoint",
+            //        id = location.id + "_21",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_22",
+            //        place2 = location.id + "_16",
+            //        foundation = "typeInstance"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_27",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_28",
-                    place2 = location.id + "_26",
-                    foundation = "typeInstance"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "measureOfIndividualPoint",
+            //        id = location.id + "_27",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_28",
+            //        place2 = location.id + "_26",
+            //        foundation = "typeInstance"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_29",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_30",
-                    place2 = location.id + "_26",
-                    foundation = "typeInstance"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "measureOfIndividualPoint",
+            //        id = location.id + "_29",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_30",
+            //        place2 = location.id + "_26",
+            //        foundation = "typeInstance"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_31",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_32",
-                    place2 = location.id + "_26",
-                    foundation = "typeInstance"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "measureOfIndividualPoint",
+            //        id = location.id + "_31",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_32",
+            //        place2 = location.id + "_26",
+            //        foundation = "typeInstance"
+            //    });
 
-                tuples = tuples.Concat(values);
+            //    tuples = tuples.Concat(values);
 
-                values = new List<Thing>();
+            //    values = new List<Thing>();
 
-                values.Add(new Thing
-                {
-                    type = "resourceInLocationType",
-                    id = location.id + "_13",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_12",
-                    place2 = location.id + "_14",
-                    foundation = "CoupleType"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "resourceInLocationType",
+            //        id = location.id + "_13",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_12",
+            //        place2 = location.id + "_14",
+            //        foundation = "CoupleType"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "resourceInLocationType",
-                    id = location.id + "_23",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_12",
-                    place2 = location.id + "_24",
-                    foundation = "CoupleType"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "resourceInLocationType",
+            //        id = location.id + "_23",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_12",
+            //        place2 = location.id + "_24",
+            //        foundation = "CoupleType"
+            //    });
 
-                tuple_types = tuple_types.Concat(values);
-            }
+            //    tuple_types = tuple_types.Concat(values);
+            //}
 
             //Views
 
-            foreach (string[] current_lookup in View_Lookup)
+            foreach (string[] current_lookup in MD_View_Lookup)
             {
                 results =
-                    from result in root.Descendants().Elements("contents").Elements("children")
+                    from result in root.Descendants().Elements("diagramContents").Elements("usedElements")
                     //from result3 in root.Elements(ns + "View")
-                    from result2 in root.Descendants()
+                    //from result2 in root.Descendants()
                     //from result3 in root.Descendants()
                     //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
                     //where result2.Attribute("name") != null
-                    where (string)result2.LastAttribute == (string)result.Attribute("element")
-                    where (string)result.Parent.Attribute("name") == current_lookup[0]
+                    //where (string)result2.LastAttribute == (string)result.Attribute("element")
+                    where (string)result.Parent.Parent.Attribute("type") == current_lookup[1]
                     select new Thing
                     {
                         type = current_lookup[0],
-                        id = (string)result.Parent.Attribute(ns2 + "id") + (string)result.Attribute("element"),// + "///" +*/ (string)result.LastAttribute,//Attribute("base_Operation"),
-                        name = ((string)result.Parent.Attribute("name")).Replace("&", " And "),//*/ (string)result.FirstAttribute,//Attribute(ns2 + "id"),
-                        value = Find_DM2_Type_RSA((string)result2.Name.LocalName.ToString()),
-                        place1 = (string)result.Parent.Attribute(ns2 + "id"),
-                        place2 = (string)result.Attribute("element"),
+                        id = (string)result.Parent.Parent.Parent.Parent.Parent.Attribute(ns2 + "id") + (string)result.Value,// + "///" +*/ (string)result.LastAttribute,//Attribute("base_Operation"),
+                        name = (string)result.Parent.Parent.Parent.Parent.Parent.Attribute("name"),
+                        //value = Find_DM2_Type_RSA((string)result2.Name.LocalName.ToString()),
+                        place1 = (string)result.Parent.Parent.Parent.Parent.Parent.Attribute(ns2 + "id"),
+                        place2 = (string)result.Value,
                         foundation = "$none$",
-                        value_type = "element_type"
+                        //value_type = "element_type"
                     };
 
                 sorted_results = results.GroupBy(x => x.name).Select(group => group.Distinct().ToList()).ToList();
 
                 sorted_results_new = new List<List<Thing>>();
-                Add_Tuples(ref sorted_results, ref sorted_results_new, tuples.ToList(), ref errors_list);
-                Add_Tuples(ref sorted_results, ref sorted_results_new, tuple_types.ToList(), ref errors_list);
+                //Add_Tuples(ref sorted_results, ref sorted_results_new, tuples.ToList(), ref errors_list);
+                //Add_Tuples(ref sorted_results, ref sorted_results_new, tuple_types.ToList(), ref errors_list);
                 sorted_results = sorted_results_new;
 
                 foreach (List<Thing> view in sorted_results)
@@ -7069,12 +6217,6 @@ namespace NEAR
                                 optional_list.AddRange(values);
                         }
                     }
-
-                    if (doc_blocks_views.TryGetValue(view.First().place1, out values))
-                        optional_list.AddRange(values);
-
-                    if (OV1_pic_views.TryGetValue(view.First().place1, out value))
-                        mandatory_list.Add(value);
 
                     mandatory_list = mandatory_list.OrderBy(x => x.type).ToList();
                     optional_list = optional_list.OrderBy(x => x.type).ToList();
@@ -7146,14 +6288,21 @@ namespace NEAR
 
                     writer.Flush();
                 }
-                return sw.ToString();
+
+                output = sw.ToString();
+                errors = string.Join("", errors_list.Distinct().ToArray());
+
+                if (errors.Count() > 0)
+                    test = false;
+
+                return test;
             }
         }
 
         ////////////////////
         ////////////////////
 
-        public static string PES2RSA(byte[] input)
+        public static string PES2MD_FUTURE(byte[] input)
         {
             Dictionary<string, Thing> things = new Dictionary<string, Thing>();
             Dictionary<string, Thing> results_dic;
