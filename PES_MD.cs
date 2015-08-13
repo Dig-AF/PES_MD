@@ -646,6 +646,16 @@ namespace NEAR
                             new string[] {"RegionOfCountry", "AV-2"}, 
                             new string[] {"PeriodType", "AV-2"}, 
                             new string[] {"DataType", "AV-2"},
+
+                            new string[] {"Condition", "DIV-1"},
+                            new string[] {"Information", "DIV-1"},
+                            new string[] {"Location", "DIV-1"},
+                            new string[] {"Performer", "DIV-1"},
+                            new string[] {"Resource", "DIV-1"},
+                            new string[] {"Rule", "DIV-1"}, 
+                            new string[] {"superSubtype", "DIV-1"}, 
+                            new string[] {"WholePartType", "DIV-1"},
+                            new string[] {"OverlapType", "DIV-1"},
                             };
 
         private class Thing
@@ -5766,13 +5776,13 @@ namespace NEAR
             IEnumerable<Thing> tuples = new List<Thing>();
             IEnumerable<Thing> results;
             IEnumerable<Location> results_loc;
-            IEnumerable<Thing> view_elements = new List<Thing>();
             List<View> views = new List<View>();
             List<Thing> mandatory_list = new List<Thing>();
             List<Thing> optional_list = new List<Thing>();
             string temp;
             Dictionary<string, List<Thing>> needline_mandatory_views = new Dictionary<string, List<Thing>>();
             Dictionary<string, List<Thing>> needline_optional_views = new Dictionary<string, List<Thing>>();
+            Dictionary<string, Thing> things_dic;
             //Dictionary<string, List<Thing>> results_dic;
             XElement root = XElement.Load(new MemoryStream(input));
             List<List<Thing>> sorted_results = new List<List<Thing>>();
@@ -5785,6 +5795,7 @@ namespace NEAR
             Thing value;
             List<string> errors_list = new List<string>();
             bool test = true;
+            List<List<Thing>> view_holder = new List<List<Thing>>();
 
             //Regular Things
 
@@ -5817,347 +5828,364 @@ namespace NEAR
 
             //SuperSubtupe
 
-            //results =
-            //    from result in root.Descendants().Elements("generalization")
-            //    //from result3 in root.Elements(ns + "View")
-            //    //from result4 in root.Descendants()
-            //    //from result2 in root.Descendants()
-            //    //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
-            //    //where result2.Attribute("name") != null
-            //    //where (string)result.Attribute == (string)result2.Attribute(ns2 + "id")
-            //    //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
-            //    select new Thing
-            //    {
-            //        type = "superSubtype",
-            //        id = (string)result.Attribute("general") + (string)result.Parent.Attribute(ns2 + "id"),
-            //        name = "$none$",
-            //        value = "$none$",
-            //        place1 = (string)result.Attribute("general"),
-            //        place2 = (string)result.Parent.Attribute(ns2 + "id"),
-            //        foundation = "superSubtype",
-            //        value_type = "$none$"
-            //    };
+            results =
+                from result in root.Descendants().Elements("generalization")
+                //from result3 in root.Elements(ns + "View")
+                //from result4 in root.Descendants()
+                //from result2 in root.Descendants()
+                //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+                //where result2.Attribute("name") != null
+                //where (string)result.Attribute == (string)result2.Attribute(ns2 + "id")
+                //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                where (string)result.Attribute("general") != null
+                where (string)result.Parent.Attribute(ns2 + "id") != null
+                select new Thing
+                {
+                    type = "superSubtype",
+                    id = (string)result.Attribute("general") + (string)result.Parent.Attribute(ns2 + "id"),
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = (string)result.Attribute("general"),
+                    place2 = (string)result.Parent.Attribute(ns2 + "id"),
+                    foundation = "superSubtype",
+                    value_type = "$none$"
+                };
 
-            //tuples = tuples.Concat(results.ToList());
+            tuples = tuples.Concat(results.ToList());
 
             //WholePartType
 
-            //results =
-            //    from result in root.Descendants().Elements("ownedAttribute")
-            //    //from result3 in root.Elements(ns + "View")
-            //    //from result4 in root.Descendants()
-            //    //from result2 in root.Descendants()
-            //    //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
-            //    where (string)result.Attribute("aggregation") == "composite"
-            //    //where (string)result.Attribute == (string)result2.Attribute(ns2 + "id")
-            //    //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
-            //    select new Thing
-            //    {
-            //        type = "WholePartType",
-            //        id = (string)result.Attribute("type") + (string)result.Parent.Attribute(ns2 + "id"),
-            //        name = "$none$",
-            //        value = "$none$",
-            //        place1 = (string)result.Attribute("type"),
-            //        place2 = (string)result.Parent.Attribute(ns2 + "id"),
-            //        foundation = "WholePartType",
-            //        value_type = "$none$"
-            //    };
+            results =
+                from result in root.Descendants().Elements("ownedAttribute")
+                //from result3 in root.Elements(ns + "View")
+                //from result4 in root.Descendants()
+                //from result2 in root.Descendants()
+                //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+                where (string)result.Attribute("aggregation") == "composite"
+                //where (string)result.Attribute == (string)result2.Attribute(ns2 + "id")
+                //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                where (string)result.Parent.Attribute(ns2 + "id") != null
+                where (string)result.Attribute("type") != null
+                select new Thing
+                {
+                    type = "WholePartType",
+                    id = (string)result.Parent.Attribute(ns2 + "id") + (string)result.Attribute("type"),
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = (string)result.Parent.Attribute(ns2 + "id"),
+                    place2 = (string)result.Attribute("type"),
+                    foundation = "WholePartType",
+                    value_type = "$none$"
+                };
 
-            //tuple_types = tuple_types.Concat(results.ToList());
+            tuple_types = tuple_types.Concat(results.ToList());
             
             //Diagramming
 
-            //foreach (Thing thing in things)
-            //{
+            foreach (Thing thing in things)
+            {
+                results_loc =
+                    from result in root.Descendants().Elements("mdElement").Elements("elementID")
+                    //from result3 in root.Elements(ns + "View")
+                    //from result4 in root.Descendants()
+                    //from result2 in root.Descendants()
+                    //from result2 in result.Elements("layoutConstraint")
+                    //where result2.Attribute("name") != null
+                    //where (string)result.Attribute(ns2 + "idref") == thing.id
+                    //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                    where (string)result.Attribute(ns2 + "idref") == thing.id 
+                    where ((string)result.Parent.Element("geometry").Value).Contains(";") == false
+                    select new Location
+                    {
+                        id = (string)result.Parent.Attribute(ns2 + "id"),
+                        top_left_x = ((string)result.Parent.Element("geometry").Value).Split(',')[0],
+                        top_left_y = ((string)result.Parent.Element("geometry").Value).Split(',')[1],
+                        bottom_right_x = ((string)result.Parent.Element("geometry").Value).Split(',')[2],
+                        bottom_right_y = ((string)result.Parent.Element("geometry").Value).Split(',')[3],
+                        element_id = (string)result.Attribute(ns2 + "idref")
+                    };
 
-            //    results_loc =
-            //        from result in root.Descendants().Elements("children")
-            //        //from result3 in root.Elements(ns + "View")
-            //        //from result4 in root.Descendants()
-            //        //from result2 in root.Descendants()
-            //        from result2 in result.Elements("layoutConstraint")
-            //        //where result2.Attribute("name") != null
-            //        where (string)result.Attribute("element") == thing.place2
-            //        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
-            //        select new Location
-            //        {
-            //            id = (string)result.Attribute("element"),
-            //            top_left_x = (string)result2.Attribute("x"),
-            //            top_left_y = ((int)result2.Attribute("y") + ((result2.Attribute("height") == null) ? 1000 : (int)result2.Attribute("height"))).ToString(),
-            //            bottom_right_x = ((int)result2.Attribute("x") + ((result2.Attribute("width") == null) ? 1000 : (int)result2.Attribute("width"))).ToString(),
-            //            bottom_right_y = (string)result2.Attribute("y")
-
-            //        };
-
-            //    locations = locations.Concat(results_loc.ToList());
-
-            //}
+                locations = locations.Concat(results_loc.ToList());
+            }
 
             //foreach (Location location in locations)
             //{
-            //    values = new List<Thing>();
+            //    string[] s = location.top_left_x.Split(',');
+            //    location.top_left_x = s[0];
+            //    location.top_left_y = s[1];
+            //    location.bottom_right_x = s[2];
+            //    location.bottom_right_y = s[3];
 
-            //    values.Add(new Thing
-            //    {
-            //        type = "Information",
-            //        id = location.id + "_12",
-            //        name = "Diagramming Information",
-            //        value = "$none$",
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "Point",
-            //        id = location.id + "_16",
-            //        name = "Top Left Location",
-            //        value = "$none$",
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "PointType",
-            //        id = location.id + "_14",
-            //        name = "Top Left LocationType",
-            //        value = "$none$",
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "Point",
-            //        id = location.id + "_26",
-            //        name = "Bottome Right Location",
-            //        value = "$none$",
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "PointType",
-            //        id = location.id + "_24",
-            //        name = "Bottome Right LocationType",
-            //        value = "$none$",
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "SpatialMeasure",
-            //        id = location.id + "_18",
-            //        name = "Top Left X Location",
-            //        value = location.top_left_x,
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType",
-            //        value_type = "numericValue"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "SpatialMeasure",
-            //        id = location.id + "_20",
-            //        name = "Top Left Y Location",
-            //        value = location.top_left_y,
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType",
-            //        value_type = "numericValue"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "SpatialMeasure",
-            //        id = location.id + "_22",
-            //        name = "Top Left Z Location",
-            //        value = "0",
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType",
-            //        value_type = "numericValue"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "SpatialMeasure",
-            //        id = location.id + "_28",
-            //        name = "Bottom Right X Location",
-            //        value = location.bottom_right_x,
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType",
-            //        value_type = "numericValue"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "SpatialMeasure",
-            //        id = location.id + "_30",
-            //        name = "Bottom Right Y Location",
-            //        value = location.bottom_right_y,
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType",
-            //        value_type = "numericValue"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "SpatialMeasure",
-            //        id = location.id + "_32",
-            //        name = "Bottom Right Z Location",
-            //        value = "0",
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType",
-            //        value_type = "numericValue"
-            //    });
-
-            //    things = things.Concat(values);
-
-            //    values = new List<Thing>();
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "describedBy",
-            //        id = location.id + "_11",
-            //        name = "$none$",
-            //        value = "$none$",
-            //        place1 = location.id,
-            //        place2 = location.id + "_12",
-            //        foundation = "namedBy"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "typeInstance",
-            //        id = location.id + "_15",
-            //        name = "$none$",
-            //        value = "$none$",
-            //        place1 = location.id + "_14",
-            //        place2 = location.id + "_16",
-            //        foundation = "typeInstance"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "typeInstance",
-            //        id = location.id + "_25",
-            //        name = "$none$",
-            //        value = "$none$",
-            //        place1 = location.id + "_24",
-            //        place2 = location.id + "_26",
-            //        foundation = "typeInstance"
-            //    });
-
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "measureOfIndividualPoint",
-            //        id = location.id + "_17",
-            //        name = "$none$",
-            //        value = "$none$",
-            //        place1 = location.id + "_18",
-            //        place2 = location.id + "_16",
-            //        foundation = "typeInstance"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "measureOfIndividualPoint",
-            //        id = location.id + "_19",
-            //        name = "$none$",
-            //        value = "$none$",
-            //        place1 = location.id + "_20",
-            //        place2 = location.id + "_16",
-            //        foundation = "typeInstance"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "measureOfIndividualPoint",
-            //        id = location.id + "_21",
-            //        name = "$none$",
-            //        value = "$none$",
-            //        place1 = location.id + "_22",
-            //        place2 = location.id + "_16",
-            //        foundation = "typeInstance"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "measureOfIndividualPoint",
-            //        id = location.id + "_27",
-            //        name = "$none$",
-            //        value = "$none$",
-            //        place1 = location.id + "_28",
-            //        place2 = location.id + "_26",
-            //        foundation = "typeInstance"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "measureOfIndividualPoint",
-            //        id = location.id + "_29",
-            //        name = "$none$",
-            //        value = "$none$",
-            //        place1 = location.id + "_30",
-            //        place2 = location.id + "_26",
-            //        foundation = "typeInstance"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "measureOfIndividualPoint",
-            //        id = location.id + "_31",
-            //        name = "$none$",
-            //        value = "$none$",
-            //        place1 = location.id + "_32",
-            //        place2 = location.id + "_26",
-            //        foundation = "typeInstance"
-            //    });
-
-            //    tuples = tuples.Concat(values);
-
-            //    values = new List<Thing>();
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "resourceInLocationType",
-            //        id = location.id + "_13",
-            //        name = "$none$",
-            //        value = "$none$",
-            //        place1 = location.id + "_12",
-            //        place2 = location.id + "_14",
-            //        foundation = "CoupleType"
-            //    });
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "resourceInLocationType",
-            //        id = location.id + "_23",
-            //        name = "$none$",
-            //        value = "$none$",
-            //        place1 = location.id + "_12",
-            //        place2 = location.id + "_24",
-            //        foundation = "CoupleType"
-            //    });
-
-            //    tuple_types = tuple_types.Concat(values);
             //}
 
+
+            foreach (Location location in locations)
+            {
+                values = new List<Thing>();
+
+                values.Add(new Thing
+                {
+                    type = "Information",
+                    id = location.id + "_12",
+                    name = "Diagramming Information",
+                    value = "$none$",
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "Point",
+                    id = location.id + "_16",
+                    name = "Top Left Location",
+                    value = "$none$",
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "PointType",
+                    id = location.id + "_14",
+                    name = "Top Left LocationType",
+                    value = "$none$",
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "Point",
+                    id = location.id + "_26",
+                    name = "Bottome Right Location",
+                    value = "$none$",
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "PointType",
+                    id = location.id + "_24",
+                    name = "Bottome Right LocationType",
+                    value = "$none$",
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "SpatialMeasure",
+                    id = location.id + "_18",
+                    name = "Top Left X Location",
+                    value = location.top_left_x,
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType",
+                    value_type = "numericValue"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "SpatialMeasure",
+                    id = location.id + "_20",
+                    name = "Top Left Y Location",
+                    value = location.top_left_y,
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType",
+                    value_type = "numericValue"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "SpatialMeasure",
+                    id = location.id + "_22",
+                    name = "Top Left Z Location",
+                    value = "0",
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType",
+                    value_type = "numericValue"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "SpatialMeasure",
+                    id = location.id + "_28",
+                    name = "Bottom Right X Location",
+                    value = location.bottom_right_x,
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType",
+                    value_type = "numericValue"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "SpatialMeasure",
+                    id = location.id + "_30",
+                    name = "Bottom Right Y Location",
+                    value = location.bottom_right_y,
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType",
+                    value_type = "numericValue"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "SpatialMeasure",
+                    id = location.id + "_32",
+                    name = "Bottom Right Z Location",
+                    value = "0",
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType",
+                    value_type = "numericValue"
+                });
+
+                things = things.Concat(values);
+
+                values = new List<Thing>();
+
+                values.Add(new Thing
+                {
+                    type = "describedBy",
+                    id = location.id + "_11",
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = location.element_id,
+                    place2 = location.id + "_12",
+                    foundation = "namedBy"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "typeInstance",
+                    id = location.id + "_15",
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = location.id + "_14",
+                    place2 = location.id + "_16",
+                    foundation = "typeInstance"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "typeInstance",
+                    id = location.id + "_25",
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = location.id + "_24",
+                    place2 = location.id + "_26",
+                    foundation = "typeInstance"
+                });
+
+
+                values.Add(new Thing
+                {
+                    type = "measureOfIndividualPoint",
+                    id = location.id + "_17",
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = location.id + "_18",
+                    place2 = location.id + "_16",
+                    foundation = "typeInstance"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "measureOfIndividualPoint",
+                    id = location.id + "_19",
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = location.id + "_20",
+                    place2 = location.id + "_16",
+                    foundation = "typeInstance"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "measureOfIndividualPoint",
+                    id = location.id + "_21",
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = location.id + "_22",
+                    place2 = location.id + "_16",
+                    foundation = "typeInstance"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "measureOfIndividualPoint",
+                    id = location.id + "_27",
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = location.id + "_28",
+                    place2 = location.id + "_26",
+                    foundation = "typeInstance"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "measureOfIndividualPoint",
+                    id = location.id + "_29",
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = location.id + "_30",
+                    place2 = location.id + "_26",
+                    foundation = "typeInstance"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "measureOfIndividualPoint",
+                    id = location.id + "_31",
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = location.id + "_32",
+                    place2 = location.id + "_26",
+                    foundation = "typeInstance"
+                });
+
+                tuples = tuples.Concat(values);
+
+                values = new List<Thing>();
+
+                values.Add(new Thing
+                {
+                    type = "resourceInLocationType",
+                    id = location.id + "_13",
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = location.id + "_12",
+                    place2 = location.id + "_14",
+                    foundation = "CoupleType"
+                });
+
+                values.Add(new Thing
+                {
+                    type = "resourceInLocationType",
+                    id = location.id + "_23",
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = location.id + "_12",
+                    place2 = location.id + "_24",
+                    foundation = "CoupleType"
+                });
+
+                tuple_types = tuple_types.Concat(values);
+            }
+
             //Views
+
+            things_dic = things.ToDictionary(x => x.id, x => x);
 
             foreach (string[] current_lookup in MD_View_Lookup)
             {
@@ -6179,14 +6207,33 @@ namespace NEAR
                         place1 = (string)result.Parent.Parent.Parent.Parent.Parent.Attribute(ns2 + "id"),
                         place2 = (string)result.Value,
                         foundation = "$none$",
-                        //value_type = "element_type"
+                        value_type = "element_type"
                     };
 
-                sorted_results = results.GroupBy(x => x.name).Select(group => group.Distinct().ToList()).ToList();
+                view_holder.Add(results.ToList());
+            }
+
+            foreach (List<Thing> view_elements in view_holder)
+            {
+                //foreach (Thing thing in values)
+                int max = view_elements.Count;
+                for (int i = 0; i < max; i++)
+                {
+                    Thing thing = view_elements[i];
+                    //thing.value = (string) Find_Def_DM2_Type((string)thing.value, values5.ToList());
+                    if (thing.place2 != null)
+                    {
+                        if (things_dic.TryGetValue(thing.place2, out value))
+                            thing.value = (string)value.type;
+                    }
+                }
+
+                sorted_results = view_elements.GroupBy(x => x.place1).Select(group => group.Distinct().ToList()).ToList();
+                //sorted_results = results.GroupBy(x => x.name).Select(group => group.Distinct().ToList()).ToList();
 
                 sorted_results_new = new List<List<Thing>>();
-                //Add_Tuples(ref sorted_results, ref sorted_results_new, tuples.ToList(), ref errors_list);
-                //Add_Tuples(ref sorted_results, ref sorted_results_new, tuple_types.ToList(), ref errors_list);
+                Add_Tuples(ref sorted_results, ref sorted_results_new, tuples.ToList(), ref errors_list);
+                Add_Tuples(ref sorted_results, ref sorted_results_new, tuple_types.ToList(), ref errors_list);
                 sorted_results = sorted_results_new;
 
                 foreach (List<Thing> view in sorted_results)
