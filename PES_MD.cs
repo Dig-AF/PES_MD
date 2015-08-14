@@ -124,6 +124,14 @@ namespace NEAR
                             new string[] { "MeasureType", "MeasureType", "IndividualTypeType" },
                             new string[] { "Resource", "ResourceInteraction", "IndividualType" }, // revisit
                             new string[] { "Resource", "ExchangeElement", "IndividualType" }, // revisit
+                            new string[] { "Data", "LogicalDataModel", "IndividualType" },
+                            new string[] { "Data", "EntityItem", "IndividualType" },
+                            new string[] { "Data", "EntityAttribute", "IndividualType" },
+                            };
+
+        static string[][] MD_Relationship_Lookup = new string[][] {
+                            // DM2 Class, UPDM_Profile Element
+                            new string[] { "activityPartOfCapability", "ActivityPartOfCapability", "WholePartType" },
                             };
 
         static string[][] MD_View_Lookup = new string[][] { 
@@ -221,6 +229,11 @@ namespace NEAR
                             new string[] {"Vision", "CV-1"},
                             new string[] {"Capability", "CV-4"},
                             new string[] {"desiredResourceStateOfCapability", "CV-4"},
+
+                            new string[] {"Capability", "CV-6"},
+                            new string[] {"Activity", "CV-6"},
+                            new string[] {"activityPartOfCapability", "CV-6"},
+
                             new string[] {"Activity", "OV-6c"},
                             new string[] {"Activity", "SV-1"},
                             new string[] {"activityPerformedByPerformer", "SV-1"},
@@ -338,6 +351,26 @@ namespace NEAR
                             new string[] {"superSubtype", "CV-4"}, 
                             new string[] {"WholePartType", "CV-4"},
                             new string[] {"activityPartOfCapability", "CV-4"}, 
+
+                            new string[] {"activityPerformedByPerformer", "CV-6"},
+                            new string[] {"activityProducesResource", "CV-6"},
+                            new string[] {"activityConsumesResource", "CV-6"},
+                            new string[] {"BeforeAfterType", "CV-6"},
+                            new string[] {"Condition", "CV-6"},
+                            new string[] {"DomainInformation", "CV-6"},
+                            new string[] {"Information", "CV-6"},
+                            new string[] {"Location", "CV-6"},
+                            new string[] {"Performer", "CV-6"},
+                            new string[] {"PersonRole", "CV-6"},
+                            new string[] {"OrganizationType", "CV-6"},
+                            new string[] {"Resource", "CV-6"},
+                            new string[] {"Rule", "CV-6"}, 
+                            new string[] {"System", "CV-6"},
+                            new string[] {"Service", "CV-6"},
+                            new string[] {"ServiceDescription", "CV-6"},
+                            new string[] {"superSubtype", "CV-6"}, 
+                            new string[] {"WholePartType", "CV-6"},
+
                             new string[] {"Information", "OV-1"},
                             new string[] {"Location", "OV-1"},
                             new string[] {"Performer", "OV-1"},
@@ -5783,7 +5816,9 @@ namespace NEAR
             Dictionary<string, List<Thing>> needline_mandatory_views = new Dictionary<string, List<Thing>>();
             Dictionary<string, List<Thing>> needline_optional_views = new Dictionary<string, List<Thing>>();
             Dictionary<string, Thing> things_dic;
-            //Dictionary<string, List<Thing>> results_dic;
+            Dictionary<string, List<Thing>> results_dic;
+            Dictionary<string, Thing> values_dic;
+            Dictionary<string, Thing> values_dic2;
             XElement root = XElement.Load(new MemoryStream(input));
             List<List<Thing>> sorted_results = new List<List<Thing>>();
             List<List<Thing>> sorted_results_new = new List<List<Thing>>();
@@ -5824,6 +5859,35 @@ namespace NEAR
                     };
 
                 things = things.Concat(results.ToList());
+            }
+
+            //Regular Relationships
+
+            foreach (string[] current_lookup in MD_Relationship_Lookup)
+            {
+
+                results =
+                    from result in root.Elements(ns + current_lookup[1])
+                    //from result3 in root.Elements(ns + "View")
+                    //from result4 in root.Descendants()
+                    from result2 in root.Descendants()
+                    //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+                    //where result2.Attribute("name") != null
+                    where (string)result.LastAttribute == (string)result2.Attribute(ns2 + "id")
+                    //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                    select new Thing
+                    {
+                        type = current_lookup[0],
+                        id = (string)result.LastAttribute,
+                        name = "$none$",
+                        value = "$none$",
+                        place2 = (string)result2.Element("client").Attribute(ns2 + "idref"),
+                        place1 = (string)result2.Element("supplier").Attribute(ns2 + "idref"),
+                        foundation = current_lookup[2],
+                        value_type = "$none$"
+                    };
+
+                tuple_types = tuple_types.Concat(results.ToList());
             }
 
             //SuperSubtupe
@@ -6183,9 +6247,53 @@ namespace NEAR
                 tuple_types = tuple_types.Concat(values);
             }
 
-            //Views
+            //Thing Dictionary
 
             things_dic = things.ToDictionary(x => x.id, x => x);
+
+            //CV-6
+
+            mandatory_list = new List<Thing>();
+            values = new List<Thing>();
+            optional_list = new List<Thing>();
+            sorted_results = new List<List<Thing>>();
+
+            //values_dic = things_dic.Where(x => x.Value.type == "Activity").ToDictionary(p => p.Key, p => p.Value);
+            //values_dic2 = things_dic.Where(x => x.Value.type == "Capability").ToDictionary(p => p.Key, p => p.Value);
+
+            //results = tuple_types.Where(x => x.type == "activityPartOfCapability").Where(x => values_dic2.ContainsKey(x.place1)).Where(x => values_dic.ContainsKey(x.place2));
+
+            foreach (Thing thing in things.Where(x => x.type == "Activity").ToList())
+            {
+                //mandatory_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
+                values.Add(new Thing { id = "_13", type = "CV-6", place2 = thing.id, value = thing.type, place1 = "_13" });
+            }
+
+            foreach (Thing thing in things.Where(x => x.type == "Capability").ToList())
+            {
+                //mandatory_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
+                values.Add(new Thing { id = "_13", type = "CV-6", place2 = thing.id, value = thing.type, place1 = "_13" });
+            }
+
+            sorted_results.Add(values);
+
+            sorted_results_new = new List<List<Thing>>();
+            Add_Tuples(ref sorted_results, ref sorted_results_new, tuples.ToList(), ref errors_list);
+            Add_Tuples(ref sorted_results, ref sorted_results_new, tuple_types.ToList(), ref errors_list);
+            sorted_results = sorted_results_new;
+
+            foreach (Thing thing in sorted_results.First())
+            {
+                if ((string)thing.value == "Activity" || (string)thing.value == "Capability" || (string)thing.value == "activityPartOfCapability")
+                    mandatory_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+                else
+                    optional_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+            }
+
+            if (sorted_results.First().Count() > 0)
+                views.Add(new View { type = "CV-6", id = "_13", name = "NEAR CV-6", optional = optional_list, mandatory = mandatory_list });
+
+            //Views
 
             foreach (string[] current_lookup in MD_View_Lookup)
             {
