@@ -5831,6 +5831,7 @@ namespace NEAR
             List<string> errors_list = new List<string>();
             bool test = true;
             List<List<Thing>> view_holder = new List<List<Thing>>();
+            Dictionary<string, List<Thing>> period_dic = new Dictionary<string, List<Thing>>();
 
             //Regular Things
 
@@ -5944,6 +5945,199 @@ namespace NEAR
 
             tuple_types = tuple_types.Concat(results.ToList());
             
+            //Milestone date
+
+            results =
+                    from result in root.Elements(ns + "ActualProjectMilestone")
+                    from result2 in root.Descendants()
+                    where (string)result2.Parent.Attribute("name") == "Timeline"
+                    //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+                    //where result2.Attribute("name") != null
+                    where (string)result.Attribute("date") == (string)result2.Attribute(ns2 + "id")
+                    //where (string)result2.Attribute("date") != null
+                    //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                    select new Thing
+                    
+                    {
+                        type = "HappensInType",
+                        id = (string)result.Attribute("base_InstanceSpecification") + "_t2",
+                        name = "$none$",
+                        value = (string)result2.Attribute("value"),
+                        place1 = (string)result.Attribute("base_InstanceSpecification") + "_t1",
+                        place2 = (string)result.Attribute("base_InstanceSpecification"),
+                        foundation = "WholePartType",
+                        value_type = "$period$"
+                    };
+
+            tuple_types = tuple_types.Concat(results.ToList());
+
+            foreach (Thing thing in results)
+            {
+                values = new List<Thing>();
+
+                values.Add(new Thing
+                {
+                    type = "PeriodType",
+                    id = thing.place2 + "_t1",
+                    name = (string)thing.value,
+                    value = "$none$",
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType",
+                    value_type = "$none$"
+                });
+
+                things = things.Concat(values);
+
+                values = new List<Thing>();
+
+                values.Add(new Thing
+                {
+                    type = "PeriodType",
+                    id = thing.place2 + "_t1",
+                    name = (string)thing.value,
+                    value = "$none$",
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType",
+                    value_type = "$none$"
+                });
+
+                values.Add(thing);
+
+                period_dic.Add(thing.place2, values);
+
+            }
+
+            results =
+                    from result in root.Elements(ns + "IncrementMilestone")
+                    from result2 in root.Descendants()
+                    where (string)result2.Parent.Attribute("name") == "Timeline"
+                    //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+                    //where result2.Attribute("name") != null
+                    where (string)result.Attribute("date") == (string)result2.Attribute(ns2 + "id")
+                    //where (string)result2.Attribute("date") != null
+                    //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                    select new Thing
+
+                    {
+                        type = "HappensInType",
+                        id = (string)result.Attribute("base_InstanceSpecification") + "_t2",
+                        name = "$none$",
+                        value = (string)result2.Attribute("value"),
+                        place1 = (string)result.Attribute("base_InstanceSpecification") + "_t1",
+                        place2 = (string)result.Attribute("base_InstanceSpecification"),
+                        foundation = "WholePartType",
+                        value_type = "$period$"
+                    };
+
+            tuple_types = tuple_types.Concat(results.ToList());
+
+            foreach (Thing thing in results)
+            {
+                values = new List<Thing>();
+
+                values.Add(new Thing
+                {
+                    type = "PeriodType",
+                    id = thing.place2 + "_t1",
+                    name = (string)thing.value,
+                    value = "$none$",
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType",
+                    value_type = "$none$"
+                });
+
+                things = things.Concat(values);
+
+                values = new List<Thing>();
+
+                values.Add(new Thing
+                {
+                    type = "PeriodType",
+                    id = thing.place2 + "_t1",
+                    name = (string)thing.value,
+                    value = "$none$",
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType",
+                    value_type = "$none$"
+                });
+
+                values.Add(thing);
+
+                period_dic.Add(thing.place2, values);
+
+            }
+
+            //Project date
+
+            results =
+                    from result in root.Elements(ns + "Project")
+                    from result2 in root.Descendants()
+                    where (string)result2.Parent.Attribute("name") == "Timeline"
+                    from result3 in root.Descendants()
+                    where (string)result3.Parent.Attribute("name") == "Timeline"
+                    //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+                    //where result2.Attribute("name") != null
+                    where (string)result.Attribute("startDate") == (string)result2.Attribute(ns2 + "id")
+                    where (string)result.Attribute("endDate") == (string)result3.Attribute(ns2 + "id")
+
+                    //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                    select new Thing
+
+                    {
+                        type = "HappensInType",
+                        id = (string)result.Attribute("base_InstanceSpecification") + "_t2",
+                        name = "$none$",
+                        value = (string)result2.Attribute("value") + " to " + (string)result3.Attribute("value"),
+                        place1 = (string)result.Attribute("base_InstanceSpecification") + "_t1",
+                        place2 = (string)result.Attribute("base_InstanceSpecification"),
+                        foundation = "WholePartType",
+                        value_type = "$period$"
+                    };
+
+            tuple_types = tuple_types.Concat(results.ToList());
+
+            foreach (Thing thing in results)
+            {
+                values = new List<Thing>();
+
+                values.Add(new Thing
+                {
+                    type = "PeriodType",
+                    id = thing.place2 + "_t1",
+                    name = (string)thing.value,
+                    value = "$none$",
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType",
+                    value_type = "$none$"
+                });
+
+                things = things.Concat(values);
+
+                values = new List<Thing>();
+
+                values.Add(new Thing
+                {
+                    type = "PeriodType",
+                    id = thing.place2 + "_t1",
+                    name = (string)thing.value,
+                    value = "$none$",
+                    place1 = "$none$",
+                    place2 = "$none$",
+                    foundation = "IndividualType",
+                    value_type = "$none$"
+                });
+
+                values.Add(thing);
+
+                period_dic.Add(thing.place2, values);
+
+            }
+
             //Diagramming
 
             foreach (Thing thing in things)
@@ -6365,10 +6559,8 @@ namespace NEAR
                                 optional_list.Add(new Thing { id = thing.place2, type = (string)thing.value });
                             }
 
-                            if (needline_mandatory_views.TryGetValue(thing.place2, out values))
-                                mandatory_list.AddRange(values);
-
-                            if (needline_optional_views.TryGetValue(thing.place2, out values))
+                            values = new List<Thing>();
+                            if (period_dic.TryGetValue(thing.place2, out values))
                                 optional_list.AddRange(values);
                         }
                     }
