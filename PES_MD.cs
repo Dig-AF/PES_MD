@@ -109,24 +109,25 @@ namespace NEAR
 
         static string[][] MD_Element_Lookup = new string[][] {
                             // DM2 Class, UPDM_Profile Element
-                            new string[] { "System", "System", "IndividualType" },
-                            new string[] { "Activity", "OperationalActivity", "IndividualType" },
-                            new string[] { "Performer", "Performer", "IndividualType" },
-                            new string[] { "Activity", "Function", "IndividualType" },
-                            new string[] { "Activity", "ActualProjectMilestone", "IndividualType" }, // revisit activityPartOfProject
-                            new string[] { "Capability", "Capability", "IndividualType" },
-                            new string[] { "PersonType", "PersonType", "IndividualType" },
-                            new string[] { "Project", "VersionOfConfiguration", "Individual" }, // revisit subType of Project
-                            new string[] { "Project", "Project", "Individual" }, // revisit ProjectType?
-                            new string[] { "Capability", "CapabilityConfiguration", "IndividualType" }, // revisit subType of Capability
-                            new string[] { "Project", "ProjectMilestone", "Individual" }, // revisit subType of Project
-                            new string[] { "Vision", "Vision", "IndividualType" },
-                            new string[] { "MeasureType", "MeasureType", "IndividualTypeType" },
-                            new string[] { "Resource", "ResourceInteraction", "IndividualType" }, // revisit
-                            new string[] { "Resource", "ExchangeElement", "IndividualType" }, // revisit
-                            new string[] { "Data", "LogicalDataModel", "IndividualType" },
-                            new string[] { "Data", "EntityItem", "IndividualType" },
-                            new string[] { "Data", "EntityAttribute", "IndividualType" },
+                            new string[] { "System", "System", "IndividualType", "base_Class" },
+                            new string[] { "Activity", "OperationalActivity", "IndividualType", "base_Activity" },
+                            new string[] { "Performer", "Performer", "IndividualType", "base_Class" },
+                            new string[] { "Activity", "Function", "IndividualType", "base_Activity" },
+                            new string[] { "Activity", "ActualProjectMilestone", "IndividualType", "base_InstanceSpecification" }, // revisit activityPartOfProject
+                            new string[] { "Capability", "Capability", "IndividualType", "base_Class" },
+                            new string[] { "PersonType", "PersonType", "IndividualType", "base_Class" },
+                            ////new string[] { "Project", "VersionOfConfiguration", "Individual" }, // revisit subType of Project
+                            new string[] { "Project", "Project", "Individual", "base_InstanceSpecification" }, // revisit ProjectType?
+                            new string[] { "ProjectType", "ProjectType", "Individual", "base_Class" }, // revisit ProjectType?
+                            new string[] { "System", "CapabilityConfiguration", "IndividualType", "base_Class" }, // revisit subType of Capability
+                            new string[] { "Activity", "ProjectMilestone", "Individual", "base_Class" }, // revisit subType of Project
+                            new string[] { "Vision", "Vision", "IndividualType", "base_Class" },
+                            new string[] { "MeasureType", "MeasureType", "IndividualTypeType", "base_DataType" },
+                            new string[] { "Resource", "ResourceInteraction", "IndividualType", "base_InformationFlow" }, // revisit
+                            new string[] { "Resource", "ExchangeElement", "IndividualType", "base_Class" }, // revisit
+                            new string[] { "Data", "LogicalDataModel", "IndividualType", "base_Package" },
+                            new string[] { "Data", "EntityItem", "IndividualType", "base_Class" },
+                            new string[] { "Data", "EntityAttribute", "IndividualType", "base_Property" },
                             };
 
         static string[][] MD_Relationship_Lookup = new string[][] {
@@ -5845,12 +5846,12 @@ namespace NEAR
                     from result2 in root.Descendants()
                     //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
                     //where result2.Attribute("name") != null
-                    where (string)result.LastAttribute == (string)result2.Attribute(ns2 + "id")
+                    where (string)result.Attribute(current_lookup[3]) == (string)result2.Attribute(ns2 + "id")
                     //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
                     select new Thing
                     {
                         type = current_lookup[0],
-                        id = (string)result.LastAttribute,// + "///" +*/ (string)result.LastAttribute,//Attribute("base_Operation"),
+                        id = (string)result2.Attribute(ns2 + "id"),// + "///" +*/ (string)result.LastAttribute,//Attribute("base_Operation"),
                         name = (string)result2.Attribute("name"),//*/ (string)result.FirstAttribute,//Attribute(ns2 + "id"),
                         value = "$none$",
                         //place1 = (string)result.Attribute(ns2 + "id"),
@@ -5861,6 +5862,8 @@ namespace NEAR
 
                 things = things.Concat(results.ToList());
             }
+
+            //things = things.GroupBy(x => x.id).Select(grp => grp.First());
 
             //Regular Relationships
 
@@ -5945,155 +5948,222 @@ namespace NEAR
 
             tuple_types = tuple_types.Concat(results.ToList());
             
-            //Milestone date
+            ////Milestone date
 
-            results =
-                    from result in root.Elements(ns + "ActualProjectMilestone")
-                    from result2 in root.Descendants()
-                    where (string)result2.Parent.Attribute("name") == "Timeline"
-                    //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
-                    //where result2.Attribute("name") != null
-                    where (string)result.Attribute("date") == (string)result2.Attribute(ns2 + "id")
-                    //where (string)result2.Attribute("date") != null
-                    //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
-                    select new Thing
+            //results =
+            //        from result in root.Elements(ns + "ActualProjectMilestone")
+            //        from result2 in root.Descendants()
+            //        where (string)result2.Parent.Attribute("name") == "Timeline"
+            //        //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+            //        //where result2.Attribute("name") != null
+            //        where (string)result.Attribute("date") == (string)result2.Attribute(ns2 + "id")
+            //        //where (string)result2.Attribute("date") != null
+            //        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+            //        select new Thing
                     
-                    {
-                        type = "HappensInType",
-                        id = (string)result.Attribute("base_InstanceSpecification") + "_t2",
-                        name = "$none$",
-                        value = (string)result2.Attribute("value"),
-                        place1 = (string)result.Attribute("base_InstanceSpecification") + "_t1",
-                        place2 = (string)result.Attribute("base_InstanceSpecification"),
-                        foundation = "WholePartType",
-                        value_type = "$period$"
-                    };
+            //        {
+            //            type = "HappensInType",
+            //            id = (string)result.Attribute("base_InstanceSpecification") + "_t2",
+            //            name = "$none$",
+            //            value = (string)result2.Attribute("value"),
+            //            place1 = (string)result.Attribute("base_InstanceSpecification") + "_t1",
+            //            place2 = (string)result.Attribute("base_InstanceSpecification"),
+            //            foundation = "WholePartType",
+            //            value_type = "$period$"
+            //        };
 
-            tuple_types = tuple_types.Concat(results.ToList());
+            //tuple_types = tuple_types.Concat(results.ToList());
 
-            foreach (Thing thing in results)
-            {
-                values = new List<Thing>();
+            //foreach (Thing thing in results)
+            //{
+            //    values = new List<Thing>();
 
-                values.Add(new Thing
-                {
-                    type = "PeriodType",
-                    id = thing.place2 + "_t1",
-                    name = (string)thing.value,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "PeriodType",
+            //        id = thing.place2 + "_t1",
+            //        name = (string)thing.value,
+            //        value = "$none$",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "$none$"
+            //    });
 
-                things = things.Concat(values);
+            //    things = things.Concat(values);
 
-                values = new List<Thing>();
+            //    values = new List<Thing>();
 
-                values.Add(new Thing
-                {
-                    type = "PeriodType",
-                    id = thing.place2 + "_t1",
-                    name = (string)thing.value,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "PeriodType",
+            //        id = thing.place2 + "_t1",
+            //        name = (string)thing.value,
+            //        value = "$none$",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "$none$"
+            //    });
 
-                values.Add(thing);
+            //    values.Add(thing);
 
-                period_dic.Add(thing.place2, values);
+            //    period_dic.Add(thing.place2, values);
 
-            }
+            //}
+
+            //results =
+            //        from result in root.Elements(ns + "IncrementMilestone")
+            //        from result2 in root.Descendants()
+            //        where (string)result2.Parent.Attribute("name") == "Timeline"
+            //        //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+            //        //where result2.Attribute("name") != null
+            //        where (string)result.Attribute("date") == (string)result2.Attribute(ns2 + "id")
+            //        //where (string)result2.Attribute("date") != null
+            //        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+            //        select new Thing
+
+            //        {
+            //            type = "HappensInType",
+            //            id = (string)result.Attribute("base_InstanceSpecification") + "_t2",
+            //            name = "$none$",
+            //            value = (string)result2.Attribute("value"),
+            //            place1 = (string)result.Attribute("base_InstanceSpecification") + "_t1",
+            //            place2 = (string)result.Attribute("base_InstanceSpecification"),
+            //            foundation = "WholePartType",
+            //            value_type = "$period$"
+            //        };
+
+            //tuple_types = tuple_types.Concat(results.ToList());
+
+            //foreach (Thing thing in results)
+            //{
+            //    values = new List<Thing>();
+
+            //    values.Add(new Thing
+            //    {
+            //        type = "PeriodType",
+            //        id = thing.place2 + "_t1",
+            //        name = (string)thing.value,
+            //        value = "$none$",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "$none$"
+            //    });
+
+            //    things = things.Concat(values);
+
+            //    values = new List<Thing>();
+
+            //    values.Add(new Thing
+            //    {
+            //        type = "PeriodType",
+            //        id = thing.place2 + "_t1",
+            //        name = (string)thing.value,
+            //        value = "$none$",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "$none$"
+            //    });
+
+            //    values.Add(thing);
+
+            //    period_dic.Add(thing.place2, values);
+
+            //}
+
+            ////Project date
+
+            //results =
+            //        from result in root.Elements(ns + "Project")
+            //        from result2 in root.Descendants()
+            //        where (string)result2.Parent.Attribute("name") == "Timeline"
+            //        from result3 in root.Descendants()
+            //        where (string)result3.Parent.Attribute("name") == "Timeline"
+            //        //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+            //        //where result2.Attribute("name") != null
+            //        where (string)result.Attribute("startDate") == (string)result2.Attribute(ns2 + "id")
+            //        where (string)result.Attribute("endDate") == (string)result3.Attribute(ns2 + "id")
+
+            //        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+            //        select new Thing
+
+            //        {
+            //            type = "HappensInType",
+            //            id = (string)result.Attribute("base_InstanceSpecification") + "_t2",
+            //            name = "$none$",
+            //            value = (string)result2.Attribute("value") + " to " + (string)result3.Attribute("value"),
+            //            place1 = (string)result.Attribute("base_InstanceSpecification") + "_t1",
+            //            place2 = (string)result.Attribute("base_InstanceSpecification"),
+            //            foundation = "WholePartType",
+            //            value_type = "$period$"
+            //        };
+
+            //tuple_types = tuple_types.Concat(results.ToList());
+
+            //foreach (Thing thing in results)
+            //{
+            //    values = new List<Thing>();
+
+            //    values.Add(new Thing
+            //    {
+            //        type = "PeriodType",
+            //        id = thing.place2 + "_t1",
+            //        name = (string)thing.value,
+            //        value = "$none$",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "$none$"
+            //    });
+
+            //    things = things.Concat(values);
+
+            //    values = new List<Thing>();
+
+            //    values.Add(new Thing
+            //    {
+            //        type = "PeriodType",
+            //        id = thing.place2 + "_t1",
+            //        name = (string)thing.value,
+            //        value = "$none$",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "$none$"
+            //    });
+
+            //    values.Add(thing);
+
+            //    period_dic.Add(thing.place2, values);
+
+            //}
+
+            //SV-8 Date
 
             results =
-                    from result in root.Elements(ns + "IncrementMilestone")
+                    from result in root.Elements(ns + "CapabilityConfiguration")
                     from result2 in root.Descendants()
-                    where (string)result2.Parent.Attribute("name") == "Timeline"
                     //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
                     //where result2.Attribute("name") != null
-                    where (string)result.Attribute("date") == (string)result2.Attribute(ns2 + "id")
+                    where ((string)result.Attribute("milestone")) != null
+                    where ((string)result.Attribute("milestone")).Contains(" ")
+                    where ((string)result.Attribute("milestone")).Split(' ')[0] == (string)result2.Attribute(ns2 + "id")
+                    from result3 in root.Descendants()
+                    where ((string)result.Attribute("milestone")).Split(' ')[1] == (string)result3.Attribute(ns2 + "id")
                     //where (string)result2.Attribute("date") != null
                     //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
                     select new Thing
 
                     {
                         type = "HappensInType",
-                        id = (string)result.Attribute("base_InstanceSpecification") + "_t2",
+                        id = (string)result.Attribute("base_Class") + "_t2",
                         name = "$none$",
-                        value = (string)result2.Attribute("value"),
-                        place1 = (string)result.Attribute("base_InstanceSpecification") + "_t1",
-                        place2 = (string)result.Attribute("base_InstanceSpecification"),
-                        foundation = "WholePartType",
-                        value_type = "$period$"
-                    };
-
-            tuple_types = tuple_types.Concat(results.ToList());
-
-            foreach (Thing thing in results)
-            {
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "PeriodType",
-                    id = thing.place2 + "_t1",
-                    name = (string)thing.value,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-
-                things = things.Concat(values);
-
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "PeriodType",
-                    id = thing.place2 + "_t1",
-                    name = (string)thing.value,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-
-                values.Add(thing);
-
-                period_dic.Add(thing.place2, values);
-
-            }
-
-            //Project date
-
-            results =
-                    from result in root.Elements(ns + "Project")
-                    from result2 in root.Descendants()
-                    where (string)result2.Parent.Attribute("name") == "Timeline"
-                    from result3 in root.Descendants()
-                    where (string)result3.Parent.Attribute("name") == "Timeline"
-                    //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
-                    //where result2.Attribute("name") != null
-                    where (string)result.Attribute("startDate") == (string)result2.Attribute(ns2 + "id")
-                    where (string)result.Attribute("endDate") == (string)result3.Attribute(ns2 + "id")
-
-                    //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
-                    select new Thing
-
-                    {
-                        type = "HappensInType",
-                        id = (string)result.Attribute("base_InstanceSpecification") + "_t2",
-                        name = "$none$",
-                        value = (string)result2.Attribute("value") + " to " + (string)result3.Attribute("value"),
-                        place1 = (string)result.Attribute("base_InstanceSpecification") + "_t1",
-                        place2 = (string)result.Attribute("base_InstanceSpecification"),
+                        value = (string)result2.Attribute("name") + " to " + (string)result3.Attribute("name"),
+                        place1 = (string)result.Attribute("base_Class") + "_t1",
+                        place2 = (string)result.Attribute("base_Class"),
                         foundation = "WholePartType",
                         value_type = "$period$"
                     };
@@ -6153,28 +6223,29 @@ namespace NEAR
                     //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
                     where (string)result.Attribute(ns2 + "idref") == thing.id 
                     where ((string)result.Parent.Element("geometry").Value).Contains(";") == false
+                    
                     select new Location
                     {
                         id = (string)result.Parent.Attribute(ns2 + "id"),
-                        top_left_x = ((string)result.Parent.Element("geometry").Value).Split(',')[0],
-                        top_left_y = ((string)result.Parent.Element("geometry").Value).Split(',')[1],
-                        bottom_right_x = ((string)result.Parent.Element("geometry").Value).Split(',')[2],
-                        bottom_right_y = ((string)result.Parent.Element("geometry").Value).Split(',')[3],
+                        top_left_x = (string)result.Parent.Element("geometry"),//.Value).Split(',')[0],
+                        //top_left_y = ((string)result.Parent.Element("geometry").Value).Split(',')[1],
+                        //bottom_right_x = ((string)result.Parent.Element("geometry").Value).Split(',')[2],
+                        //bottom_right_y = ((string)result.Parent.Element("geometry").Value).Split(',')[3],
                         element_id = (string)result.Attribute(ns2 + "idref")
                     };
 
                 locations = locations.Concat(results_loc.ToList());
             }
 
-            //foreach (Location location in locations)
-            //{
-            //    string[] s = location.top_left_x.Split(',');
-            //    location.top_left_x = s[0];
-            //    location.top_left_y = s[1];
-            //    location.bottom_right_x = s[2];
-            //    location.bottom_right_y = s[3];
+            foreach (Location location in locations)
+            {
+                string[] s = location.top_left_x.Split(',');
+                location.top_left_x = s[0];
+                location.top_left_y = s[1];
+                location.bottom_right_x = s[2];
+                location.bottom_right_y = s[3];
 
-            //}
+            }
 
 
             foreach (Location location in locations)
@@ -6486,6 +6557,48 @@ namespace NEAR
 
             if (sorted_results.First().Count() > 0)
                 views.Add(new View { type = "CV-6", id = "_13", name = "NEAR CV-6", optional = optional_list, mandatory = mandatory_list });
+
+            //SV-8
+
+            mandatory_list = new List<Thing>();
+            values = new List<Thing>();
+            optional_list = new List<Thing>();
+            sorted_results = new List<List<Thing>>();
+
+            //values_dic = things_dic.Where(x => x.Value.type == "Activity").ToDictionary(p => p.Key, p => p.Value);
+            //values_dic2 = things_dic.Where(x => x.Value.type == "Capability").ToDictionary(p => p.Key, p => p.Value);
+
+            //results = tuple_types.Where(x => x.type == "activityPartOfCapability").Where(x => values_dic2.ContainsKey(x.place1)).Where(x => values_dic.ContainsKey(x.place2));
+
+            values_dic = tuple_types.Where(x => x.type == "HappensInType").ToDictionary(x => x.place2, x => x);
+
+            foreach (Thing thing in things.Where(x => x.type == "System"))
+            {
+                if (values_dic.TryGetValue(thing.id, out value))
+                {
+                    //mandatory_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
+                    values.Add(new Thing { id = "_14", type = "SV-8", place2 = thing.id, value = thing.type, place1 = "_13" });
+                    values.Add(new Thing { id = "_14", type = "SV-8", place2 = value.place1, value = "PeriodType", place1 = "_13" });
+                }
+            }
+
+            sorted_results.Add(values);
+
+            sorted_results_new = new List<List<Thing>>();
+            Add_Tuples(ref sorted_results, ref sorted_results_new, tuples.ToList(), ref errors_list);
+            Add_Tuples(ref sorted_results, ref sorted_results_new, tuple_types.ToList(), ref errors_list);
+            sorted_results = sorted_results_new;
+
+            foreach (Thing thing in sorted_results.First())
+            {
+                if ((string)thing.value == "System")
+                    mandatory_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+                else
+                    optional_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+            }
+
+            if (sorted_results.First().Count() > 0)
+                views.Add(new View { type = "SV-8", id = "_14", name = "NEAR SV-8", optional = optional_list, mandatory = mandatory_list });
 
             //Views
 
