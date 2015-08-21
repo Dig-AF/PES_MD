@@ -6570,9 +6570,14 @@ namespace NEAR
                     where (string)result.Attribute("instance") == (string)result3.Attribute("base_InstanceSpecification")
                     from result4 in root.Descendants()
                     where (string)result4.Attribute(ns2+"id") == (string)result3.Attribute("date")
+                    from result5 in root.Descendants().Elements("supplier")
+                    where (string)result5.Attribute(ns2 + "idref") == (string)result2.Attribute("base_InstanceSpecification")
+                    from result6 in root.Descendants().Elements("client")
+                    where (string)result5.Parent.Attribute(ns2 + "id") == (string)result6.Parent.Attribute(ns2 + "id")
+
                     select new Thing
                     {
-                        type = "temp",
+                        type = (string)result6.Attribute(ns2 + "idref"),
                         id = (string)result3.Attribute("date"),
                         name = "$none$",
                         value = (string)result4.Attribute("value"),
@@ -6580,6 +6585,34 @@ namespace NEAR
                         place2 = (string)result.Attribute("instance"),
                         value_type = "$date$"
                     };
+
+                values = results.ToList();
+
+            //SV-6
+
+                results =
+                        from result in root.Descendants().Elements("conveyed")
+                        from result2 in root.Descendants().Elements("informationSource")
+                        where (string)result.Parent.Attribute(ns2 + "id") == (string)result2.Parent.Attribute(ns2 + "id")
+                        from result3 in root.Descendants().Elements("informationTarget")
+                        where (string)result3.Parent.Attribute(ns2 + "id") == (string)result.Parent.Attribute(ns2 + "id")
+                        from result4 in root.Descendants().Elements("realizingActivityEdge")
+                        where (string)result4.Parent.Attribute(ns2 + "id") == (string)result.Parent.Attribute(ns2 + "id")
+                        from result5 in root.Descendants().Elements("outgoing")
+                        where (string)result5.Attribute(ns2 + "idref") == (string)result4.Attribute(ns2 + "idref")
+                        from result6 in root.Descendants().Elements("incoming")
+                        where (string)result6.Attribute(ns2 + "idref") == (string)result4.Attribute(ns2 + "idref")
+
+                        select new Thing
+                        {
+                            type = (string)result.Attribute(ns2 + "idref"),
+                            id = (string)result2.Attribute(ns2 + "idref"),
+                            name = "$none$",
+                            value = (string)result3.Attribute(ns2 + "idref"),
+                            place1 = (string)result5.Parent.Attribute("behavior"),
+                            place2 = (string)result6.Parent.Attribute("behavior"),
+                            value_type = "$performer$"
+                        };
 
                 values = results.ToList();
 
