@@ -128,11 +128,13 @@ namespace NEAR
                             new string[] { "Data", "LogicalDataModel", "IndividualType", "base_Package" },
                             new string[] { "Data", "EntityItem", "IndividualType", "base_Class" },
                             new string[] { "Data", "EntityAttribute", "IndividualType", "base_Property" },
+                            new string[] { "Activity", "IncrementMilestone", "Individual", "base_InstanceSpecification" },
                             };
 
         static string[][] MD_Relationship_Lookup = new string[][] {
                             // DM2 Class, UPDM_Profile Element
                             new string[] { "activityPartOfCapability", "ActivityPartOfCapability", "WholePartType" },
+                            new string[] { "activityPerformedByPerformer", "ActivityPerformedByPerformer", "CoupleType" },
                             };
 
         static string[][] MD_View_Lookup = new string[][] { 
@@ -6557,6 +6559,29 @@ namespace NEAR
 
             if (sorted_results.First().Count() > 0)
                 views.Add(new View { type = "CV-6", id = "_13", name = "NEAR CV-6", optional = optional_list, mandatory = mandatory_list });
+
+            //PV-2
+
+                results =
+                    from result in root.Descendants().Elements("value")
+                    from result2 in root.Elements(ns+"Project")
+                    where (string)result.Parent.Parent.Attribute(ns2 + "id") == (string)result2.Attribute("base_InstanceSpecification")
+                    from result3 in root.Descendants()
+                    where (string)result.Attribute("instance") == (string)result3.Attribute("base_InstanceSpecification")
+                    from result4 in root.Descendants()
+                    where (string)result4.Attribute(ns2+"id") == (string)result3.Attribute("date")
+                    select new Thing
+                    {
+                        type = "temp",
+                        id = (string)result3.Attribute("date"),
+                        name = "$none$",
+                        value = (string)result4.Attribute("value"),
+                        place1 = (string)result2.Attribute("base_InstanceSpecification"),
+                        place2 = (string)result.Attribute("instance"),
+                        value_type = "$date$"
+                    };
+
+                values = results.ToList();
 
             //SV-8
 

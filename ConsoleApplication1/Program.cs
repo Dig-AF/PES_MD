@@ -17,7 +17,7 @@ namespace ConsoleApplication
             string errors = "";
             bool test;
 
-            input = @"C:\GitHub\test\NEAR_TEST_DATA_2015-08-10.xml";
+            input = @"C:\GitHub\test\MD_TEST_DATA_Sprint13_2015-08-20.xml";
             test = NEAR.PES_MD.MD2PES(File.ReadAllBytes(input),ref output, ref errors);
             if (!test)
                 System.IO.File.WriteAllText(@"C:\GitHub\test\error.csv", errors);
