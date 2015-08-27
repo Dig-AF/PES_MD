@@ -110,6 +110,7 @@ namespace NEAR
         static string[][] MD_Element_Lookup = new string[][] {
                             // DM2 Class, UPDM_Profile Element
                             new string[] { "System", "System", "IndividualType", "base_Class" },
+                            new string[] { "Service", "ServiceAccess", "IndividualType", "base_Class" },
                             new string[] { "Activity", "OperationalActivity", "IndividualType", "base_Activity" },
                             new string[] { "Performer", "Performer", "IndividualType", "base_Class" },
                             new string[] { "Activity", "Function", "IndividualType", "base_Activity" },
@@ -129,12 +130,13 @@ namespace NEAR
                             new string[] { "Data", "EntityItem", "IndividualType", "base_Class" },
                             new string[] { "Data", "EntityAttribute", "IndividualType", "base_Property" },
                             new string[] { "Activity", "IncrementMilestone", "Individual", "base_InstanceSpecification" },
+                            new string[] { "Activity", "OperationalActivityAction", "Individual", "base_CallBehaviorAction" },
                             };
 
         static string[][] MD_Relationship_Lookup = new string[][] {
                             // DM2 Class, UPDM_Profile Element
-                            new string[] { "activityPartOfCapability", "ActivityPartOfCapability", "WholePartType" },
-                            new string[] { "activityPerformedByPerformer", "ActivityPerformedByPerformer", "CoupleType" },
+                            new string[] { "activityPartOfCapability", "ActivityPartOfCapability", "WholePartType","1" },
+                            new string[] { "activityPerformedByPerformer", "ActivityPerformedByPerformer", "CoupleType","2" },
                             };
 
         static string[][] MD_View_Lookup = new string[][] { 
@@ -237,6 +239,14 @@ namespace NEAR
                             new string[] {"Activity", "CV-6"},
                             new string[] {"activityPartOfCapability", "CV-6"},
 
+                            new string[] {"Capability", "CV-3"},
+                            new string[] {"Activity", "CV-3"},
+                            new string[] {"activityPartOfCapability", "CV-3"},
+                            new string[] {"ProjectType", "CV-3"},
+                            new string[] {"desiredResourceStateOfCapability", "CV-3"},
+                            new string[] {"activityPartOfProjectType", "CV-3"},
+
+
                             new string[] {"Activity", "OV-6c"},
                             new string[] {"Activity", "SV-1"},
                             new string[] {"activityPerformedByPerformer", "SV-1"},
@@ -299,6 +309,7 @@ namespace NEAR
                             new string[] {"Activity", "PV-2"},
                             new string[] {"activityPartOfProjectType", "PV-2"},
                             new string[] {"ProjectType", "PV-2"},
+                            new string[] {"Project", "PV-2"},
                             new string[] {"Data", "DIV-2"},
                             new string[] {"Data", "DIV-3"},
                             new string[] {"DataType", "DIV-3"},
@@ -373,6 +384,28 @@ namespace NEAR
                             new string[] {"ServiceDescription", "CV-6"},
                             new string[] {"superSubtype", "CV-6"}, 
                             new string[] {"WholePartType", "CV-6"},
+
+                            new string[] {"activityPerformedByPerformer", "CV-3"},
+                            new string[] {"activityProducesResource", "CV-3"},
+                            new string[] {"activityConsumesResource", "CV-3"},
+                            new string[] {"BeforeAfterType", "CV-3"},
+                            new string[] {"Condition", "CV-3"},
+                            new string[] {"DomainInformation", "CV-3"},
+                            new string[] {"Information", "CV-3"},
+                            new string[] {"Location", "CV-3"},
+                            new string[] {"Performer", "CV-3"},
+                            new string[] {"PersonRole", "CV-3"},
+                            new string[] {"OrganizationType", "CV-3"},
+                            new string[] {"Resource", "CV-3"},
+                            new string[] {"Rule", "CV-3"}, 
+                            new string[] {"System", "CV-3"},
+                            new string[] {"Service", "CV-3"},
+                            new string[] {"ServiceDescription", "CV-3"},
+                            new string[] {"superSubtype", "CV-3"}, 
+                            new string[] {"WholePartType", "CV-3"},
+                            new string[] {"HappensInType", "CV-3"},
+                            new string[] {"PeriodType", "CV-3"},
+                            new string[] {"Project", "CV-3"},
 
                             new string[] {"Information", "OV-1"},
                             new string[] {"Location", "OV-1"},
@@ -640,6 +673,7 @@ namespace NEAR
                             new string[] {"Rule", "PV-1"}, 
                             new string[] {"superSubtype", "PV-1"}, 
                             new string[] {"WholePartType", "PV-1"}, 
+                            new string[] {"typeInstance", "PV-2"},
                             new string[] {"PeriodType", "PV-2"},
                             new string[] {"HappensInType", "PV-2"},
                             new string[] {"Condition", "PV-2"},
@@ -5819,7 +5853,9 @@ namespace NEAR
             Dictionary<string, List<Thing>> needline_mandatory_views = new Dictionary<string, List<Thing>>();
             Dictionary<string, List<Thing>> needline_optional_views = new Dictionary<string, List<Thing>>();
             Dictionary<string, Thing> things_dic;
-            Dictionary<string, List<Thing>> results_dic;
+            Dictionary<string, List<Thing>> div2_dic = new Dictionary<string, List<Thing>>();
+            Dictionary<string, List<Thing>> div2_dic2 = new Dictionary<string, List<Thing>>();
+
             Dictionary<string, Thing> values_dic;
             Dictionary<string, Thing> values_dic2;
             XElement root = XElement.Load(new MemoryStream(input));
@@ -5827,14 +5863,19 @@ namespace NEAR
             List<List<Thing>> sorted_results_new = new List<List<Thing>>();
             bool representation_scheme = false;
             List<Thing> values = new List<Thing>();
+            List<Thing> values2 = new List<Thing>();
             XNamespace ns = "http://www.omg.org/spec/UPDM/20121004/UPDM-Profile";
             XNamespace ns2 = "http://www.omg.org/spec/XMI/20131001";
             XNamespace ns3 = "http://schema.omg.org/spec/UML/2.2";
             Thing value;
+            Thing value2;
             List<string> errors_list = new List<string>();
             bool test = true;
             List<List<Thing>> view_holder = new List<List<Thing>>();
             Dictionary<string, List<Thing>> period_dic = new Dictionary<string, List<Thing>>();
+            int count=0;
+            int count2 = 0;
+            bool add = false;
 
             //Regular Things
 
@@ -5863,37 +5904,121 @@ namespace NEAR
                     };
 
                 things = things.Concat(results.ToList());
+                
             }
 
             //things = things.GroupBy(x => x.id).Select(grp => grp.First());
+
+            //DIV-2 Parts
+
+            results =
+                    from result in root.Elements(ns + "EntityItem")
+                    //from result3 in root.Elements(ns + "View")
+                    //from result4 in root.Descendants()
+                    from result2 in root.Descendants().Elements("ownedAttribute")
+                    //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+                    //where result2.Attribute("name") != null
+                    where (string)result.Attribute("base_Class") == (string)result2.Parent.Attribute(ns2 + "id")
+                    //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                    select new Thing
+                    {
+                        type = "Data",
+                        id = (string)result2.Attribute(ns2 + "id"),// + "///" +*/ (string)result.LastAttribute,//Attribute("base_Operation"),
+                        name = (string)result2.Attribute("name"),//*/ (string)result.FirstAttribute,//Attribute(ns2 + "id"),
+                        value = "$none$",
+                        place1 = (string)result2.Attribute(ns2 + "id"),
+                        place2 = (string)result.Attribute("base_Class"),
+                        foundation = "Individual_Type",
+                        value_type = "$none$"
+                    };
+
+            //things = things.Concat(results.ToList());
+            div2_dic = results.GroupBy(x => x.place2).ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
+
+            foreach (Thing thing in results)
+            {
+                value = new Thing
+                {
+                    type = "WholePartType",
+                    id = thing.place1 + thing.place2,
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = thing.place2,
+                    place2 = thing.place1,
+                    foundation = "WholePartType",
+                    value_type = "$none$"
+                };
+                tuple_types = tuple_types.Concat(new List<Thing>(){value}
+                );
+                values = new List<Thing>();
+                if (div2_dic2.TryGetValue(thing.place2, out values))
+                {
+                    values.Add(value);
+                    div2_dic2.Remove(thing.place2);
+                    div2_dic2.Add(thing.place2, values);
+                }
+                else
+                    div2_dic2.Add(thing.place2, new List<Thing>() { value });
+
+            }
 
             //Regular Relationships
 
             foreach (string[] current_lookup in MD_Relationship_Lookup)
             {
 
-                results =
-                    from result in root.Elements(ns + current_lookup[1])
-                    //from result3 in root.Elements(ns + "View")
-                    //from result4 in root.Descendants()
-                    from result2 in root.Descendants()
-                    //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
-                    //where result2.Attribute("name") != null
-                    where (string)result.LastAttribute == (string)result2.Attribute(ns2 + "id")
-                    //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
-                    select new Thing
-                    {
-                        type = current_lookup[0],
-                        id = (string)result.LastAttribute,
-                        name = "$none$",
-                        value = "$none$",
-                        place2 = (string)result2.Element("client").Attribute(ns2 + "idref"),
-                        place1 = (string)result2.Element("supplier").Attribute(ns2 + "idref"),
-                        foundation = current_lookup[2],
-                        value_type = "$none$"
-                    };
+                if (current_lookup[2] == "1")
+                {
 
-                tuple_types = tuple_types.Concat(results.ToList());
+                    results =
+                        from result in root.Elements(ns + current_lookup[1])
+                        //from result3 in root.Elements(ns + "View")
+                        //from result4 in root.Descendants()
+                        from result2 in root.Descendants()
+                        //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+                        //where result2.Attribute("name") != null
+                        where (string)result.LastAttribute == (string)result2.Attribute(ns2 + "id")
+                        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                        select new Thing
+                        {
+                            type = current_lookup[0],
+                            id = (string)result.LastAttribute,
+                            name = "$none$",
+                            value = "$none$",
+                            place2 = (string)result2.Element("client").Attribute(ns2 + "idref"),
+                            place1 = (string)result2.Element("supplier").Attribute(ns2 + "idref"),
+                            foundation = current_lookup[2],
+                            value_type = "$none$"
+                        };
+
+                    tuple_types = tuple_types.Concat(results.ToList());
+                }
+                else
+                {
+                    results =
+                        from result in root.Elements(ns + current_lookup[1])
+                        //from result3 in root.Elements(ns + "View")
+                        //from result4 in root.Descendants()
+                        from result2 in root.Descendants()
+                        //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+                        //where result2.Attribute("name") != null
+                        where (string)result.LastAttribute == (string)result2.Attribute(ns2 + "id")
+                        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                        select new Thing
+                        {
+                            type = current_lookup[0],
+                            id = (string)result.LastAttribute,
+                            name = "$none$",
+                            value = "$none$",
+                            place1 = (string)result2.Element("client").Attribute(ns2 + "idref"),
+                            place2 = (string)result2.Element("supplier").Attribute(ns2 + "idref"),
+                            foundation = current_lookup[2],
+                            value_type = "$none$"
+                        };
+
+                    tuple_types = tuple_types.Concat(results.ToList());
+                }
+
             }
 
             //SuperSubtupe
@@ -6562,18 +6687,122 @@ namespace NEAR
 
             //PV-2
 
+            mandatory_list = new List<Thing>();
+            values = new List<Thing>();
+            values2 = new List<Thing>();
+            optional_list = new List<Thing>();
+            sorted_results = new List<List<Thing>>();
+
                 results =
-                    from result in root.Descendants().Elements("value")
+                    //from result in root.Descendants().Elements("value")
                     from result2 in root.Elements(ns+"Project")
-                    where (string)result.Parent.Parent.Attribute(ns2 + "id") == (string)result2.Attribute("base_InstanceSpecification")
-                    from result3 in root.Descendants()
-                    where (string)result.Attribute("instance") == (string)result3.Attribute("base_InstanceSpecification")
-                    from result4 in root.Descendants()
-                    where (string)result4.Attribute(ns2+"id") == (string)result3.Attribute("date")
+                    //where (string)result.Parent.Parent.Attribute(ns2 + "id") == (string)result2.Attribute("base_InstanceSpecification")
+                    //from result3 in root.Descendants()
+                    //where (string)result.Attribute("instance") == (string)result3.Attribute("base_InstanceSpecification")
+                    //from result4 in root.Descendants()
+                    //where (string)result4.Attribute(ns2+"id") == (string)result3.Attribute("date")
                     from result5 in root.Descendants().Elements("supplier")
                     where (string)result5.Attribute(ns2 + "idref") == (string)result2.Attribute("base_InstanceSpecification")
                     from result6 in root.Descendants().Elements("client")
                     where (string)result5.Parent.Attribute(ns2 + "id") == (string)result6.Parent.Attribute(ns2 + "id")
+                    from result7 in root.Elements(ns + "ProjectType")
+                    where (string)result6.Attribute(ns2 + "idref") == (string)result7.Attribute("base_Class")
+
+                    select new Thing
+                    {
+                        type = (string)result6.Attribute(ns2 + "idref"),
+                        //id = (string)result3.Attribute("date"),
+                        name = "$none$",
+                        //value = (string)result4.Attribute("value"),
+                        place1 = (string)result2.Attribute("base_InstanceSpecification"),
+                        //place2 = (string)result.Attribute("instance"),
+                        value_type = "$date$"
+                    };
+
+                foreach (Thing thing in results)
+                {
+                    //things = things.Concat(new List<Thing>(){
+                    //    new Thing
+                    //    {
+                    //        type = "PeriodType",
+                    //        id = thing.place2 + thing.type + "_t1",
+                    //        name = (string)thing.value,
+                    //        value = "$none$",
+                    //        place1 = "$none$",
+                    //        place2 = "$none$",
+                    //        foundation = "IndividualType",
+                    //        value_type = "$none$"
+                    //    }
+                    //});
+
+                    //tuple_types = tuple_types.Concat(new List<Thing>(){
+                    //    new Thing
+                    //    {
+                    //        type = "HappensInType",
+                    //        id = thing.place2 + thing.type + "_t2",
+                    //        name = "$none$",
+                    //        value = (string)thing.value,
+                    //        place1 = thing.place2 + thing.type + "_t1",
+                    //        place2 = thing.place2,
+                    //        foundation = "WholePartType",
+                    //        value_type = "$period$"
+                    //    }
+                    //});
+
+                    tuple_types = tuple_types.Concat(new List<Thing>(){
+                        new Thing
+                        {
+                            type = "typeInstance",
+                            id = thing.place1 + thing.type + "_ti1",
+                            name = "$none$",
+                            value = "$none$",
+                            place1 = thing.type,
+                            place2 = thing.place1,
+                            foundation = "typeInstance",
+                            value_type = "$none$"
+                        }
+                    });
+
+                    //tuple_types = tuple_types.Concat(new List<Thing>(){
+                    //    new Thing
+                    //    {
+                    //        type = "activityPartOfProjectType",
+                    //        id = thing.place2 + thing.type + "_apt1",
+                    //        name = "$none$",
+                    //        value = "$none$",
+                    //        place1 = thing.type,
+                    //        place2 = thing.place2,
+                    //        foundation = "typeInstance",
+                    //        value_type = "$none$"
+                    //    }
+                   // });
+
+                    values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place1, value = "Project", place1 = "_14" });
+                    values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.type, value = "ProjectType", place1 = "_14" });
+                    //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place2, value = "Activity", place1 = "_14" });
+                    //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place2 + thing.type + "_t2", value = "HappensInType", place1 = "_14" });
+                    //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place2 + thing.type + "_t1", value = "PeriodType", place1 = "_14" });
+                    //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place1 + thing.type + "_ti1", value = "typeInstance", place1 = "_14" });
+                    //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place2 + thing.type + "_apt1", value = "activityPartOfProjectType", place1 = "_14" });
+
+                }
+
+            //
+
+                results =
+                    from result in root.Descendants().Elements("value")
+                    from result2 in root.Elements(ns + "Project")
+                    where (string)result.Parent.Parent.Attribute(ns2 + "id") == (string)result2.Attribute("base_InstanceSpecification")
+                    from result3 in root.Descendants()
+                    where (string)result.Attribute("instance") == (string)result3.Attribute("base_InstanceSpecification")
+                    from result4 in root.Descendants()
+                    where (string)result4.Attribute(ns2 + "id") == (string)result3.Attribute("date")
+                    from result5 in root.Descendants().Elements("supplier")
+                    where (string)result5.Attribute(ns2 + "idref") == (string)result2.Attribute("base_InstanceSpecification")
+                    from result6 in root.Descendants().Elements("client")
+                    where (string)result5.Parent.Attribute(ns2 + "id") == (string)result6.Parent.Attribute(ns2 + "id")
+                    from result7 in root.Elements(ns + "ProjectType")
+                    where (string)result6.Attribute(ns2 + "idref") == (string)result7.Attribute("base_Class")
 
                     select new Thing
                     {
@@ -6586,16 +6815,108 @@ namespace NEAR
                         value_type = "$date$"
                     };
 
-                values = results.ToList();
+                foreach (Thing thing in results)
+                {
+                    things = things.Concat(new List<Thing>(){
+                        new Thing
+                        {
+                            type = "PeriodType",
+                            id = thing.place2 + thing.type + "_t1",
+                            name = (string)thing.value,
+                            value = "$none$",
+                            place1 = "$none$",
+                            place2 = "$none$",
+                            foundation = "IndividualType",
+                            value_type = "$none$"
+                        }
+                    });
+
+                    tuple_types = tuple_types.Concat(new List<Thing>(){
+                        new Thing
+                        {
+                            type = "HappensInType",
+                            id = thing.place2 + thing.type + "_t2",
+                            name = "$none$",
+                            value = (string)thing.value,
+                            place1 = thing.place2 + thing.type + "_t1",
+                            place2 = thing.place2,
+                            foundation = "WholePartType",
+                            value_type = "$period$"
+                        }
+                    });
+
+                    //tuple_types = tuple_types.Concat(new List<Thing>(){
+                    //    new Thing
+                    //    {
+                    //        type = "typeInstance",
+                    //        id = thing.place1 + thing.type + "_ti1",
+                    //        name = "$none$",
+                    //        value = "$none$",
+                    //        place1 = thing.type,
+                    //        place2 = thing.place1,
+                    //        foundation = "typeInstance",
+                    //        value_type = "$none$"
+                    //    }
+                    //});
+
+                    tuple_types = tuple_types.Concat(new List<Thing>(){
+                        new Thing
+                        {
+                            type = "activityPartOfProjectType",
+                            id = thing.place2 + thing.type + "_apt1",
+                            name = "$none$",
+                            value = "$none$",
+                            place1 = thing.type,
+                            place2 = thing.place2,
+                            foundation = "WholePartType",
+                            value_type = "$none$"
+                        }
+                    });
+
+                    //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place1, value = "Project", place1 = "_14" });
+                    //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.type, value = "ProjectType", place1 = "_14" });
+                    values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place2, value = "Activity", place1 = "_14" });
+                    //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place2 + thing.type + "_t2", value = "HappensInType", place1 = "_14" });
+                    values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place2 + thing.type + "_t1", value = "PeriodType", place1 = "_14" });
+                    //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place1 + thing.type + "_ti1", value = "typeInstance", place1 = "_14" });
+                    //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place2 + thing.type + "_apt1", value = "activityPartOfProjectType", place1 = "_14" });
+
+                }
+
+            //
+                sorted_results.Add(values);
+
+                sorted_results_new = new List<List<Thing>>();
+                Add_Tuples(ref sorted_results, ref sorted_results_new, tuples.ToList(), ref errors_list);
+                Add_Tuples(ref sorted_results, ref sorted_results_new, tuple_types.ToList(), ref errors_list);
+                sorted_results = sorted_results_new;
+
+                foreach (Thing thing in sorted_results.First())
+                {
+                    if ((string)thing.value == "Activity" || (string)thing.value == "Project" || (string)thing.value == "activityPartOfProjectType" || (string)thing.value == "ProjectType")
+                        mandatory_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+                    else
+                        optional_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+                }
+
+                if (sorted_results.First().Count() > 0)
+                    views.Add(new View { type = "PV-2", id = "_14", name = "NEAR PV-2", optional = optional_list, mandatory = mandatory_list });
 
             //SV-6
 
+                mandatory_list = new List<Thing>();
+                values = new List<Thing>();
+                optional_list = new List<Thing>();
+                sorted_results = new List<List<Thing>>();
+
                 results =
                         from result in root.Descendants().Elements("conveyed")
+                        //
                         from result2 in root.Descendants().Elements("informationSource")
                         where (string)result.Parent.Attribute(ns2 + "id") == (string)result2.Parent.Attribute(ns2 + "id")
                         from result3 in root.Descendants().Elements("informationTarget")
                         where (string)result3.Parent.Attribute(ns2 + "id") == (string)result.Parent.Attribute(ns2 + "id")
+                        //
                         from result4 in root.Descendants().Elements("realizingActivityEdge")
                         where (string)result4.Parent.Attribute(ns2 + "id") == (string)result.Parent.Attribute(ns2 + "id")
                         from result5 in root.Descendants().Elements("outgoing")
@@ -6614,7 +6935,515 @@ namespace NEAR
                             value_type = "$performer$"
                         };
 
-                values = results.ToList();
+                foreach (Thing thing in results)
+                {
+                    tuple_types = tuple_types.Concat(new List<Thing>(){
+                        new Thing
+                        {
+                            type = "activityProducesResource",
+                            id = thing.id + (string)thing.value + "_1",
+                            name = thing.name,
+                            value = "$none$",
+                            place1 = thing.place1,
+                            place2 = thing.type + "_d1",
+                            foundation = "CoupleType",
+                            value_type = "$none$"
+                        }
+                    });
+
+                    tuple_types = tuple_types.Concat(new List<Thing>(){
+                        new Thing
+                        {
+                            type = "activityConsumesResource",
+                            id = thing.id + (string)thing.value + "_2",
+                            name = thing.name,
+                            value = "$none$",
+                            place1 = thing.type + "_d1",
+                            place2 = thing.place2,
+                            foundation = "CoupleType",
+                            value_type = "$none$"
+                        }
+                    });
+
+                    if (!things_dic.TryGetValue(thing.type + "_d1", out value2))
+                        if (things_dic.TryGetValue(thing.type, out value))
+                        {
+
+                        things = things.Concat(new List<Thing>(){
+                        new Thing
+                            {
+                                type = "Data",
+                                id = value.id + "_d1",
+                                name = value.name,
+                                value = "$none$",
+                                place1 = "$none$",
+                                place2 = "$none$",
+                                foundation = "IndividualType",
+                                value_type = "$none$"
+                            }
+                        });
+
+                        things_dic.Add(value.id + "_d1", new Thing
+                            {
+                                type = "Data",
+                                id = value.id + "_d1",
+                                name = value.name,
+                                value = "$none$",
+                                place1 = "$none$",
+                                place2 = "$none$",
+                                foundation = "IndividualType",
+                                value_type = "$none$"
+                            });
+                    }
+
+                }
+
+                values_dic2 = things_dic.Where(x => x.Value.type == "Data").ToDictionary(p => p.Key, p => p.Value);
+
+                results = tuple_types.Where(x => x.type == "activityConsumesResource").Where(x => values_dic2.ContainsKey(x.place1));
+                values_dic = tuple_types.Where(x => x.type == "activityProducesResource").GroupBy(x => x.place2).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
+
+                foreach (Thing rela in results)
+                {
+                    if (values_dic.TryGetValue(rela.place1, out value))
+                    {
+                        values.Add(rela);
+                        values.Add(value);
+                    }
+
+                }
+
+                count = 0;
+                count2 = values.Count();
+
+                //var duplicateKeys = app2.GroupBy(x => x.place2)
+                //            .Where(group => group.Count() > 1)
+                //            .Select(group => group.Key);
+
+                //List<string> test = duplicateKeys.ToList();
+
+                values_dic2 = tuple_types.Where(x => x.type == "activityPerformedByPerformer").Where(x => Allowed_Element("SV-6", x.place1, ref things_dic)).GroupBy(x => x.place2).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
+
+                while (count < count2)
+                {
+                    add = false;
+
+                    foreach (Thing thing in values)
+                    {
+                        if (values_dic2.TryGetValue(values[count].place2, out value))
+                            if (values_dic2.TryGetValue(values[count + 1].place1, out value2))
+                            {
+                                add = true;
+                                values.Add(value);
+                                values.Add(value2);
+                                break;
+                            }
+                    }
+
+
+                    if (add == true)
+                    {
+                        count = count + 2;
+                    }
+                    else
+                    {
+                        values.RemoveAt(count);
+                        values.RemoveAt(count);
+                        count2 = count2 - 2;
+                    }
+                }
+
+                sorted_results.Add(Add_Places(things_dic, values));
+
+                foreach (Thing thing in sorted_results.First())
+                {
+                    temp = Find_Mandatory_Optional(thing.type, "SV-6", "SV-6", "_15", ref errors_list);
+                    if (temp == "Mandatory")
+                        mandatory_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
+                    if (temp == "Optional")
+                        optional_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
+                }
+
+                if (sorted_results.First().Count() > 0)
+                    views.Add(new View { type = "SV-6", id = "_15", name = "NEAR SV-6", optional = optional_list, mandatory = mandatory_list });
+
+            //CV-3
+
+                mandatory_list = new List<Thing>();
+                values = new List<Thing>();
+                optional_list = new List<Thing>();
+                sorted_results = new List<List<Thing>>();
+
+                results =
+                        from result in root.Elements(ns + "Capability")
+                        from result2 in root.Descendants().Elements("supplier")
+                        where (string)result.Attribute("base_Class") == (string)result2.Attribute(ns2 + "idref")
+                        from result3 in root.Descendants().Elements("client")
+                        where (string)result3.Parent.Attribute(ns2 + "id") == (string)result2.Parent.Attribute(ns2 + "id")
+                        from result4 in root.Elements(ns + "OperationalActivity")
+                        where (string)result4.Attribute("base_Activity") == (string)result3.Attribute(ns2 + "idref")
+                        from result5 in root.Elements(ns + "Project")
+                        from result6 in root.Descendants().Elements("supplier")
+                        where (string)result5.Attribute("base_InstanceSpecification") == (string)result6.Attribute(ns2 + "idref")
+                        from result7 in root.Descendants().Elements("client")
+                        where (string)result6.Parent.Attribute(ns2 + "id") == (string)result7.Parent.Attribute(ns2 + "id")
+                        where (string)result4.Attribute("base_Activity") == (string)result7.Attribute(ns2 + "idref")
+
+                        from result8 in root.Elements(ns + "ProjectType")
+                        from result9 in root.Descendants().Elements("client")
+                        where (string)result8.Attribute("base_Class") == (string)result9.Attribute(ns2 + "idref")
+                        from result10 in root.Descendants().Elements("supplier")
+                        where (string)result9.Parent.Attribute(ns2 + "id") == (string)result10.Parent.Attribute(ns2 + "id")
+                        where (string)result5.Attribute("base_InstanceSpecification") == (string)result10.Attribute(ns2 + "idref")
+
+                        //from result11 in root.Descendants()
+                        //where (string)result5.Attribute("startDate") == (string)result11.Attribute(ns2 + "id")
+                        //from result12 in root.Descendants()
+                        //where (string)result5.Attribute("startDate") == (string)result12.Attribute(ns2 + "id")
+
+
+                        select new Thing
+                        {
+                            type = (string)result8.Attribute("base_Class"),
+                            id = (string)result5.Attribute("base_InstanceSpecification"),
+                            name = "$none$",
+                            //value = (string)result11.Attribute("value") + " to " + (string)result12.Attribute("value"),
+                            place1 = (string)result.Attribute("base_Class"),
+                            place2 = (string)result4.Attribute("base_Activity"),
+                            value_type = "$date$"
+                        };
+
+                foreach (Thing thing in results)
+                {
+                    tuple_types = tuple_types.Concat(new List<Thing>(){
+                        new Thing
+                        {
+                            type = "activityPartOfProjectType",
+                            id = thing.place2 + thing.type + "_apt1",
+                            name = "$none$",
+                            value = "$none$",
+                            place1 = thing.type,
+                            place2 = thing.place2,
+                            foundation = "WholePartType",
+                            value_type = "$none$"
+                        }
+                    });
+
+                    //things = things.Concat(new List<Thing>(){
+                    //    new Thing
+                    //    {
+                    //        type = "PeriodType",
+                    //        id = thing.id + thing.type + "_t1",
+                    //        name = (string)thing.value,
+                    //        value = "$none$",
+                    //        place1 = "$none$",
+                    //        place2 = "$none$",
+                    //        foundation = "IndividualType",
+                    //        value_type = "$none$"
+                    //    }
+                    //});
+
+                    //tuple_types = tuple_types.Concat(new List<Thing>(){
+                    //    new Thing
+                    //    {
+                    //        type = "HappensInType",
+                    //        id = thing.id + thing.type + "_t2",
+                    //        name = "$none$",
+                    //        value = (string)thing.value,
+                    //        place1 = thing.id + thing.type + "_t1",
+                    //        place2 = thing.id,
+                    //        foundation = "WholePartType",
+                    //        value_type = "$period$"
+                    //    }
+                    //});
+
+                    //tuple_types = tuple_types.Concat(new List<Thing>(){
+                    //    new Thing
+                    //    {
+                    //        type = "typeInstance",
+                    //        id = thing.place1 + thing.type + "_ti1",
+                    //        name = "$none$",
+                    //        value = "$none$",
+                    //        place1 = thing.type,
+                    //        place2 = thing.place1,
+                    //        foundation = "typeInstance",
+                    //        value_type = "$none$"
+                    //    }
+                    //});
+
+                    //tuple_types = tuple_types.Concat(new List<Thing>(){
+                    //    new Thing
+                    //    {
+                    //        type = "activityPartOfCapability",
+                    //        id = thing.place2 + thing.place1 + "_apc1",
+                    //        name = "$none$",
+                    //        value = "$none$",
+                    //        place1 = thing.place1,
+                    //        place2 = thing.place2,
+                    //        foundation = "WholePartType",
+                    //        value_type = "$none$"
+                    //    }
+                    //});
+
+                    values.Add(new Thing { id = "_17", type = "CV-3", place2 = thing.place1, value = "Capability", place1 = "_17" });
+                    values.Add(new Thing { id = "_17", type = "CV-3", place2 = thing.type, value = "ProjectType", place1 = "_17" });
+                    values.Add(new Thing { id = "_17", type = "CV-3", place2 = thing.place2, value = "Activity", place1 = "_17" });
+                    values.Add(new Thing { id = "_17", type = "CV-3", place2 = thing.id, value = "Project", place1 = "_17" });
+                    //values.Add(new Thing { id = "_17", type = "CV-3", place2 = thing.id + thing.type + "_t1", value = "PeriodType", place1 = "_17" });
+                    //values.Add(new Thing { id = "_14", type = "CV-3", place2 = thing.place2 + thing.place1 + "_apc1", value = "activityPartOfCapability", place1 = "_17" });
+                    //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place1 + thing.type + "_ti1", value = "typeInstance", place1 = "_14" });
+                    //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place2 + thing.type + "_apt1", value = "activityPartOfProjectType", place1 = "_14" });
+
+                }
+
+                results =
+                    //from result in root.Elements(ns + "Capability")
+                    //from result2 in root.Descendants().Elements("supplier")
+                    //where (string)result.Attribute("base_Class") == (string)result2.Attribute(ns2 + "idref")
+                    //from result3 in root.Descendants().Elements("client")
+                    //where (string)result3.Parent.Attribute(ns2 + "id") == (string)result2.Parent.Attribute(ns2 + "id")
+                    //from result4 in root.Elements(ns + "OperationalActivity")
+                    //where (string)result4.Attribute("base_Activity") == (string)result3.Attribute(ns2 + "idref")
+                    from result5 in root.Elements(ns + "Project")
+                    //from result6 in root.Descendants().Elements("supplier")
+                    //where (string)result5.Attribute("base_InstanceSpecification") == (string)result6.Attribute(ns2 + "idref")
+                    //from result7 in root.Descendants().Elements("client")
+                    //where (string)result6.Parent.Attribute(ns2 + "id") == (string)result7.Parent.Attribute(ns2 + "id")
+                    //where (string)result4.Attribute("base_Activity") == (string)result7.Attribute(ns2 + "idref")
+
+                    from result8 in root.Elements(ns + "ProjectType")
+                    from result9 in root.Descendants().Elements("client")
+                    where (string)result8.Attribute("base_Class") == (string)result9.Attribute(ns2 + "idref")
+                    from result10 in root.Descendants().Elements("supplier")
+                    where (string)result9.Parent.Attribute(ns2 + "id") == (string)result10.Parent.Attribute(ns2 + "id")
+                    where (string)result5.Attribute("base_InstanceSpecification") == (string)result10.Attribute(ns2 + "idref")
+
+                    from result11 in root.Descendants()
+                    where (string)result5.Attribute("startDate") == (string)result11.Attribute(ns2 + "id")
+                    from result12 in root.Descendants()
+                    where (string)result5.Attribute("startDate") == (string)result12.Attribute(ns2 + "id")
+
+
+            select new Thing
+            {
+                type = (string)result8.Attribute("base_Class"),
+                id = (string)result5.Attribute("base_InstanceSpecification"),
+                name = "$none$",
+                value = (string)result11.Attribute("value") + " to " + (string)result12.Attribute("value"),
+                //place1 = (string)result.Attribute("base_Class"),
+                //place2 = (string)result4.Attribute("base_Activity"),
+                value_type = "$date$"
+            };
+
+                foreach (Thing thing in results)
+                {
+                    //tuple_types = tuple_types.Concat(new List<Thing>(){
+                    //    new Thing
+                    //    {
+                    //        type = "activityPartOfProjectType",
+                    //        id = thing.place2 + thing.type + "_apt1",
+                    //        name = "$none$",
+                    //        value = "$none$",
+                    //        place1 = thing.type,
+                    //        place2 = thing.place2,
+                    //        foundation = "WholePartType",
+                    //        value_type = "$none$"
+                    //    }
+                    //});
+
+                    things = things.Concat(new List<Thing>(){
+                        new Thing
+                        {
+                            type = "PeriodType",
+                            id = thing.id + thing.type + "_t1",
+                            name = (string)thing.value,
+                            value = "$none$",
+                            place1 = "$none$",
+                            place2 = "$none$",
+                            foundation = "IndividualType",
+                            value_type = "$none$"
+                        }
+                    });
+
+                    tuple_types = tuple_types.Concat(new List<Thing>(){
+                        new Thing
+                        {
+                            type = "HappensInType",
+                            id = thing.id + thing.type + "_t2",
+                            name = "$none$",
+                            value = (string)thing.value,
+                            place1 = thing.id + thing.type + "_t1",
+                            place2 = thing.id,
+                            foundation = "WholePartType",
+                            value_type = "$period$"
+                        }
+                    });
+
+                    //tuple_types = tuple_types.Concat(new List<Thing>(){
+                    //    new Thing
+                    //    {
+                    //        type = "typeInstance",
+                    //        id = thing.place1 + thing.type + "_ti1",
+                    //        name = "$none$",
+                    //        value = "$none$",
+                    //        place1 = thing.type,
+                    //        place2 = thing.place1,
+                    //        foundation = "typeInstance",
+                    //        value_type = "$none$"
+                    //    }
+                    //});
+
+                    //tuple_types = tuple_types.Concat(new List<Thing>(){
+                    //    new Thing
+                    //    {
+                    //        type = "activityPartOfCapability",
+                    //        id = thing.place2 + thing.place1 + "_apc1",
+                    //        name = "$none$",
+                    //        value = "$none$",
+                    //        place1 = thing.place1,
+                    //        place2 = thing.place2,
+                    //        foundation = "WholePartType",
+                    //        value_type = "$none$"
+                    //    }
+                    //});
+
+                    //values.Add(new Thing { id = "_17", type = "CV-3", place2 = thing.place1, value = "Capability", place1 = "_17" });
+                    //values.Add(new Thing { id = "_17", type = "CV-3", place2 = thing.type, value = "ProjectType", place1 = "_17" });
+                    //values.Add(new Thing { id = "_17", type = "CV-3", place2 = thing.place2, value = "Activity", place1 = "_17" });
+                    //values.Add(new Thing { id = "_17", type = "CV-3", place2 = thing.id, value = "Project", place1 = "_17" });
+                    values.Add(new Thing { id = "_17", type = "CV-3", place2 = thing.id + thing.type + "_t1", value = "PeriodType", place1 = "_17" });
+                    //values.Add(new Thing { id = "_14", type = "CV-3", place2 = thing.place2 + thing.place1 + "_apc1", value = "activityPartOfCapability", place1 = "_17" });
+                    //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place1 + thing.type + "_ti1", value = "typeInstance", place1 = "_14" });
+                    //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place2 + thing.type + "_apt1", value = "activityPartOfProjectType", place1 = "_14" });
+
+                }
+
+                sorted_results.Add(values);
+
+                sorted_results_new = new List<List<Thing>>();
+                Add_Tuples(ref sorted_results, ref sorted_results_new, tuples.ToList(), ref errors_list);
+                Add_Tuples(ref sorted_results, ref sorted_results_new, tuple_types.ToList(), ref errors_list);
+                sorted_results = sorted_results_new;
+
+                foreach (Thing thing in sorted_results.First())
+                {
+                    if ((string)thing.value == "Activity" || (string)thing.value == "Capability" || (string)thing.value == "activityPartOfCapability"
+                        || (string)thing.value == "ProjectType" || (string)thing.value == "activityPartOfProjectType" || (string)thing.value == "desiredResourceStateOfCapability")
+                        mandatory_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+                    else
+                        optional_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+                }
+
+                if (sorted_results.First().Count() > 0)
+                    views.Add(new View { type = "CV-3", id = "_17", name = "NEAR CV-3", optional = optional_list, mandatory = mandatory_list });
+
+            //SvcV-6
+
+                mandatory_list = new List<Thing>();
+                values = new List<Thing>();
+                optional_list = new List<Thing>();
+                sorted_results = new List<List<Thing>>();
+
+                values_dic2 = things_dic.Where(x => x.Value.type == "Data").ToDictionary(p => p.Key, p => p.Value);
+
+                results = tuple_types.Where(x => x.type == "activityConsumesResource").Where(x => values_dic2.ContainsKey(x.place1));
+                values_dic = tuple_types.Where(x => x.type == "activityProducesResource").GroupBy(x => x.place2).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
+
+                foreach (Thing rela in results)
+                {
+                    if (values_dic.TryGetValue(rela.place1, out value))
+                    {
+                        values.Add(rela);
+                        values.Add(value);
+                    }
+
+                }
+
+                count = 0;
+                count2 = values.Count();
+
+                //var duplicateKeys = app2.GroupBy(x => x.place2)
+                //            .Where(group => group.Count() > 1)
+                //            .Select(group => group.Key);
+
+                //List<string> test = duplicateKeys.ToList();
+
+                values_dic2 = tuple_types.Where(x => x.type == "activityPerformedByPerformer").Where(x => Allowed_Element("SvcV-6", x.place1, ref things_dic)).GroupBy(x => x.place2).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
+
+                while (count < count2)
+                {
+                    add = false;
+
+                    foreach (Thing thing in values)
+                    {
+                        if (values_dic2.TryGetValue(values[count].place2, out value))
+                            if (values_dic2.TryGetValue(values[count + 1].place1, out value2))
+                            {
+                                add = true;
+                                values.Add(value);
+                                values.Add(value2);
+                                break;
+                            }
+                    }
+
+
+                    if (add == true)
+                    {
+                        count = count + 2;
+                    }
+                    else
+                    {
+                        values.RemoveAt(count);
+                        values.RemoveAt(count);
+                        count2 = count2 - 2;
+                    }
+                }
+
+                sorted_results.Add(Add_Places(things_dic, values));
+
+                foreach (Thing thing in sorted_results.First())
+                {
+
+                    temp = Find_Mandatory_Optional(thing.type, "SvcV-6", "SvcV-6", "_16", ref errors_list);
+                    if (temp == "Mandatory")
+                        mandatory_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
+                    if (temp == "Optional")
+                        optional_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
+
+                    if ((string)thing.type == "Service")
+                    {
+                        values = new List<Thing>();
+
+                        values.Add(new Thing
+                        {
+                            type = "ServiceDescription",
+                            id = thing.place2 + "_2",
+                            name = thing.place2 + "_Description",
+                            value = "$none$",
+                            place1 = "$none$",
+                            place2 = "$none$",
+                            foundation = "Individual",
+                            value_type = "$none$"
+                        });
+
+                        values.Add(new Thing
+                        {
+                            type = "serviceDescribedBy",
+                            id = thing.place2 + "_1",
+                            name = "$none$",
+                            value = "$none$",
+                            place1 = thing.id,
+                            place2 = thing.id + "_2",
+                            foundation = "namedBy",
+                            value_type = "$none$"
+                        });
+
+                        mandatory_list.AddRange(values);
+                    }
+                }
+
+                if (sorted_results.First().Count() > 0)
+                    views.Add(new View { type = "SvcV-6", id = "_16", name = "NEAR SvcV-6", optional = optional_list, mandatory = mandatory_list });
 
             //SV-8
 
@@ -6635,8 +7464,8 @@ namespace NEAR
                 if (values_dic.TryGetValue(thing.id, out value))
                 {
                     //mandatory_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
-                    values.Add(new Thing { id = "_14", type = "SV-8", place2 = thing.id, value = thing.type, place1 = "_13" });
-                    values.Add(new Thing { id = "_14", type = "SV-8", place2 = value.place1, value = "PeriodType", place1 = "_13" });
+                    values.Add(new Thing { id = "_14", type = "SV-8", place2 = thing.id, value = thing.type, place1 = "_14" });
+                    values.Add(new Thing { id = "_14", type = "SV-8", place2 = value.place1, value = "PeriodType", place1 = "_14" });
                 }
             }
 
@@ -6732,6 +7561,12 @@ namespace NEAR
 
                             values = new List<Thing>();
                             if (period_dic.TryGetValue(thing.place2, out values))
+                                optional_list.AddRange(values);
+
+                            if (div2_dic.TryGetValue(thing.place2, out values))
+                                mandatory_list.AddRange(values);
+
+                            if (div2_dic2.TryGetValue(thing.place2, out values))
                                 optional_list.AddRange(values);
                         }
                     }
