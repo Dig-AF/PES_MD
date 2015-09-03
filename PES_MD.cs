@@ -140,8 +140,10 @@ namespace NEAR
                             };
 
         static string[][] MD_View_Lookup = new string[][] { 
+                            new string[] {"CV-2", "CV-2 Capability Taxonomy"},
                             new string[] {"DIV-1", "DIV-1 Conceptual Data Model"},
                             new string[] {"DIV-2", "DIV-2 Logical Data Model"},
+                            new string[] {"OV-5a", "OV-5a Operational Activity Decomposition Tree"},
                             new string[] {"OV-6c", "OV-6c Operational Event-Trace Description (BPD)"},
                             }; 
 
@@ -6902,6 +6904,82 @@ namespace NEAR
                 if (sorted_results.First().Count() > 0)
                     views.Add(new View { type = "PV-2", id = "_14", name = "NEAR PV-2", optional = optional_list, mandatory = mandatory_list });
 
+            //OV-2
+
+                mandatory_list = new List<Thing>();
+                values = new List<Thing>();
+                optional_list = new List<Thing>();
+                sorted_results = new List<List<Thing>>();
+
+                values_dic2 = things_dic.Where(x => x.Value.type == "Resource").ToDictionary(p => p.Key, p => p.Value);
+
+                results = tuple_types.Where(x => x.type == "activityConsumesResource").Where(x => values_dic2.ContainsKey(x.place1));
+                values_dic = tuple_types.Where(x => x.type == "activityProducesResource").GroupBy(x => x.place2).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
+
+                foreach (Thing rela in results)
+                {
+                    if (values_dic.TryGetValue(rela.place1, out value))
+                    {
+                        values.Add(rela);
+                        values.Add(value);
+                    }
+
+                }
+
+                count = 0;
+                count2 = values.Count();
+
+                //var duplicateKeys = app2.GroupBy(x => x.place2)
+                //            .Where(group => group.Count() > 1)
+                //            .Select(group => group.Key);
+
+                //List<string> test = duplicateKeys.ToList();
+
+                values_dic2 = tuple_types.Where(x => x.type == "activityPerformedByPerformer").Where(x => Allowed_Element("OV-2", x.place1, ref things_dic)).GroupBy(x => x.place2).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
+
+                while (count < count2)
+                {
+                    add = false;
+
+                    foreach (Thing thing in values)
+                    {
+                        if (values_dic2.TryGetValue(values[count].place2, out value))
+                            if (values_dic2.TryGetValue(values[count + 1].place1, out value2))
+                            {
+                                add = true;
+                                values.Add(value);
+                                values.Add(value2);
+                                break;
+                            }
+                    }
+
+
+                    if (add == true)
+                    {
+                        count = count + 2;
+                    }
+                    else
+                    {
+                        values.RemoveAt(count);
+                        values.RemoveAt(count);
+                        count2 = count2 - 2;
+                    }
+                }
+
+                sorted_results.Add(Add_Places(things_dic, values));
+
+                foreach (Thing thing in sorted_results.First())
+                {
+                    temp = Find_Mandatory_Optional(thing.type, "OV-2", "OV-2", "_21", ref errors_list);
+                    if (temp == "Mandatory")
+                        mandatory_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
+                    if (temp == "Optional")
+                        optional_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
+                }
+
+                if (sorted_results.First().Count() > 0)
+                    views.Add(new View { type = "OV-2", id = "_21", name = "NEAR OV-2", optional = optional_list, mandatory = mandatory_list });
+
             //SV-6
 
                 mandatory_list = new List<Thing>();
@@ -6918,11 +6996,16 @@ namespace NEAR
                         where (string)result3.Parent.Attribute(ns2 + "id") == (string)result.Parent.Attribute(ns2 + "id")
                         //
                         from result4 in root.Descendants().Elements("realizingActivityEdge")
-                        where (string)result4.Parent.Attribute(ns2 + "id") == (string)result.Parent.Attribute(ns2 + "id")
+                        
+                        where (string)result.Parent.Attribute(ns2 + "id") == (string)result4.Parent.Attribute(ns2 + "id")
                         from result5 in root.Descendants().Elements("outgoing")
-                        where (string)result5.Attribute(ns2 + "idref") == (string)result4.Attribute(ns2 + "idref")
+                        where (string)result5.Parent.Attribute("behavior") != null
+                        where (string)result4.Attribute(ns2 + "idref") == (string)result5.Attribute(ns2 + "idref")
+                        
                         from result6 in root.Descendants().Elements("incoming")
-                        where (string)result6.Attribute(ns2 + "idref") == (string)result4.Attribute(ns2 + "idref")
+                        where (string)result6.Parent.Attribute("behavior") != null
+                        where (string)result4.Attribute(ns2 + "idref") == (string)result6.Attribute(ns2 + "idref")
+                        
 
                         select new Thing
                         {
