@@ -17,8 +17,8 @@ namespace ConsoleApplication
             string errors = "";
             bool test;
 
-            input = @"C:\GitHub\test\MD_TEST_DATA_Sprint13_2015-08-27.xml";
-            test = NEAR.PES_MD.MD2PES(File.ReadAllBytes(input),ref output, ref errors);
+            input = @"C:\GitHub\test\MD_TEST_DATA_Sprint14_2015-09-15.xml";
+            test = EAWS.Core.SilverBullet.PES_MD.MD2PES(File.ReadAllBytes(input), ref output, ref errors);
             if (!test)
                 System.IO.File.WriteAllText(@"C:\GitHub\test\error.csv", errors);
                 
