@@ -113,15 +113,16 @@ namespace EAWS.Core.SilverBullet
                             new string[] { "Service", "ServiceAccess", "IndividualType", "base_Class" },
                             new string[] { "Activity", "OperationalActivity", "IndividualType", "base_Activity" },
                             new string[] { "Performer", "Performer", "IndividualType", "base_Class" },
+                            new string[] { "Performer", "ConceptRole", "IndividualType", "base_Property" },
                             new string[] { "Activity", "Function", "IndividualType", "base_Activity" },
                             new string[] { "Activity", "ActualProjectMilestone", "IndividualType", "base_InstanceSpecification" }, // revisit activityPartOfProject
                             new string[] { "Capability", "Capability", "IndividualType", "base_Class" },
-                            new string[] { "PersonType", "PersonType", "IndividualType", "base_Class" },
+                            new string[] { "PersonRole", "PersonType", "IndividualType", "base_Class" },
                             ////new string[] { "Project", "VersionOfConfiguration", "Individual" }, // revisit subType of Project
                             new string[] { "Project", "Project", "Individual", "base_InstanceSpecification" }, // revisit ProjectType?
-                            new string[] { "ProjectType", "ProjectType", "Individual", "base_Class" }, // revisit ProjectType?
+                            new string[] { "ProjectType", "ProjectType", "IndividualType", "base_Class" }, // revisit ProjectType?
                             new string[] { "System", "CapabilityConfiguration", "IndividualType", "base_Class" }, // revisit subType of Capability
-                            new string[] { "Activity", "ProjectMilestone", "Individual", "base_Class" }, // revisit subType of Project
+                            new string[] { "Activity", "ProjectMilestone", "IndividualType", "base_Class" }, // revisit subType of Project
                             new string[] { "Vision", "Vision", "IndividualType", "base_Class" },
                             new string[] { "MeasureType", "MeasureType", "IndividualTypeType", "base_DataType" },
                             new string[] { "Resource", "ResourceInteraction", "IndividualType", "base_InformationFlow" }, // revisit
@@ -129,30 +130,33 @@ namespace EAWS.Core.SilverBullet
                             new string[] { "Data", "LogicalDataModel", "IndividualType", "base_Package" },
                             new string[] { "Data", "EntityItem", "IndividualType", "base_Class" },
                             new string[] { "Data", "EntityAttribute", "IndividualType", "base_Property" },
-                            new string[] { "Activity", "IncrementMilestone", "Individual", "base_InstanceSpecification" },
+                            new string[] { "Activity", "IncrementMilestone", "IndividualType", "base_InstanceSpecification" },
                             //new string[] { "Activity", "OperationalActivityAction", "Individual", "base_CallBehaviorAction" },
+                            //new string[] { "IndividualPersonRole", "ActualPerson", "Individual", "base_InstanceSpecification" },
+                            new string[] { "IndividualPersonRole", "IndividualPersonRole", "IndividualType", "base_InstanceSpecification" },
+                            new string[] { "OrganizationType", "OrganizationType", "IndividualType", "base_Class" },
                             };
 
         static string[][] MD_Relationship_Lookup = new string[][] {
                             // DM2 Class, UPDM_Profile Element
                             new string[] { "activityPartOfCapability", "ActivityPartOfCapability", "WholePartType","1" },
                             new string[] { "activityPerformedByPerformer", "ActivityPerformedByPerformer", "CoupleType","2" },
+                            new string[] { "OverlapType", "ArbitraryConnector", "CoupleType","1" },
+                            new string[] { "OverlapType", "Details", "CoupleType","1" },
                             };
 
         static string[][] MD_View_Lookup = new string[][] { 
                             new string[] {"CV-2", "CV-2 Capability Taxonomy"},
                             new string[] {"DIV-1", "DIV-1 Conceptual Data Model"},
                             new string[] {"DIV-2", "DIV-2 Logical Data Model"},
+                            new string[] {"DIV-3", "DIV-3 Physical Data Model"},
+                            new string[] {"OV-1", "OV-1 High-Level Operational Concept Graphic"},
                             new string[] {"OV-2", "OV-2 Operational Resource Flow Description"},
+                            new string[] {"OV-4", "OV-4 Organizational Relationships Chart"},
                             new string[] {"OV-5a", "OV-5a Operational Activity Decomposition Tree"},
                             new string[] {"OV-5b", "OV-5b Operational Activity Model"},
                             new string[] {"OV-6c", "OV-6c Operational Event-Trace Description (BPD)"},
-                            new string[] {"OV-1", "OV-1 High-Level Operational Concept Graphic"},
-                            new string[] {"OV-4", "OV-4 Organizational Relationships Chart"},
-                            new string[] {"OV-6c", "OV-6c Operational Event-Trace Description"},
-                            new string[] {"OV-6c", "OV-6c Operational Event-Trace Description (BPD)"},
-                            new string[] {"DIV-3", "DIV-3 Physical Data Mode"},
-                               
+                            new string[] {"OV-6c", "OV-6c Operational Event-Trace Description"},      
                             }; 
 
         static string[][] View_Lookup = new string[][] {  
@@ -424,6 +428,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"Rule", "OV-1"}, 
                             new string[] {"superSubtype", "OV-1"}, 
                             new string[] {"WholePartType", "OV-1"},
+                            new string[] {"OverlapType", "OV-1"},
                             new string[] {"representationSchemeInstance", "OV-1"},
                             new string[] {"Condition", "OV-2"},
                             new string[] {"Information", "OV-2"},
@@ -458,12 +463,15 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"Information", "OV-4"},
                             new string[] {"Location", "OV-4"},
                             new string[] {"OrganizationType", "OV-4"},
+                            new string[] {"Organization", "OV-4"},
                             new string[] {"Performer", "OV-4"},
+                            new string[] {"IndividualPersonRole", "OV-4"},
                             new string[] {"PersonRole", "OV-4"},
                             new string[] {"Resource", "OV-4"},
                             new string[] {"Rule", "OV-4"}, 
                             new string[] {"superSubtype", "OV-4"}, 
                             new string[] {"WholePartType", "OV-4"},
+                            new string[] {"OverlapType", "OV-4"},
                             new string[] {"Condition", "OV-5a"},
                             new string[] {"Information", "OV-5a"},
                             new string[] {"Location", "OV-5a"},
@@ -676,6 +684,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"superSubtype", "DIV-3"}, 
                             new string[] {"WholePartType", "DIV-3"},
                             new string[] {"typeInstance", "DIV-3"},
+                            new string[] {"OverlapType", "DIV-3"},
                             new string[] {"Condition", "PV-1"},
                             new string[] {"Information", "PV-1"},
                             new string[] {"Location", "PV-1"},
@@ -5867,6 +5876,8 @@ namespace EAWS.Core.SilverBullet
             Dictionary<string, Thing> bpmn_lookup = new Dictionary<string, Thing>();
             Dictionary<string, List<Thing>> div2_dic = new Dictionary<string, List<Thing>>();
             Dictionary<string, List<Thing>> div2_dic2 = new Dictionary<string, List<Thing>>();
+            Dictionary<string, List<Thing>> div3_dic = new Dictionary<string, List<Thing>>();
+            Dictionary<string, List<Thing>> div3_dic2 = new Dictionary<string, List<Thing>>();
             Dictionary<string, List<Thing>>  results_dic = new Dictionary<string, List<Thing>>();
             Dictionary<string, List<Thing>>  results_dic2 = new Dictionary<string, List<Thing>>();
             Dictionary<string, List<Thing>>  results_dic3 = new Dictionary<string, List<Thing>>();
@@ -5883,7 +5894,7 @@ namespace EAWS.Core.SilverBullet
             List<Thing> values2 = new List<Thing>();
             XNamespace ns = "http://www.omg.org/spec/UPDM/20121004/UPDM-Profile";
             XNamespace ns2 = "http://www.omg.org/spec/XMI/20131001";
-            XNamespace ns3 = "http://schema.omg.org/spec/UML/2.2";
+            XNamespace ns3 = "http://www.omg.org/spec/UML/20131001";
             Thing value;
             Thing value2;
             List<Thing> values3 = new List<Thing>();
@@ -5894,7 +5905,7 @@ namespace EAWS.Core.SilverBullet
             List<string> errors_list = new List<string>();
             bool test = true;
             List<List<Thing>> view_holder = new List<List<Thing>>();
-            //Dictionary<string, List<Thing>> sv8_dic = new Dictionary<string, List<Thing>>();
+            Dictionary<string, List<Thing>> OV1_pic_views = new Dictionary<string, List<Thing>>();
             int count=0;
             int count2 = 0;
             bool add = false;
@@ -5931,13 +5942,69 @@ namespace EAWS.Core.SilverBullet
 
             //things = things.GroupBy(x => x.id).Select(grp => grp.First());
 
-            //DIV-2 Parts
+            //DIV-3 Data Type Parts
 
             results =
                     from result in root.Elements(ns + "EntityItem")
                     //from result3 in root.Elements(ns + "View")
                     //from result4 in root.Descendants()
                     from result2 in root.Descendants().Elements("ownedAttribute")
+                    //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+                    //where result2.Attribute("name") != null
+                    where (string)result.Attribute("base_Class") == (string)result2.Parent.Attribute(ns2 + "id")
+                    //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                    from result3 in root.Descendants().Elements("referenceExtension")
+                    where (string)result3.Parent.Parent.Parent.Attribute(ns2 + "id") == (string)result2.Attribute(ns2 + "id")
+                    select new Thing
+                    {
+                        type = "DataType",
+                        id = (string)result3.Attribute("originalID") + (string)result2.Attribute(ns2 + "id"),// + "///" +*/ (string)result.LastAttribute,//Attribute("base_Operation"),
+                        name = (string)result3.Attribute("referentPath"),//*/ (string)result.FirstAttribute,//Attribute(ns2 + "id"),
+                        value = "$none$",
+                        place1 = (string)result3.Attribute("originalID") + (string)result2.Attribute(ns2 + "id"),
+                        place2 = (string)result2.Parent.Attribute(ns2 + "id"),
+                        foundation = "Individual_Type",
+                        value_type = "$none$"
+                    };
+
+            things = things.Concat(results.ToList());
+            div3_dic = results.GroupBy(x => x.place2).ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
+
+            foreach (Thing thing in results)
+            {
+                value = new Thing
+                {
+                    type = "typeInstance",
+                    id = thing.place1 + thing.place2 + "ti1",
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = thing.place2,
+                    place2 = thing.place1,
+                    foundation = "typeInstance",
+                    value_type = "$none$"
+                };
+                tuples = tuples.Concat(new List<Thing>() { value }
+                );
+                values = new List<Thing>();
+                if (div3_dic2.TryGetValue(thing.place2, out values))
+                {
+                    values.Add(value);
+                    div3_dic2.Remove(thing.place2);
+                    div3_dic2.Add(thing.place2, values);
+                }
+                else
+                    div3_dic2.Add(thing.place2, new List<Thing>() { value });
+
+            }
+            
+            //DIV Data Parts
+
+            results =
+                    from result in root.Elements(ns + "EntityItem")
+                    //from result3 in root.Elements(ns + "View")
+                    //from result4 in root.Descendants()
+                    from result2 in root.Descendants().Elements("ownedAttribute")
+                    where (string)result2.Attribute("aggregation") == "composite"
                     //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
                     //where result2.Attribute("name") != null
                     where (string)result.Attribute("base_Class") == (string)result2.Parent.Attribute(ns2 + "id")
@@ -6096,201 +6163,60 @@ namespace EAWS.Core.SilverBullet
                 };
 
             tuple_types = tuple_types.Concat(results.ToList());
-            
-            ////Milestone date
 
-            //results =
-            //        from result in root.Elements(ns + "ActualProjectMilestone")
-            //        from result2 in root.Descendants()
-            //        where (string)result2.Parent.Attribute("name") == "Timeline"
-            //        //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
-            //        //where result2.Attribute("name") != null
-            //        where (string)result.Attribute("date") == (string)result2.Attribute(ns2 + "id")
-            //        //where (string)result2.Attribute("date") != null
-            //        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
-            //        select new Thing
-                    
-            //        {
-            //            type = "HappensInType",
-            //            id = (string)result.Attribute("base_InstanceSpecification") + "_t2",
-            //            name = "$none$",
-            //            value = (string)result2.Attribute("value"),
-            //            place1 = (string)result.Attribute("base_InstanceSpecification") + "_t1",
-            //            place2 = (string)result.Attribute("base_InstanceSpecification"),
-            //            foundation = "WholePartType",
-            //            value_type = "$period$"
-            //        };
+            //WholePartType - Roles
 
-            //tuple_types = tuple_types.Concat(results.ToList());
+            results =
+                from result in root.Descendants().Elements("ownedAttribute")
+                where (string)result.Attribute(ns2 + "id") != null
+                where (string)result.Attribute("type") != null
+                //from result3 in root.Elements(ns + "View")
+                //from result4 in root.Descendants()
+                //from result2 in root.Descendants()
+                //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+                where (string)result.Attribute("aggregation") == "composite"
+                //where (string)result.Attribute == (string)result2.Attribute(ns2 + "id")
+                //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                from result2 in root.Elements(ns + "ConceptRole")
+                where (string)result.Attribute(ns2 + "id") == (string)result2.Attribute("base_Property")
+                
+                select new Thing
+                {
+                    type = "WholePartType",
+                    id = (string)result.Attribute(ns2 + "id") + (string)result.Attribute("type"),
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = (string)result.Attribute(ns2 + "id"),
+                    place2 = (string)result.Attribute("type"),
+                    foundation = "WholePartType",
+                    value_type = "$none$"
+                };
 
-            //foreach (Thing thing in results)
-            //{
-            //    values = new List<Thing>();
+            tuple_types = tuple_types.Concat(results.ToList());
 
-            //    values.Add(new Thing
-            //    {
-            //        type = "PeriodType",
-            //        id = thing.place2 + "_t1",
-            //        name = (string)thing.value,
-            //        value = "$none$",
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType",
-            //        value_type = "$none$"
-            //    });
+            //Overlap - informationAssociation
 
-            //    things = things.Concat(values);
+            results =
+                from result in root.Descendants().Elements("ownedAttribute")
+                where (string)result.Attribute("association") != null
+                where (string)result.Parent.Attribute(ns2 + "id") != null
+                where (string)result.Attribute("type") != null
 
-            //    values = new List<Thing>();
+                select new Thing
+                {
+                    type = "OverlapType",
+                    id = (string)result.Parent.Attribute(ns2 + "id") + (string)result.Attribute("type"),
+                    name = "$none$",
+                    value = "$none$",
+                    place1 = (string)result.Parent.Attribute(ns2 + "id"),
+                    place2 = (string)result.Attribute("type"),
+                    foundation = "CoupleType",
+                    value_type = "$none$"
+                };
 
-            //    values.Add(new Thing
-            //    {
-            //        type = "PeriodType",
-            //        id = thing.place2 + "_t1",
-            //        name = (string)thing.value,
-            //        value = "$none$",
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType",
-            //        value_type = "$none$"
-            //    });
+            tuple_types = tuple_types.Concat(results.ToList());
 
-            //    values.Add(thing);
-
-            //    period_dic.Add(thing.place2, values);
-
-            //}
-
-            //results =
-            //        from result in root.Elements(ns + "IncrementMilestone")
-            //        from result2 in root.Descendants()
-            //        where (string)result2.Parent.Attribute("name") == "Timeline"
-            //        //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
-            //        //where result2.Attribute("name") != null
-            //        where (string)result.Attribute("date") == (string)result2.Attribute(ns2 + "id")
-            //        //where (string)result2.Attribute("date") != null
-            //        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
-            //        select new Thing
-
-            //        {
-            //            type = "HappensInType",
-            //            id = (string)result.Attribute("base_InstanceSpecification") + "_t2",
-            //            name = "$none$",
-            //            value = (string)result2.Attribute("value"),
-            //            place1 = (string)result.Attribute("base_InstanceSpecification") + "_t1",
-            //            place2 = (string)result.Attribute("base_InstanceSpecification"),
-            //            foundation = "WholePartType",
-            //            value_type = "$period$"
-            //        };
-
-            //tuple_types = tuple_types.Concat(results.ToList());
-
-            //foreach (Thing thing in results)
-            //{
-            //    values = new List<Thing>();
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "PeriodType",
-            //        id = thing.place2 + "_t1",
-            //        name = (string)thing.value,
-            //        value = "$none$",
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType",
-            //        value_type = "$none$"
-            //    });
-
-            //    things = things.Concat(values);
-
-            //    values = new List<Thing>();
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "PeriodType",
-            //        id = thing.place2 + "_t1",
-            //        name = (string)thing.value,
-            //        value = "$none$",
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType",
-            //        value_type = "$none$"
-            //    });
-
-            //    values.Add(thing);
-
-            //    period_dic.Add(thing.place2, values);
-
-            //}
-
-            ////Project date
-
-            //results =
-            //        from result in root.Elements(ns + "Project")
-            //        from result2 in root.Descendants()
-            //        where (string)result2.Parent.Attribute("name") == "Timeline"
-            //        from result3 in root.Descendants()
-            //        where (string)result3.Parent.Attribute("name") == "Timeline"
-            //        //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
-            //        //where result2.Attribute("name") != null
-            //        where (string)result.Attribute("startDate") == (string)result2.Attribute(ns2 + "id")
-            //        where (string)result.Attribute("endDate") == (string)result3.Attribute(ns2 + "id")
-
-            //        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
-            //        select new Thing
-
-            //        {
-            //            type = "HappensInType",
-            //            id = (string)result.Attribute("base_InstanceSpecification") + "_t2",
-            //            name = "$none$",
-            //            value = (string)result2.Attribute("value") + " to " + (string)result3.Attribute("value"),
-            //            place1 = (string)result.Attribute("base_InstanceSpecification") + "_t1",
-            //            place2 = (string)result.Attribute("base_InstanceSpecification"),
-            //            foundation = "WholePartType",
-            //            value_type = "$period$"
-            //        };
-
-            //tuple_types = tuple_types.Concat(results.ToList());
-
-            //foreach (Thing thing in results)
-            //{
-            //    values = new List<Thing>();
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "PeriodType",
-            //        id = thing.place2 + "_t1",
-            //        name = (string)thing.value,
-            //        value = "$none$",
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType",
-            //        value_type = "$none$"
-            //    });
-
-            //    things = things.Concat(values);
-
-            //    values = new List<Thing>();
-
-            //    values.Add(new Thing
-            //    {
-            //        type = "PeriodType",
-            //        id = thing.place2 + "_t1",
-            //        name = (string)thing.value,
-            //        value = "$none$",
-            //        place1 = "$none$",
-            //        place2 = "$none$",
-            //        foundation = "IndividualType",
-            //        value_type = "$none$"
-            //    });
-
-            //    values.Add(thing);
-
-            //    period_dic.Add(thing.place2, values);
-
-            //}
-
-            //SV-8 Date
+            //Milestone Dates
 
             results =
                     from result in root.Descendants()
@@ -6459,6 +6385,56 @@ namespace EAWS.Core.SilverBullet
 
                 }
 
+            }
+
+            //OV-1 Picture
+
+            results =
+                from result in root.Descendants().Elements("image")
+                from result2 in root.Descendants().Elements("diagramContents").Elements("binaryObject")
+                where (string)result2.Parent.Parent.Attribute("type") == "OV-1 High-Level Operational Concept Graphic"
+                where (string)result.Parent.Parent.Parent.Attribute("name") == (string)result2.Attribute("streamContentID")
+                
+                select
+                    //new {
+                    //    key = (string)result.Parent.Parent.Attribute("SAObjId"),
+                    //    value = new List<Thing> {
+                        new Thing
+                        {
+                            type = "ArchitecturalDescription",
+                            id = (string)result.Parent.Parent.Parent.Attribute("name"),
+                            name = "$none$",
+                            value = (string)result.Value,
+                            place1 = (string)result2.Parent.Parent.Parent.Parent.Parent.Attribute(ns2 + "id"),
+                            place2 = (string)result.Parent.Parent.Parent.Attribute("name"),
+                            foundation = "IndividualType",
+                            value_type = "exemplar"
+                        };
+            //}}).ToDictionary(a => a.key, a => a.value);
+
+            OV1_pic_views = results.GroupBy(x => x.place1).ToDictionary(x => x.Key, x => x.ToList());
+
+            if (OV1_pic_views.Count() > 0)
+            {
+                representation_scheme = true;
+                foreach (KeyValuePair<string, List<Thing>> entry in OV1_pic_views)
+                {
+                    foreach (Thing thing in entry.Value)
+                    {
+                        tuples = tuples.Concat(new List<Thing>{new Thing
+                            {
+                            type = "representationSchemeInstance",
+                            id = thing.id+"_1",
+                            name = "$none$",
+                            value = "$none$",
+                            place1 = "_rs1",
+                            place2 = thing.id,
+                            foundation = "typeInstance",
+                            value_type = "$none$"
+                            }});
+                    }
+                }
+                things = things.Concat(OV1_pic_views.SelectMany(x => x.Value));   
             }
 
             //Diagramming
@@ -7196,33 +7172,33 @@ namespace EAWS.Core.SilverBullet
 
                 foreach (Thing thing in results)
                 {
-                    things = things.Concat(new List<Thing>(){
-                        new Thing
-                        {
-                            type = "PeriodType",
-                            id = thing.place2 + thing.type + "_t1",
-                            name = (string)thing.value,
-                            value = "$none$",
-                            place1 = "$none$",
-                            place2 = "$none$",
-                            foundation = "IndividualType",
-                            value_type = "$none$"
-                        }
-                    });
+                    //things = things.Concat(new List<Thing>(){
+                    //    new Thing
+                    //    {
+                    //        type = "PeriodType",
+                    //        id = thing.place2 + thing.type + "_t1",
+                    //        name = (string)thing.value,
+                    //        value = "$none$",
+                    //        place1 = "$none$",
+                    //        place2 = "$none$",
+                    //        foundation = "IndividualType",
+                    //        value_type = "$none$"
+                    //    }
+                    //});
 
-                    tuple_types = tuple_types.Concat(new List<Thing>(){
-                        new Thing
-                        {
-                            type = "HappensInType",
-                            id = thing.place2 + thing.type + "_t2",
-                            name = "$none$",
-                            value = (string)thing.value,
-                            place1 = thing.place2 + thing.type + "_t1",
-                            place2 = thing.place2,
-                            foundation = "WholePartType",
-                            value_type = "$period$"
-                        }
-                    });
+                    //tuple_types = tuple_types.Concat(new List<Thing>(){
+                    //    new Thing
+                    //    {
+                    //        type = "HappensInType",
+                    //        id = thing.place2 + thing.type + "_t2",
+                    //        name = "$none$",
+                    //        value = (string)thing.value,
+                    //        place1 = thing.place2 + thing.type + "_t1",
+                    //        place2 = thing.place2,
+                    //        foundation = "WholePartType",
+                    //        value_type = "$period$"
+                    //    }
+                    //});
 
                     //tuple_types = tuple_types.Concat(new List<Thing>(){
                     //    new Thing
@@ -7256,7 +7232,7 @@ namespace EAWS.Core.SilverBullet
                     //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.type, value = "ProjectType", place1 = "_14" });
                     values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place2, value = "Activity", place1 = "_14" });
                     //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place2 + thing.type + "_t2", value = "HappensInType", place1 = "_14" });
-                    values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place2 + thing.type + "_t1", value = "PeriodType", place1 = "_14" });
+                    values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place2 + "_t1", value = "PeriodType", place1 = "_14" });
                     //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place1 + thing.type + "_ti1", value = "typeInstance", place1 = "_14" });
                     //values.Add(new Thing { id = "_14", type = "PV-2", place2 = thing.place2 + thing.type + "_apt1", value = "activityPartOfProjectType", place1 = "_14" });
 
@@ -7977,6 +7953,47 @@ namespace EAWS.Core.SilverBullet
                         thing.place2 = value.id;
                     }
 
+                    if (thing.type == "DIV-2" || thing.type == "DIV-3")
+                    if (div2_dic.TryGetValue(thing.place2, out values))
+                    {
+                        foreach (Thing additional in values)
+                        {
+                            view_elements.Add(new Thing
+                            {
+                                type = thing.type,
+                                id = thing.id,
+                                name = thing.name,
+                                value = thing.value,
+                                place1 = thing.place1,
+                                place2 = additional.id,
+                                foundation = thing.foundation,
+                                value_type = thing.value_type
+                            });
+                            max++;
+                        }
+                        
+                    }
+                    if (thing.type == "DIV-3")
+                    if (div3_dic.TryGetValue(thing.place2, out values))
+                    {
+                        foreach (Thing additional in values)
+                        {
+                            view_elements.Add(new Thing
+                            {
+                                type = thing.type,
+                                id = thing.id,
+                                name = thing.name,
+                                value = thing.value,
+                                place1 = thing.place1,
+                                place2 = additional.id,
+                                foundation = thing.foundation,
+                                value_type = thing.value_type
+                            });
+                            max++;
+                        }
+
+                    }
+
                     if (thing.place2 != null)
                     {
                         if (things_dic.TryGetValue(thing.place2, out value))
@@ -7998,7 +8015,6 @@ namespace EAWS.Core.SilverBullet
                     mandatory_list = new List<Thing>();
                     optional_list = new List<Thing>();
 
-
                     foreach (Thing thing in view)
                     {
                         if (thing.place2 != null)
@@ -8017,13 +8033,28 @@ namespace EAWS.Core.SilverBullet
                             //if (sv8_dic.TryGetValue(thing.place2, out values))
                             //    optional_list.AddRange(values);
 
-                            if (div2_dic.TryGetValue(thing.place2, out values))
-                                mandatory_list.AddRange(values);
 
-                            if (div2_dic2.TryGetValue(thing.place2, out values))
-                                optional_list.AddRange(values);
+                                //if (div2_dic.TryGetValue(thing.place2, out values))
+                                //    mandatory_list.AddRange(values);
+
+                                //if (div2_dic2.TryGetValue(thing.place2, out values))
+                                //    optional_list.AddRange(values);
+
+                            //if (view.First().type == "DIV-3")
+                           // {
+                                //if (div3_dic.TryGetValue(thing.place2, out values))
+                                //    mandatory_list.AddRange(values);
+
+                             //   if (div3_dic2.TryGetValue(thing.place2, out values))
+                             //       optional_list.AddRange(values);
+                            //}
                         }
                     }
+
+                    values = new List<Thing>();
+
+                    if (OV1_pic_views.TryGetValue(view.First().place1, out values))
+                        mandatory_list.AddRange(values);
 
                     mandatory_list = mandatory_list.OrderBy(x => x.type).ToList();
                     optional_list = optional_list.OrderBy(x => x.type).ToList();
