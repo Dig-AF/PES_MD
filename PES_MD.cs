@@ -6355,6 +6355,32 @@ namespace EAWS.Core.SilverBullet
 
             }
 
+            ////activityPerformedByPerformer - OV-5b
+
+            //results =
+            //       from result in root.Descendants().Elements("inPartition")
+            //       where (string)result.Parent.Attribute("behavior") != null
+            //       from result2 in root.Descendants().Elements("group")
+            //       where (string)result2.Attribute(ns2 + "id") == (string)result.Attribute(ns2 + "idref")
+            //       where (string)result2.Attribute("represents") != null
+
+            //       select new Thing
+
+            //       {
+            //           type = "activityPerformedByPerformer",
+            //           id = (string)result.Parent.Attribute("represents") + (string)result.Parent.Attribute("behavior"),
+            //           name = "$none$",
+            //           value = "$none$",
+            //           place1 = (string)result.Parent.Attribute("represents"),
+            //           place2 = (string)result.Parent.Attribute("behavior"),
+            //           foundation = "CoupleType",
+            //           value_type = "$period$"
+
+            //       };
+
+            //tuple_types = tuple_types.Concat(results);
+
+
             //activityPerformedByPerformer - Milestones
 
             results =
@@ -6875,7 +6901,7 @@ namespace EAWS.Core.SilverBullet
                         new Thing
                         {
                             type = "activityProducesResource",
-                            id = thing.id + (string)thing.value + "_1",
+                            id = thing.place1 + thing.type + "_d1" + "_1",
                             name = thing.name,
                             value = "$none$",
                             place1 = thing.place1,
@@ -6889,10 +6915,38 @@ namespace EAWS.Core.SilverBullet
                         new Thing
                         {
                             type = "activityConsumesResource",
-                            id = thing.id + (string)thing.value + "_2",
+                            id = thing.type + "_d1" + thing.place2 + "_2",
                             name = thing.name,
                             value = "$none$",
                             place1 = thing.type + "_d1",
+                            place2 = thing.place2,
+                            foundation = "CoupleType",
+                            value_type = "$none$"
+                        }
+                    });
+
+                tuple_types = tuple_types.Concat(new List<Thing>(){
+                        new Thing
+                        {
+                            type = "activityProducesResource",
+                            id = thing.place1 + thing.type + "_3",
+                            name = thing.name,
+                            value = "$none$",
+                            place1 = thing.place1,
+                            place2 = thing.type,
+                            foundation = "CoupleType",
+                            value_type = "$none$"
+                        }
+                    });
+
+                tuple_types = tuple_types.Concat(new List<Thing>(){
+                        new Thing
+                        {
+                            type = "activityConsumesResource",
+                            id = thing.type + thing.place2 + "_4",
+                            name = thing.name,
+                            value = "$none$",
+                            place1 = thing.type,
                             place2 = thing.place2,
                             foundation = "CoupleType",
                             value_type = "$none$"
@@ -6931,6 +6985,9 @@ namespace EAWS.Core.SilverBullet
                     }
 
             }
+
+            tuple_types = tuple_types.GroupBy(x => x.id).Select(grp => grp.First());
+            things_dic = things.ToDictionary(x => x.id, x => x);
 
             //Need line
 
@@ -8044,6 +8101,35 @@ namespace EAWS.Core.SilverBullet
             tuple_types = tuple_types.Concat(results);
 
             //Lookup
+
+            results =
+                    from result in root.Descendants().Elements("edge")
+                    from result2 in root.Descendants().Elements("realizingActivityEdge")
+                    where (string)result2.Attribute(ns2 + "idref") ==  (string) result.Attribute(ns2 + "id")
+                    where (string)result2.Parent.Element("conveyed").Attribute(ns2 + "idref") != null
+                    select new Thing
+                    {
+                        type = "temp",
+                        id = (string)result2.Parent.Element("conveyed").Attribute(ns2 + "idref"),// + "///" +*/ (string)result.LastAttribute,//Attribute("base_Operation"),
+                        value = "$none$",
+                        place1 = (string)result.Attribute(ns2 + "id"),
+                        place2 = (string)result2.Parent.Element("conveyed").Attribute(ns2 + "idref"),
+                        value_type = "$none$"
+                    };
+
+            foreach (Thing thing in results)
+            {
+
+                if (lookup.TryGetValue(thing.place1, out values))
+                {
+                    values.Add(thing);
+                    lookup.Remove(thing.place1);
+                    lookup.Add(thing.place1, values);
+                }
+                else
+                    lookup.Add(thing.place1, new List<Thing>() { thing });
+
+            }
 
             results =
                     from result in root.Elements(ns + "Performer")
