@@ -152,7 +152,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"DIV-1", "DIV-1 Conceptual Data Model"},
                             new string[] {"DIV-2", "DIV-2 Logical Data Model"},
                             new string[] {"DIV-3", "DIV-3 Physical Data Model"},
-                            //new string[] {"OV-1", "OV-1 High-Level Operational Concept Graphic"},
+                            new string[] {"OV-1", "OV-1 High-Level Operational Concept Graphic"},
                             new string[] {"OV-2", "OV-2 Operational Resource Flow Description"},
                             new string[] {"OV-4", "OV-4 Organizational Relationships Chart"},
                             new string[] {"OV-5a", "OV-5a Operational Activity Decomposition Tree"},
@@ -359,6 +359,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"superSubtype", "CV-1"}, 
                             new string[] {"WholePartType", "CV-1"},
                             new string[] {"activityPartOfCapability", "CV-1"}, 
+                            new string[] {"activityPartOfCapability", "CV-2"}, 
                             new string[] {"Activity", "CV-2"},
                             new string[] {"Condition", "CV-2"},
                             new string[] {"DomainInformation", "CV-2"},
@@ -5937,6 +5938,7 @@ namespace EAWS.Core.SilverBullet
                     //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
                     //where result2.Attribute("name") != null
                     where (string)result.Attribute(current_lookup[3]) == (string)result2.Attribute(ns2 + "id")
+                    where (string)result2.Attribute("name") != null
                     //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
                     select new Thing
                     {
@@ -5955,6 +5957,177 @@ namespace EAWS.Core.SilverBullet
             }
 
             //things = things.GroupBy(x => x.id).Select(grp => grp.First());
+
+            //Regular Relationships
+
+            foreach (string[] current_lookup in MD_Relationship_Lookup)
+            {
+
+                if (current_lookup[2] == "1")
+                {
+
+                    results =
+                        from result in root.Elements(ns + current_lookup[1])
+                        //from result3 in root.Elements(ns + "View")
+                        //from result4 in root.Descendants()
+                        from result2 in root.Descendants()
+                        //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+                        //where result2.Attribute("name") != null
+                        where (string)result.LastAttribute == (string)result2.Attribute(ns2 + "id")
+                        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                        select new Thing
+                        {
+                            type = current_lookup[0],
+                            id = (string)result.LastAttribute,
+                            name = "$none$",
+                            value = (string)result2.Element("supplier").Attribute(ns2 + "idref") + (string)result2.Element("client").Attribute(ns2 + "idref"),
+                            place2 = (string)result2.Element("client").Attribute(ns2 + "idref"),
+                            place1 = (string)result2.Element("supplier").Attribute(ns2 + "idref"),
+                            foundation = current_lookup[2],
+                            value_type = "$id$"
+                        };
+
+                    tuple_types = tuple_types.Concat(results.ToList());
+                }
+                else
+                {
+                    results =
+                        from result in root.Elements(ns + current_lookup[1])
+                        //from result3 in root.Elements(ns + "View")
+                        //from result4 in root.Descendants()
+                        from result2 in root.Descendants()
+                        //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+                        //where result2.Attribute("name") != null
+                        where (string)result.LastAttribute == (string)result2.Attribute(ns2 + "id")
+                        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                        select new Thing
+                        {
+                            type = current_lookup[0],
+                            id = (string)result.LastAttribute,
+                            name = "$none$",
+                            value = (string)result2.Element("client").Attribute(ns2 + "idref") + (string)result2.Element("supplier").Attribute(ns2 + "idref"),
+                            place1 = (string)result2.Element("client").Attribute(ns2 + "idref"),
+                            place2 = (string)result2.Element("supplier").Attribute(ns2 + "idref"),
+                            foundation = current_lookup[2],
+                            value_type = "$id$"
+                        };
+
+                    tuple_types = tuple_types.Concat(results.ToList());
+                }
+
+            }
+
+            //OV-6c BPMN
+
+            results =
+                from result in root.Descendants().Elements("node")
+                from result2 in root.Descendants().Elements("node")
+                where (string)result.Attribute(ns2 + "idref") == (string)result2.Attribute(ns2 + "id")
+                where (string)result2.Attribute("behavior") != null
+                where (string)result.Parent.Attribute("represents") != null
+                //from result3 in root.Descendants().Elements("covered")
+                //where (string)result3.Attribute(ns2 + "idref") == (string)result.Attribute(ns2 + "id")
+                //where (string)result3.Parent.Attribute("message") != null
+
+                select
+                    //new {
+                    //    key = (string)result.Parent.Parent.Attribute("SAObjId"),
+                    //    value = new List<Thing> {
+                           new Thing
+
+                           {
+                               type = "activityPerformedByPerformer",
+                               id = (string)result2.Attribute("behavior") + (string)result.Parent.Attribute("represents"),
+                               name = "$none$",
+                               value = (string)result.Parent.Attribute("represents") + (string)result2.Attribute("behavior") ,
+                               place2 = (string)result2.Attribute("behavior"),
+                               place1 = (string)result.Parent.Attribute("represents"),
+                               foundation = "CoupleType",
+                               value_type = "$id$"
+
+                           };
+
+            tuple_types = tuple_types.Concat(results);
+
+            //OV-6c ETD
+
+            results =
+                   from result in root.Descendants().Elements("fragment")
+                   from result2 in root.Descendants().Elements("message")
+                   where (string)result.Attribute("message") == (string)result2.Attribute(ns2 + "id")
+                   where (string)result2.Attribute("name") != null
+
+                   select new Thing
+                   {
+                       type = "Activity",
+                       id = (string)result.Attribute(ns2 + "id"),// + "///" +*/ (string)result.LastAttribute,//Attribute("base_Operation"),
+                       name = (string)result2.Attribute("name"),//*/ (string)result.FirstAttribute,//Attribute(ns2 + "id"),
+                       value = "$none$",
+                       //place1 = (string)result.Attribute(ns2 + "id"),
+                       //place2 = (string)result.LastAttribute,
+                       foundation = "IndividualType",
+                       value_type = "$none$"
+                   };
+
+            things = things.Concat(results.ToList());
+
+            results =
+                from result in root.Descendants().Elements("coveredBy")
+                from result2 in root.Descendants().Elements("ownedAttribute")
+                where (string)result.Parent.Attribute("represents") == (string)result2.Attribute(ns2 + "id")
+                where (string)result2.Attribute("type") != null
+                //from result3 in root.Descendants().Elements("covered")
+                //where (string)result3.Attribute(ns2 + "idref") == (string)result.Attribute(ns2 + "id")
+                //where (string)result3.Parent.Attribute("message") != null
+
+                select
+                    //new {
+                    //    key = (string)result.Parent.Parent.Attribute("SAObjId"),
+                    //    value = new List<Thing> {
+                           new Thing
+
+                           {
+                               type = "activityPerformedByPerformer",
+                               id = (string)result2.Attribute("type") + (string)result.Attribute(ns2 + "idref"),
+                               name = "$none$",
+                               value = (string)result2.Attribute("type") + (string)result.Attribute(ns2 + "idref"),
+                               place1 = (string)result2.Attribute("type"),
+                               place2 = (string)result.Attribute(ns2 + "idref"),
+                               foundation = "CoupleType",
+                               value_type = "$id$"
+
+                           };
+
+            tuple_types = tuple_types.Concat(results);
+
+            tuple_types = tuple_types.GroupBy(x => (string)x.value).Select(grp => grp.First());
+
+            results =
+                from result in root.Descendants().Elements("message")
+                //from result2 in root.Descendants().Elements("fragment")
+                //where (string)result.Attribute("sendEvent") == (string)result2.Attribute(ns2 + "id")
+                //from result3 in root.Descendants().Elements("fragment")
+                //where (string)result.Attribute("receiveEvent") == (string)result3.Attribute(ns2 + "id")
+
+                select
+                    //new {
+                    //    key = (string)result.Parent.Parent.Attribute("SAObjId"),
+                    //    value = new List<Thing> {
+               new Thing
+
+               {
+                   type = "BeforeAfterType",
+                   id = (string)result.Attribute("sendEvent") + (string)result.Attribute("receiveEvent"),
+                   name = "$none$",
+                   value = "$none$",
+                   place1 = (string)result.Attribute("sendEvent"),
+                   place2 = (string)result.Attribute("receiveEvent"),
+                   foundation = "CoupleType",
+                   value_type = "$period$"
+
+               };
+
+            tuple_types = tuple_types.Concat(results);
 
             //DIV-3 Data Type Parts
 
@@ -6010,7 +6183,7 @@ namespace EAWS.Core.SilverBullet
                     div3_dic2.Add(thing.place2, new List<Thing>() { value });
 
             }
-            
+
             //DIV Data Parts
 
             results =
@@ -6018,7 +6191,7 @@ namespace EAWS.Core.SilverBullet
                     //from result3 in root.Elements(ns + "View")
                     //from result4 in root.Descendants()
                     from result2 in root.Descendants().Elements("ownedAttribute")
-                    where (string)result2.Attribute("aggregation") == "composite"
+                    //where (string)result2.Attribute("aggregation") == "composite"
                     //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
                     //where result2.Attribute("name") != null
                     where (string)result.Attribute("base_Class") == (string)result2.Parent.Attribute(ns2 + "id")
@@ -6051,7 +6224,7 @@ namespace EAWS.Core.SilverBullet
                     foundation = "WholePartType",
                     value_type = "$none$"
                 };
-                tuple_types = tuple_types.Concat(new List<Thing>(){value}
+                tuple_types = tuple_types.Concat(new List<Thing>() { value }
                 );
                 values = new List<Thing>();
                 if (div2_dic2.TryGetValue(thing.place2, out values))
@@ -6062,65 +6235,6 @@ namespace EAWS.Core.SilverBullet
                 }
                 else
                     div2_dic2.Add(thing.place2, new List<Thing>() { value });
-
-            }
-
-            //Regular Relationships
-
-            foreach (string[] current_lookup in MD_Relationship_Lookup)
-            {
-
-                if (current_lookup[2] == "1")
-                {
-
-                    results =
-                        from result in root.Elements(ns + current_lookup[1])
-                        //from result3 in root.Elements(ns + "View")
-                        //from result4 in root.Descendants()
-                        from result2 in root.Descendants()
-                        //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
-                        //where result2.Attribute("name") != null
-                        where (string)result.LastAttribute == (string)result2.Attribute(ns2 + "id")
-                        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
-                        select new Thing
-                        {
-                            type = current_lookup[0],
-                            id = (string)result.LastAttribute,
-                            name = "$none$",
-                            value = "$none$",
-                            place2 = (string)result2.Element("client").Attribute(ns2 + "idref"),
-                            place1 = (string)result2.Element("supplier").Attribute(ns2 + "idref"),
-                            foundation = current_lookup[2],
-                            value_type = "$none$"
-                        };
-
-                    tuple_types = tuple_types.Concat(results.ToList());
-                }
-                else
-                {
-                    results =
-                        from result in root.Elements(ns + current_lookup[1])
-                        //from result3 in root.Elements(ns + "View")
-                        //from result4 in root.Descendants()
-                        from result2 in root.Descendants()
-                        //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
-                        //where result2.Attribute("name") != null
-                        where (string)result.LastAttribute == (string)result2.Attribute(ns2 + "id")
-                        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
-                        select new Thing
-                        {
-                            type = current_lookup[0],
-                            id = (string)result.LastAttribute,
-                            name = "$none$",
-                            value = "$none$",
-                            place1 = (string)result2.Element("client").Attribute(ns2 + "idref"),
-                            place2 = (string)result2.Element("supplier").Attribute(ns2 + "idref"),
-                            foundation = current_lookup[2],
-                            value_type = "$none$"
-                        };
-
-                    tuple_types = tuple_types.Concat(results.ToList());
-                }
 
             }
 
@@ -6427,132 +6541,55 @@ namespace EAWS.Core.SilverBullet
 
             }
 
-            //OV-6c ETD
-
-            results =
-                   from result in root.Descendants().Elements("fragment")
-                   from result2 in root.Descendants().Elements("message")
-                   where (string)result.Attribute("message") == (string)result2.Attribute(ns2 + "id")
-
-                   select new Thing
-                   {
-                       type = "Activity",
-                       id = (string)result.Attribute(ns2 + "id"),// + "///" +*/ (string)result.LastAttribute,//Attribute("base_Operation"),
-                       name = (string)result2.Attribute("name"),//*/ (string)result.FirstAttribute,//Attribute(ns2 + "id"),
-                       value = "$none$",
-                       //place1 = (string)result.Attribute(ns2 + "id"),
-                       //place2 = (string)result.LastAttribute,
-                       foundation = "IndividualType",
-                       value_type = "$none$"
-                   };
-
-            things = things.Concat(results.ToList());
-
-            results =
-                from result in root.Descendants().Elements("coveredBy")
-                from result2 in root.Descendants().Elements("ownedAttribute")
-                where (string)result.Parent.Attribute("represents") == (string)result2.Attribute(ns2 + "id")
-                where (string)result2.Attribute("type") != null
-                //from result3 in root.Descendants().Elements("covered")
-                //where (string)result3.Attribute(ns2 + "idref") == (string)result.Attribute(ns2 + "id")
-                //where (string)result3.Parent.Attribute("message") != null
-
-                select
-                    //new {
-                    //    key = (string)result.Parent.Parent.Attribute("SAObjId"),
-                    //    value = new List<Thing> {
-                           new Thing
-
-                        {
-                            type = "activityPerformedByPerformer",
-                            id = (string)result2.Attribute("type") + (string)result.Attribute(ns2 + "idref"),
-                            name = "$none$",
-                            value = "$none$",
-                            place1 = (string)result2.Attribute("type"),
-                            place2 = (string)result.Attribute(ns2 + "idref"),
-                            foundation = "CoupleType",
-                            value_type = "$period$"
-
-                        };
-
-            tuple_types = tuple_types.Concat(results);
-
-            results =
-                from result in root.Descendants().Elements("message")
-                //from result2 in root.Descendants().Elements("fragment")
-                //where (string)result.Attribute("sendEvent") == (string)result2.Attribute(ns2 + "id")
-                //from result3 in root.Descendants().Elements("fragment")
-                //where (string)result.Attribute("receiveEvent") == (string)result3.Attribute(ns2 + "id")
-
-                select
-                    //new {
-                    //    key = (string)result.Parent.Parent.Attribute("SAObjId"),
-                    //    value = new List<Thing> {
-               new Thing
-
-               {
-                   type = "BeforeAfterType",
-                   id = (string)result.Attribute("sendEvent") + (string)result.Attribute("receiveEvent"),
-                   name = "$none$",
-                   value = "$none$",
-                   place1 = (string)result.Attribute("sendEvent"),
-                   place2 = (string)result.Attribute("receiveEvent"),
-                   foundation = "CoupleType",
-                   value_type = "$period$"
-
-               };
-
-            tuple_types = tuple_types.Concat(results);
-
             //OV-1 Picture
 
-            //results =
-            //    from result in root.Descendants().Elements("image")
-            //    from result2 in root.Descendants().Elements("diagramContents").Elements("binaryObject")
-            //    where (string)result2.Parent.Parent.Attribute("type") == "OV-1 High-Level Operational Concept Graphic"
-            //    where (string)result.Parent.Parent.Parent.Attribute("name") == (string)result2.Attribute("streamContentID")
-                
-            //    select
-            //        //new {
-            //        //    key = (string)result.Parent.Parent.Attribute("SAObjId"),
-            //        //    value = new List<Thing> {
-            //            new Thing
-            //            {
-            //                type = "ArchitecturalDescription",
-            //                id = (string)result.Parent.Parent.Parent.Attribute("name"),
-            //                name = "$none$",
-            //                value = (string)result.Value,
-            //                place1 = (string)result2.Parent.Parent.Parent.Parent.Parent.Attribute(ns2 + "id"),
-            //                place2 = (string)result.Parent.Parent.Parent.Attribute("name"),
-            //                foundation = "IndividualType",
-            //                value_type = "exemplar"
-            //            };
-            ////}}).ToDictionary(a => a.key, a => a.value);
+            results =
+                from result in root.Descendants().Elements("image")
+                from result2 in root.Descendants().Elements("diagramContents").Elements("binaryObject")
+                where (string)result2.Parent.Parent.Attribute("type") == "OV-1 High-Level Operational Concept Graphic"
+                where (string)result.Parent.Parent.Parent.Attribute("name") == (string)result2.Attribute("streamContentID")
 
-            //OV1_pic_views = results.GroupBy(x => x.place1).ToDictionary(x => x.Key, x => x.ToList());
+                select
+                    //new {
+                    //    key = (string)result.Parent.Parent.Attribute("SAObjId"),
+                    //    value = new List<Thing> {
+                        new Thing
+                        {
+                            type = "ArchitecturalDescription",
+                            id = (string)result.Parent.Parent.Parent.Attribute("name"),
+                            name = "$none$",
+                            value = (string)result.Value,
+                            place1 = (string)result2.Parent.Parent.Parent.Parent.Parent.Attribute(ns2 + "id"),
+                            place2 = (string)result.Parent.Parent.Parent.Attribute("name"),
+                            foundation = "IndividualType",
+                            value_type = "exemplar"
+                        };
+            //}}).ToDictionary(a => a.key, a => a.value);
 
-            //if (OV1_pic_views.Count() > 0)
-            //{
-            //    representation_scheme = true;
-            //    foreach (KeyValuePair<string, List<Thing>> entry in OV1_pic_views)
-            //    {
-            //        foreach (Thing thing in entry.Value)
-            //        {
-            //            tuples = tuples.Concat(new List<Thing>{new Thing
-            //                {
-            //                type = "representationSchemeInstance",
-            //                id = thing.id+"_1",
-            //                name = "$none$",
-            //                value = "$none$",
-            //                place1 = "_rs1",
-            //                place2 = thing.id,
-            //                foundation = "typeInstance",
-            //                value_type = "$none$"
-            //                }});
-            //        }
-            //    }
-            //    things = things.Concat(OV1_pic_views.SelectMany(x => x.Value));   
-            //}
+            OV1_pic_views = results.GroupBy(x => x.place1).ToDictionary(x => x.Key, x => x.ToList());
+
+            if (OV1_pic_views.Count() > 0)
+            {
+                representation_scheme = true;
+                foreach (KeyValuePair<string, List<Thing>> entry in OV1_pic_views)
+                {
+                    foreach (Thing thing in entry.Value)
+                    {
+                        tuples = tuples.Concat(new List<Thing>{new Thing
+                            {
+                            type = "representationSchemeInstance",
+                            id = thing.id+"_1",
+                            name = "$none$",
+                            value = "$none$",
+                            place1 = "_rs1",
+                            place2 = thing.id,
+                            foundation = "typeInstance",
+                            value_type = "$none$"
+                            }});
+                    }
+                }
+                things = things.Concat(OV1_pic_views.SelectMany(x => x.Value));
+            }
 
             //Diagramming
 
