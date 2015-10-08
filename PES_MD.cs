@@ -137,14 +137,16 @@ namespace EAWS.Core.SilverBullet
                             //new string[] { "IndividualPersonRole", "ActualPerson", "Individual", "base_InstanceSpecification" },
                             new string[] { "IndividualPersonRole", "IndividualPersonRole", "IndividualType", "base_InstanceSpecification" },
                             new string[] { "OrganizationType", "OrganizationType", "IndividualType", "base_Class" },
+                            new string[] { "Resource", "Materiel", "IndividualType", "base_Class" },
                             };
 
         static string[][] MD_Relationship_Lookup = new string[][] {
                             // DM2 Class, UPDM_Profile Element
                             new string[] { "activityPartOfCapability", "ActivityPartOfCapability", "WholePartType","1" },
                             new string[] { "activityPerformedByPerformer", "ActivityPerformedByPerformer", "CoupleType","2" },
-                            new string[] { "OverlapType", "ArbitraryConnector", "CoupleType","1" },
+                            //new string[] { "OverlapType", "ArbitraryConnector", "CoupleType","1" },
                             new string[] { "OverlapType", "Details", "CoupleType","1" },
+                            new string[] { "WholePartType", "Implements", "CoupleType","1" },
                             };
 
         static string[][] MD_View_Lookup = new string[][] { 
@@ -161,6 +163,12 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"OV-6c", "OV-6c Operational Event-Trace Description"}, 
                             new string[] {"SV-7", "DODAF2_SV-7Typical"},
                             new string[] {"SvcV-7", "DODAF2_SvcV-7Typical"},
+                            new string[] {"SV-1", "SV-1 Systems Interface Description"},
+                            new string[] {"SV-2", "SV-2 Systems Communications Description"},
+                            new string[] {"SV-4", "SV-4 Systems Functionality Description"},
+                            new string[] {"SvcV-1", "SvcV-1 Services Context Description"},
+                            new string[] {"SvcV-2", "SvcV-2 Services Resource Flow Description"},
+                            new string[] {"SvcV-4", "SvcV-4 Services Functionality Description"},
                             }; 
 
         static string[][] View_Lookup = new string[][] {  
@@ -6298,6 +6306,7 @@ namespace EAWS.Core.SilverBullet
                 from result in root.Descendants().Elements("ownedAttribute")
                 where (string)result.Attribute(ns2 + "id") != null
                 where (string)result.Attribute("type") != null
+                where (string)result.Attribute("name") != null
                 //from result3 in root.Elements(ns + "View")
                 //from result4 in root.Descendants()
                 //from result2 in root.Descendants()
@@ -6319,6 +6328,38 @@ namespace EAWS.Core.SilverBullet
                     foundation = "WholePartType",
                     value_type = "$none$"
                 };
+
+            tuple_types = tuple_types.Concat(results.ToList());
+
+            //OverlapType - Arbitrary
+
+            results =
+                        from result in root.Elements(ns + "ArbitraryConnector")
+                        //from result3 in root.Elements(ns + "View")
+                        //from result4 in root.Descendants()
+                        from result2 in root.Descendants()
+                        //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+                        //where result2.Attribute("name") != null
+                        where (string)result.LastAttribute == (string)result2.Attribute(ns2 + "id")
+                        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                        from result3 in root.Descendants().Elements("ownedAttribute")
+                        where (string)result3.Attribute(ns2 + "id") == (string)result2.Element("supplier").Attribute(ns2 + "idref")
+                        where (string)result3.Attribute("type") != null
+                        from result4 in root.Descendants().Elements("ownedAttribute")
+                        where (string)result4.Attribute(ns2 + "id") == (string)result2.Element("client").Attribute(ns2 + "idref")
+                        where (string)result4.Attribute("type") != null
+
+                        select new Thing
+                        {
+                            type = "OverlapType",
+                            id = (string)result.LastAttribute,
+                            name = "$none$",
+                            value = (string)result2.Element("supplier").Attribute(ns2 + "idref") + (string)result2.Element("client").Attribute(ns2 + "idref"),
+                            place2 = (string)result4.Attribute("type"),
+                            place1 = (string)result3.Attribute("type"),
+                            foundation = "CoupleType",
+                            value_type = "$id$"
+                        };
 
             tuple_types = tuple_types.Concat(results.ToList());
 
@@ -8364,6 +8405,40 @@ namespace EAWS.Core.SilverBullet
 
             }
 
+            results =
+                    from result in root.Descendants().Elements("realization")
+                    from result2 in root.Descendants().Elements("realizingActivityEdge")
+                    where (string)result2.Parent.Attribute(ns2 + "id") != null
+                    where (string)result.Parent.Attribute(ns2 + "id") != null
+                    where (string)result.Parent.Attribute(ns2 + "id") == (string)result2.Parent.Attribute(ns2 + "id")
+                    select new Thing
+                    {
+                        type = "temp",
+                        id = (string)result2.Parent.Attribute(ns2 + "id"),// + "///" +*/ (string)result.LastAttribute,//Attribute("base_Operation"),
+                        value = "$none$",
+                        place1 = (string)result.Attribute(ns2 + "idref"),
+                        place2 = (string)result2.Parent.Attribute(ns2 + "id"),
+                        value_type = "$none$"
+                    };
+
+            foreach (Thing thing in results)
+            {
+                if (lookup.TryGetValue(thing.place2, out values))
+                {
+                    if (lookup.TryGetValue(thing.place1, out values2))
+                    {
+                        values.AddRange(values2);
+                        lookup.Remove(thing.place1);
+                        lookup.Add(thing.place1, values);
+                    }
+                    else
+                    {
+                        lookup.Add(thing.place1, values);
+                    }
+                }
+            }
+
+
             //Views
 
             foreach (string[] current_lookup in MD_View_Lookup)
@@ -8598,6 +8673,9 @@ namespace EAWS.Core.SilverBullet
 
                     mandatory_list = mandatory_list.OrderBy(x => x.type).ToList();
                     optional_list = optional_list.OrderBy(x => x.type).ToList();
+
+                    if (view.First().type == "SV-1")
+                        values = null;
 
                     if (Proper_View(mandatory_list, view.First().name, view.First().type, view.First().place1, ref errors_list))
                         views.Add(new View { type = view.First().type, id = view.First().place1, name = view.First().name, mandatory = mandatory_list, optional = optional_list });
