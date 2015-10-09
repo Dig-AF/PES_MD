@@ -5909,6 +5909,7 @@ namespace EAWS.Core.SilverBullet
             Dictionary<string, Thing> values_dic;
             Dictionary<string, Thing> values_dic2;
             Dictionary<string, Thing> values_dic3;
+            Dictionary<string, Thing> values_dic4;
             XElement root = XElement.Load(new MemoryStream(input));
             List<List<Thing>> sorted_results = new List<List<Thing>>();
             List<List<Thing>> sorted_results_new = new List<List<Thing>>();
@@ -8438,6 +8439,7 @@ namespace EAWS.Core.SilverBullet
                 }
             }
 
+            tuple_types = tuple_types.GroupBy(x => x.id).Select(grp => grp.First());
 
             //Views
 
@@ -8671,11 +8673,41 @@ namespace EAWS.Core.SilverBullet
                     if (OV1_pic_views.TryGetValue(view.First().place1, out values))
                         mandatory_list.AddRange(values);
 
+                    if (view.First().type == "SV-4")
+                    {
+                        //var duplicateKeys = tuple_types.GroupBy(x => x.id)
+                        //.Where(group => group.Count() > 1)
+                        //.Select(group => group.Key);
+
+                        values_dic4 = tuple_types.Where(x => x.type == "activityPerformedByPerformer").ToDictionary(x=>x.id,x=>x);
+
+                        //values2 = mandatory_list.Where(x => x.type == "activityPerformedByPerformer").ToDictionary(x => x.id, x => values_dic4[x.id]).Values.ToList();
+
+                        values2 = mandatory_list.Where(x => x.type == "activityPerformedByPerformer").Select(x => values_dic4[x.id]).ToList();
+
+                        values_dic = values2.GroupBy(x => x.place2).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
+
+                        results = tuple_types.Where(x => x.type == "activityConsumesResource").Where(x => values_dic.ContainsKey(x.place2));
+
+                        values_dic3 = things.Where(x => x.type == "Data").ToDictionary(x => x.id, x => x);
+
+                        results = results.Where(x => values_dic3.ContainsKey(x.place1));
+
+                        values_dic2 = results.GroupBy(x => x.place1).Select(grp => grp.First()).ToDictionary(x => x.place1, x => x);
+
+                        values = tuple_types.Where(x => x.type == "activityProducesResource").Where(x => values_dic.ContainsKey(x.place1)).Where(x => values_dic2.ContainsKey(x.place2)).ToList();
+
+                        mandatory_list.AddRange(results);
+
+                        mandatory_list.AddRange(values);
+
+                        //mandatory_list.AddRange(results.GroupBy(x => x.place1).Select(grp => grp.First()).ToDictionary(x => x.id, x => values_dic3[x.place1]).Values.ToList());
+
+                        mandatory_list.AddRange(results.GroupBy(x => x.place1).Select(grp => grp.First()).Select( x => values_dic3[x.place1]));
+                    }
+
                     mandatory_list = mandatory_list.OrderBy(x => x.type).ToList();
                     optional_list = optional_list.OrderBy(x => x.type).ToList();
-
-                    if (view.First().type == "SV-1")
-                        values = null;
 
                     if (Proper_View(mandatory_list, view.First().name, view.First().type, view.First().place1, ref errors_list))
                         views.Add(new View { type = view.First().type, id = view.First().place1, name = view.First().name, mandatory = mandatory_list, optional = optional_list });
