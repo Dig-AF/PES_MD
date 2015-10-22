@@ -146,7 +146,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] { "activityPerformedByPerformer", "ActivityPerformedByPerformer", "CoupleType","2" },
                             //new string[] { "OverlapType", "ArbitraryConnector", "CoupleType","1" },
                             new string[] { "OverlapType", "Details", "CoupleType","1" },
-                            new string[] { "WholePartType", "Implements", "CoupleType","1" },
+                            new string[] { "OverlapType", "Implements", "CoupleType","1" },
                             };
 
         static string[][] MD_View_Lookup = new string[][] { 
@@ -463,6 +463,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"Rule", "OV-2"}, 
                             new string[] {"superSubtype", "OV-2"}, 
                             new string[] {"WholePartType", "OV-2"},
+                            new string[] {"OverlapType", "OV-2"},
                             new string[] {"Condition", "OV-3"},
                             new string[] {"Information", "OV-3"},
                             new string[] {"Location", "OV-3"},
@@ -1309,4574 +1310,4574 @@ namespace EAWS.Core.SilverBullet
         ////////////////////
         ////////////////////
 
-        public static bool MD2PES_HighLevel(byte[] input, ref string output, ref string errors)
-        {
-            IEnumerable<Thing> things = new List<Thing>();
-            IEnumerable<Thing> tuple_types = new List<Thing>();
-            IEnumerable<Thing> tuples = new List<Thing>();
-            IEnumerable<Thing> results;
-            IEnumerable<Thing> results2;
-            IEnumerable<Location> locations;
-            List<View> views = new List<View>();
-            List<Thing> mandatory_list = new List<Thing>();
-            List<Thing> optional_list = new List<Thing>();
-            string temp;
-            Dictionary<string, List<Thing>> doc_blocks_data;
-            Dictionary<string, string> diagrams;
-            Dictionary<string, string> not_processed_diagrams;
-            Dictionary<string, Thing> things_dic;
-            Dictionary<string, Thing> values_dic;
-            Dictionary<string, Thing> values_dic2;
-            Dictionary<string, List<Thing>> doc_blocks_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> description_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> OV1_pic_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> needline_mandatory_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> CV1_mandatory_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> CV1_optional_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> CV4_mandatory_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> CV4_optional_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> needline_optional_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> OV2_support_mandatory_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> OV2_support_optional_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> OV4_support_optional_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> OV2_support_mandatory_views_2 = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> OV4_support_optional_views_2 = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> OV5b_aro_mandatory_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> OV6c_aro_optional_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> OV5b_aro_optional_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> PV1_mandatory_views = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> DIV3_optional = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> DIV3_mandatory = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> results_dic;
-            Dictionary<string, List<Thing>> period_dic = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> datatype_mandatory_dic = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> datatype_optional_dic = new Dictionary<string, List<Thing>>();
-            Dictionary<string, List<Thing>> aro;
-            Dictionary<string, List<Thing>> aro2;
-            XElement root = XElement.Load(new MemoryStream(input));
-            List<List<Thing>> sorted_results = new  List<List<Thing>>();
-            List<List<Thing>> sorted_results_new = new List<List<Thing>>();
-            List<List<Thing>> view_holder = new List<List<Thing>>();
-            bool representation_scheme = false;
-            List<Thing> values = new List<Thing>();
-            List<Thing> values2 = new List<Thing>();
-            List<Thing> values3 = new List<Thing>();
-            List<Thing> values4 = new List<Thing>();
-            List<Thing> values5 = new List<Thing>();
-            List<Thing> values6 = new List<Thing>();
-            List<Thing> values7 = new List<Thing>();
-            Thing value;
-            Thing value2;
-            int count = 0;
-            int count2 = 0;
-            bool add = false;
-            bool test = true;
-            List<string> errors_list = new List<string>();
+//        public static bool MD2PES_HighLevel(byte[] input, ref string output, ref string errors)
+//        {
+//            IEnumerable<Thing> things = new List<Thing>();
+//            IEnumerable<Thing> tuple_types = new List<Thing>();
+//            IEnumerable<Thing> tuples = new List<Thing>();
+//            IEnumerable<Thing> results;
+//            IEnumerable<Thing> results2;
+//            IEnumerable<Location> locations;
+//            List<View> views = new List<View>();
+//            List<Thing> mandatory_list = new List<Thing>();
+//            List<Thing> optional_list = new List<Thing>();
+//            string temp;
+//            Dictionary<string, List<Thing>> doc_blocks_data;
+//            Dictionary<string, string> diagrams;
+//            Dictionary<string, string> not_processed_diagrams;
+//            Dictionary<string, Thing> things_dic;
+//            Dictionary<string, Thing> values_dic;
+//            Dictionary<string, Thing> values_dic2;
+//            Dictionary<string, List<Thing>> doc_blocks_views = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> description_views = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> OV1_pic_views = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> needline_mandatory_views = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> CV1_mandatory_views = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> CV1_optional_views = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> CV4_mandatory_views = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> CV4_optional_views = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> needline_optional_views = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> OV2_support_mandatory_views = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> OV2_support_optional_views = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> OV4_support_optional_views = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> OV2_support_mandatory_views_2 = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> OV4_support_optional_views_2 = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> OV5b_aro_mandatory_views = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> OV6c_aro_optional_views = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> OV5b_aro_optional_views = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> PV1_mandatory_views = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> DIV3_optional = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> DIV3_mandatory = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> results_dic;
+//            Dictionary<string, List<Thing>> period_dic = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> datatype_mandatory_dic = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> datatype_optional_dic = new Dictionary<string, List<Thing>>();
+//            Dictionary<string, List<Thing>> aro;
+//            Dictionary<string, List<Thing>> aro2;
+//            XElement root = XElement.Load(new MemoryStream(input));
+//            List<List<Thing>> sorted_results = new  List<List<Thing>>();
+//            List<List<Thing>> sorted_results_new = new List<List<Thing>>();
+//            List<List<Thing>> view_holder = new List<List<Thing>>();
+//            bool representation_scheme = false;
+//            List<Thing> values = new List<Thing>();
+//            List<Thing> values2 = new List<Thing>();
+//            List<Thing> values3 = new List<Thing>();
+//            List<Thing> values4 = new List<Thing>();
+//            List<Thing> values5 = new List<Thing>();
+//            List<Thing> values6 = new List<Thing>();
+//            List<Thing> values7 = new List<Thing>();
+//            Thing value;
+//            Thing value2;
+//            int count = 0;
+//            int count2 = 0;
+//            bool add = false;
+//            bool test = true;
+//            List<string> errors_list = new List<string>();
 
 
-            //Diagram Type
+//            //Diagram Type
 
-            results =
-                from result in root.Elements("Class").Elements("MDDiagram")
-                select new Thing
-                            {
-                                type = (string)result.Attribute("MDObjMinorTypeName"),
-                                id = (string)result.Attribute("MDObjId"),
-                                name = ((string)result.Attribute("MDObjName")).Replace("&", " And "),
-                                value = "$none$",
-                                place1 = "$none$",
-                                place2 = "$none$",
-                                foundation = "Thing",
-                                value_type = "$none$"
-                            };
+//            results =
+//                from result in root.Elements("Class").Elements("MDDiagram")
+//                select new Thing
+//                            {
+//                                type = (string)result.Attribute("MDObjMinorTypeName"),
+//                                id = (string)result.Attribute("MDObjId"),
+//                                name = ((string)result.Attribute("MDObjName")).Replace("&", " And "),
+//                                value = "$none$",
+//                                place1 = "$none$",
+//                                place2 = "$none$",
+//                                foundation = "Thing",
+//                                value_type = "$none$"
+//                            };
 
-            diagrams = View_Lookup.ToDictionary(x => x[1], x => x[0]);
-            not_processed_diagrams = Not_Processed_View_Lookup.ToDictionary(x => x[1], x => x[0]);
-            foreach (Thing thing in results)
-            {
-                if (!diagrams.TryGetValue(thing.type, out temp))
-                {
-                    if (not_processed_diagrams.TryGetValue(thing.type, out temp))
-                    {
-                        errors_list.Add("Diagram error," + thing.id + "," + thing.name + "," + temp + ", Type Not Allowed - Diagram Ignored: " + thing.type + "\r\n");
-                    }
-                    else
-                    {
-                        errors_list.Add("Diagram error," + thing.id + "," + thing.name + ",Unknown, Type Not Allowed - Diagram Ignored: " + thing.type + "\r\n");
-                    }
-                }
-            }
+//            diagrams = View_Lookup.ToDictionary(x => x[1], x => x[0]);
+//            not_processed_diagrams = Not_Processed_View_Lookup.ToDictionary(x => x[1], x => x[0]);
+//            foreach (Thing thing in results)
+//            {
+//                if (!diagrams.TryGetValue(thing.type, out temp))
+//                {
+//                    if (not_processed_diagrams.TryGetValue(thing.type, out temp))
+//                    {
+//                        errors_list.Add("Diagram error," + thing.id + "," + thing.name + "," + temp + ", Type Not Allowed - Diagram Ignored: " + thing.type + "\r\n");
+//                    }
+//                    else
+//                    {
+//                        errors_list.Add("Diagram error," + thing.id + "," + thing.name + ",Unknown, Type Not Allowed - Diagram Ignored: " + thing.type + "\r\n");
+//                    }
+//                }
+//            }
 
 
 
-            //Doc Block
+//            //Doc Block
 
-            results_dic =
-                (from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
-                where (string)result.Attribute("MDObjMinorTypeName") == "Doc Block"
-                select new
-                {
-                        key = (string)result.Parent.Attribute("MDObjId"),
-                        value = new List<Thing> {new Thing
-                        {
-                        type = "Information",
-                        id = (string)result.Attribute("MDObjId")+"_1",
-                        name = "Doc Block Comment",
-                        value = (string)result.Attribute("MDSymZPDesc"),
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = "IndividualType",
-                        value_type = "exemplar"
-                        },new Thing
-                    {
-                        type = "Information",
-                        id = (string)result.Attribute("MDObjId")+"_2",
-                        name = "Doc Block Type",
-                        value = (string)result.Parent.Attribute("MDObjMinorTypeName"),
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = "IndividualType",
-                        value_type = "exemplar"
-                    },new Thing
-                    {
-                        type = "Information",
-                        id = (string)result.Attribute("MDObjId")+"_3",
-                        name = "Doc Block Date",
-                        value = (string)result.Parent.Attribute("MDObjUpdateDate"),
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = "IndividualType",
-                        value_type = "exemplar"
-                    },new Thing
-                    {
-                        type = "Information",
-                        id = (string)result.Attribute("MDObjId")+"_4",
-                        name = "Doc Block Time",
-                        value = (string)result.Parent.Attribute("MDObjUpdateTime"),
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = "IndividualType",
-                        value_type = "exemplar"
-                    }}
-                }).ToDictionary(a => a.key, a => a.value);
+//            results_dic =
+//                (from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
+//                where (string)result.Attribute("MDObjMinorTypeName") == "Doc Block"
+//                select new
+//                {
+//                        key = (string)result.Parent.Attribute("MDObjId"),
+//                        value = new List<Thing> {new Thing
+//                        {
+//                        type = "Information",
+//                        id = (string)result.Attribute("MDObjId")+"_1",
+//                        name = "Doc Block Comment",
+//                        value = (string)result.Attribute("MDSymZPDesc"),
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = "IndividualType",
+//                        value_type = "exemplar"
+//                        },new Thing
+//                    {
+//                        type = "Information",
+//                        id = (string)result.Attribute("MDObjId")+"_2",
+//                        name = "Doc Block Type",
+//                        value = (string)result.Parent.Attribute("MDObjMinorTypeName"),
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = "IndividualType",
+//                        value_type = "exemplar"
+//                    },new Thing
+//                    {
+//                        type = "Information",
+//                        id = (string)result.Attribute("MDObjId")+"_3",
+//                        name = "Doc Block Date",
+//                        value = (string)result.Parent.Attribute("MDObjUpdateDate"),
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = "IndividualType",
+//                        value_type = "exemplar"
+//                    },new Thing
+//                    {
+//                        type = "Information",
+//                        id = (string)result.Attribute("MDObjId")+"_4",
+//                        name = "Doc Block Time",
+//                        value = (string)result.Parent.Attribute("MDObjUpdateTime"),
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = "IndividualType",
+//                        value_type = "exemplar"
+//                    }}
+//                }).ToDictionary(a => a.key, a => a.value);
 
-            if(results_dic.Count() > 0)
-            {
-                doc_blocks_data = new Dictionary<string, List<Thing>>(results_dic);
+//            if(results_dic.Count() > 0)
+//            {
+//                doc_blocks_data = new Dictionary<string, List<Thing>>(results_dic);
 
-                foreach (KeyValuePair<string, List<Thing>> entry in results_dic)
-                {
-                    List<Thing> thing_list = new List<Thing>();
-                    foreach (Thing thing in entry.Value)
-                    {
-                        thing_list.Add(new Thing
-                        {
-                            type = "describedBy", id = thing.id + entry.Key, foundation = "namedBy", place1 = entry.Key,
-                            place2 = thing.id, name = "$none$", value = "$none$", value_type = "$none$"
-                        });
-                    }
-                    tuples = tuples.Concat(thing_list);
+//                foreach (KeyValuePair<string, List<Thing>> entry in results_dic)
+//                {
+//                    List<Thing> thing_list = new List<Thing>();
+//                    foreach (Thing thing in entry.Value)
+//                    {
+//                        thing_list.Add(new Thing
+//                        {
+//                            type = "describedBy", id = thing.id + entry.Key, foundation = "namedBy", place1 = entry.Key,
+//                            place2 = thing.id, name = "$none$", value = "$none$", value_type = "$none$"
+//                        });
+//                    }
+//                    tuples = tuples.Concat(thing_list);
 
-                    doc_blocks_views.Add(entry.Key,new List<Thing> (thing_list));
-                }
+//                    doc_blocks_views.Add(entry.Key,new List<Thing> (thing_list));
+//                }
 
-                results_dic =
-                    (from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
-                        where (string)result.Attribute("MDObjMinorTypeName") == "Doc Block"
-                        select new
-                        {
-                            key = (string)result.Parent.Attribute("MDObjId"),
-                            value = new List<Thing> {new Thing
-                            {
-                                type = "Thing",
-                                id = (string)result.Attribute("MDObjId"),
-                                name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                                value = "$none$",
-                                place1 = "$none$",
-                                place2 = "$none$",
-                                foundation = "Thing",
-                                value_type = "$none$"
-                            }}
-                        }).ToDictionary(a => a.key, a => a.value);
+//                results_dic =
+//                    (from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
+//                        where (string)result.Attribute("MDObjMinorTypeName") == "Doc Block"
+//                        select new
+//                        {
+//                            key = (string)result.Parent.Attribute("MDObjId"),
+//                            value = new List<Thing> {new Thing
+//                            {
+//                                type = "Thing",
+//                                id = (string)result.Attribute("MDObjId"),
+//                                name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                                value = "$none$",
+//                                place1 = "$none$",
+//                                place2 = "$none$",
+//                                foundation = "Thing",
+//                                value_type = "$none$"
+//                            }}
+//                        }).ToDictionary(a => a.key, a => a.value);
 
-                MergeDictionaries(doc_blocks_data, results_dic);
+//                MergeDictionaries(doc_blocks_data, results_dic);
 
-                things = things.Concat(doc_blocks_data.SelectMany(x => x.Value));
+//                things = things.Concat(doc_blocks_data.SelectMany(x => x.Value));
 
-                MergeDictionaries(doc_blocks_views, doc_blocks_data);
-            }
+//                MergeDictionaries(doc_blocks_views, doc_blocks_data);
+//            }
 
-            //Regular Things
+//            //Regular Things
 
-            foreach(string[] current_lookup in Element_Lookup)
-            {
+//            foreach(string[] current_lookup in Element_Lookup)
+//            {
 
-                results =
-                    from result in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result.Attribute("MDObjMinorTypeName") == current_lookup[1]
-                    select new Thing
-                    {
-                        type = current_lookup[0],
-                        id = (string)result.Attribute("MDObjId"),
-                        name = ((string)result.Attribute("MDObjName")).Replace("&", " And "),
-                        value = "$none$",
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = current_lookup[2],
-                        value_type = "$none$"
-                    };
+//                results =
+//                    from result in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result.Attribute("MDObjMinorTypeName") == current_lookup[1]
+//                    select new Thing
+//                    {
+//                        type = current_lookup[0],
+//                        id = (string)result.Attribute("MDObjId"),
+//                        name = ((string)result.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = "$none$",
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = current_lookup[2],
+//                        value_type = "$none$"
+//                    };
 
-                things = things.Concat(results.ToList());
+//                things = things.Concat(results.ToList());
 
-                if (current_lookup[1] != "Entity" && current_lookup[1] != "Access Path" && current_lookup[1] != "Index" && current_lookup[1] != "Table")
-                {
-                    results_dic =
-                        (from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty")
-                         where (string)result.Parent.Attribute("MDObjMinorTypeName") == current_lookup[1]
-                         where (string)result.Attribute("MDPrpName") == "Description"
-                         select new
-                         {
-                             key = (string)result.Parent.Attribute("MDObjId"),
-                             value = new List<Thing> {
-                            new Thing
-                            {
-                                type = "Information",
-                                id = (string)result.Parent.Attribute("MDObjId") + "_9",
-                                name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And ") + " Description",
-                                value = ((string)result.Attribute("MDPrpValue")).Replace("@", " At ").Replace("\"","'").Replace("&", " And "),
-                                place1 = (string)result.Parent.Attribute("MDObjId"),
-                                place2 = (string)result.Parent.Attribute("MDObjId") + "_9",
-                                foundation = "IndividualType",
-                                value_type = "exemplar"
-                            }
-                        }
-                         }).ToDictionary(a => a.key, a => a.value);
+//                if (current_lookup[1] != "Entity" && current_lookup[1] != "Access Path" && current_lookup[1] != "Index" && current_lookup[1] != "Table")
+//                {
+//                    results_dic =
+//                        (from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty")
+//                         where (string)result.Parent.Attribute("MDObjMinorTypeName") == current_lookup[1]
+//                         where (string)result.Attribute("MDPrpName") == "Description"
+//                         select new
+//                         {
+//                             key = (string)result.Parent.Attribute("MDObjId"),
+//                             value = new List<Thing> {
+//                            new Thing
+//                            {
+//                                type = "Information",
+//                                id = (string)result.Parent.Attribute("MDObjId") + "_9",
+//                                name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And ") + " Description",
+//                                value = ((string)result.Attribute("MDPrpValue")).Replace("@", " At ").Replace("\"","'").Replace("&", " And "),
+//                                place1 = (string)result.Parent.Attribute("MDObjId"),
+//                                place2 = (string)result.Parent.Attribute("MDObjId") + "_9",
+//                                foundation = "IndividualType",
+//                                value_type = "exemplar"
+//                            }
+//                        }
+//                         }).ToDictionary(a => a.key, a => a.value);
 
-                    things = things.Concat(results_dic.SelectMany(x => x.Value));
+//                    things = things.Concat(results_dic.SelectMany(x => x.Value));
 
-                    foreach (Thing thing in results_dic.SelectMany(x => x.Value))
-                    {
-                        value = new Thing
-                        {
-                            type = "describedBy",
-                            id = thing.place1 + "_10",
-                            foundation = "namedBy",
-                            place1 = thing.place1,
-                            place2 = thing.place2,
-                            name = "$none$",
-                            value = "$none$",
-                            value_type = "$none$"
-                        };
-                        tuples = tuples.Concat(new List<Thing> { value });
-                        description_views.Add(thing.place1, new List<Thing> { value });
-                    }
+//                    foreach (Thing thing in results_dic.SelectMany(x => x.Value))
+//                    {
+//                        value = new Thing
+//                        {
+//                            type = "describedBy",
+//                            id = thing.place1 + "_10",
+//                            foundation = "namedBy",
+//                            place1 = thing.place1,
+//                            place2 = thing.place2,
+//                            name = "$none$",
+//                            value = "$none$",
+//                            value_type = "$none$"
+//                        };
+//                        tuples = tuples.Concat(new List<Thing> { value });
+//                        description_views.Add(thing.place1, new List<Thing> { value });
+//                    }
 
-                    MergeDictionaries(description_views, results_dic);
-                }
-                else if (current_lookup[1] == "Index")
-                {
-                    results =
-                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                         where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == current_lookup[1]
-                         where (string)result.Parent.Attribute("MDPrpName") == "Description"
+//                    MergeDictionaries(description_views, results_dic);
+//                }
+//                else if (current_lookup[1] == "Index")
+//                {
+//                    results =
+//                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                         where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == current_lookup[1]
+//                         where (string)result.Parent.Attribute("MDPrpName") == "Description"
                          
-                         select new Thing
-                            {
-                                type = "Information",
-                                id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity") + "_9",
-                                name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And ") + " Primary Key",
-                                value = (string)result.Attribute("MDLinkIdentity"),
-                                place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                                place2 = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity") + "_9",
-                                foundation = "IndividualType",
-                                value_type = "exemplar"
-                            };
+//                         select new Thing
+//                            {
+//                                type = "Information",
+//                                id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity") + "_9",
+//                                name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And ") + " Primary Key",
+//                                value = (string)result.Attribute("MDLinkIdentity"),
+//                                place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                                place2 = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity") + "_9",
+//                                foundation = "IndividualType",
+//                                value_type = "exemplar"
+//                            };
 
-                    things = things.Concat(results);
+//                    things = things.Concat(results);
 
-                    sorted_results = results.GroupBy(x => x.place1).Select(group => group.ToList()).ToList();
+//                    sorted_results = results.GroupBy(x => x.place1).Select(group => group.ToList()).ToList();
 
-                    foreach (List<Thing> view in sorted_results)
-                    {
-                        values = new List<Thing>();
-                        foreach (Thing thing in view)
-                        {
-                            value = new Thing
-                            {
-                                type = "describedBy",
-                                id = thing.place2 + "_10",
-                                foundation = "namedBy",
-                                place1 = thing.place1,
-                                place2 = thing.place2,
-                                name = "$none$",
-                                value = "$none$",
-                                value_type = "$none$"
-                            };
-                            tuples = tuples.Concat(new List<Thing> { value });
-                            values.Add(value);
-                            values.Add(thing);
-                        }
-                        description_views.Add(view.First().place1, values);
-                    }
+//                    foreach (List<Thing> view in sorted_results)
+//                    {
+//                        values = new List<Thing>();
+//                        foreach (Thing thing in view)
+//                        {
+//                            value = new Thing
+//                            {
+//                                type = "describedBy",
+//                                id = thing.place2 + "_10",
+//                                foundation = "namedBy",
+//                                place1 = thing.place1,
+//                                place2 = thing.place2,
+//                                name = "$none$",
+//                                value = "$none$",
+//                                value_type = "$none$"
+//                            };
+//                            tuples = tuples.Concat(new List<Thing> { value });
+//                            values.Add(value);
+//                            values.Add(thing);
+//                        }
+//                        description_views.Add(view.First().place1, values);
+//                    }
 
-                    //MergeDictionaries(description_views, results_dic);
-                }
-            }
+//                    //MergeDictionaries(description_views, results_dic);
+//                }
+//            }
 
-            //OV-1 Picture
+//            //OV-1 Picture
 
-            results =
-                from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol").Elements("MDPicture")
-                where (string)result.Parent.Attribute("MDObjMinorTypeName") == "Picture"
-                where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "OV-01 High Level Operational Concept (DM2)"
-                select 
-                //new {
-                //    key = (string)result.Parent.Parent.Attribute("MDObjId"),
-                //    value = new List<Thing> {
-                        new Thing
-                    {
-                    type = "ArchitecturalDescription",
-                    id = (string)result.Parent.Attribute("MDObjId"),
-                    name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                    value = (string)result.Attribute("MDPictureData"),
-                    place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                    place2 = (string)result.Parent.Attribute("MDObjId"),
-                    foundation = "IndividualType",
-                    value_type = "exemplar"
-                    };
-                //}}).ToDictionary(a => a.key, a => a.value);
+//            results =
+//                from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol").Elements("MDPicture")
+//                where (string)result.Parent.Attribute("MDObjMinorTypeName") == "Picture"
+//                where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "OV-01 High Level Operational Concept (DM2)"
+//                select 
+//                //new {
+//                //    key = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                //    value = new List<Thing> {
+//                        new Thing
+//                    {
+//                    type = "ArchitecturalDescription",
+//                    id = (string)result.Parent.Attribute("MDObjId"),
+//                    name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                    value = (string)result.Attribute("MDPictureData"),
+//                    place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                    place2 = (string)result.Parent.Attribute("MDObjId"),
+//                    foundation = "IndividualType",
+//                    value_type = "exemplar"
+//                    };
+//                //}}).ToDictionary(a => a.key, a => a.value);
 
-            OV1_pic_views = results.GroupBy(x=>x.place1).ToDictionary(x=>x.Key, x=>x.ToList());
+//            OV1_pic_views = results.GroupBy(x=>x.place1).ToDictionary(x=>x.Key, x=>x.ToList());
 
-            if (OV1_pic_views.Count() > 0)
-            {
-                representation_scheme = true;
-                foreach (KeyValuePair<string, List<Thing>> entry in OV1_pic_views)
-                {
-                    foreach (Thing thing in entry.Value)
-                    {
-                        tuples = tuples.Concat(new List<Thing>{new Thing
-                            {
-                            type = "representationSchemeInstance",
-                            id = thing.id+"_1",
-                            name = "$none$",
-                            value = "$none$",
-                            place1 = "_rs1",
-                            place2 = thing.id,
-                            foundation = "typeInstance",
-                            value_type = "$none$"
-                            }});
-                    }
-                }
-                things = things.Concat(OV1_pic_views.SelectMany(x => x.Value));
-            }
+//            if (OV1_pic_views.Count() > 0)
+//            {
+//                representation_scheme = true;
+//                foreach (KeyValuePair<string, List<Thing>> entry in OV1_pic_views)
+//                {
+//                    foreach (Thing thing in entry.Value)
+//                    {
+//                        tuples = tuples.Concat(new List<Thing>{new Thing
+//                            {
+//                            type = "representationSchemeInstance",
+//                            id = thing.id+"_1",
+//                            name = "$none$",
+//                            value = "$none$",
+//                            place1 = "_rs1",
+//                            place2 = thing.id,
+//                            foundation = "typeInstance",
+//                            value_type = "$none$"
+//                            }});
+//                    }
+//                }
+//                things = things.Concat(OV1_pic_views.SelectMany(x => x.Value));
+//            }
 
-            //Regular tuples
+//            //Regular tuples
 
-            foreach (string[] current_lookup in Tuple_Lookup)
-            {
-                if (current_lookup[3] == "1")
-                {
-                    results =
-                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
-                        select new Thing
-                        {
-                            type = current_lookup[0],
-                            id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
-                            name = "$none$",
-                            value = "$none$",
-                            place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                            place2 = (string)result.Attribute("MDLinkIdentity"),
-                            foundation = current_lookup[2],
-                            value_type = "$none$"
-                        };
-                }
-                else
-                {
-                    results =
-                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
-                        select new Thing
-                        {
-                            type = current_lookup[0],
-                            id = (string)result.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
-                            name = "$none$",
-                            value = "$none$",
-                            place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                            place1 = (string)result.Attribute("MDLinkIdentity"),
-                            foundation = current_lookup[2],
-                            value_type = "$none$"
-                        };
-                }
-                tuples = tuples.Concat(results.ToList());
-            }
+//            foreach (string[] current_lookup in Tuple_Lookup)
+//            {
+//                if (current_lookup[3] == "1")
+//                {
+//                    results =
+//                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
+//                        select new Thing
+//                        {
+//                            type = current_lookup[0],
+//                            id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
+//                            name = "$none$",
+//                            value = "$none$",
+//                            place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                            place2 = (string)result.Attribute("MDLinkIdentity"),
+//                            foundation = current_lookup[2],
+//                            value_type = "$none$"
+//                        };
+//                }
+//                else
+//                {
+//                    results =
+//                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
+//                        select new Thing
+//                        {
+//                            type = current_lookup[0],
+//                            id = (string)result.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
+//                            name = "$none$",
+//                            value = "$none$",
+//                            place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                            place1 = (string)result.Attribute("MDLinkIdentity"),
+//                            foundation = current_lookup[2],
+//                            value_type = "$none$"
+//                        };
+//                }
+//                tuples = tuples.Concat(results.ToList());
+//            }
 
-            tuples = tuples.GroupBy(x => x.id).Select(grp => grp.First());
+//            tuples = tuples.GroupBy(x => x.id).Select(grp => grp.First());
 
-            //Regular TupleTypes
+//            //Regular TupleTypes
 
-            foreach (string[] current_lookup in Tuple_Type_Lookup)
-            {
-                if (current_lookup[3] == "1")
-                {
-                    results =
-                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
-                        select new Thing
-                        {
-                            type = current_lookup[0],
-                            id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
-                            name = "$none$",
-                            value = "$none$",
-                            place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                            place2 = (string)result.Attribute("MDLinkIdentity"),
-                            foundation = current_lookup[2],
-                            value_type = "$none$"
-                        };
+//            foreach (string[] current_lookup in Tuple_Type_Lookup)
+//            {
+//                if (current_lookup[3] == "1")
+//                {
+//                    results =
+//                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
+//                        select new Thing
+//                        {
+//                            type = current_lookup[0],
+//                            id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
+//                            name = "$none$",
+//                            value = "$none$",
+//                            place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                            place2 = (string)result.Attribute("MDLinkIdentity"),
+//                            foundation = current_lookup[2],
+//                            value_type = "$none$"
+//                        };
 
-                    tuple_types = tuple_types.Concat(results.ToList());
+//                    tuple_types = tuple_types.Concat(results.ToList());
 
-                }
-                else if (current_lookup[3] == "2")
-                {
-                    results =
-                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
-                        select new Thing
-                        {
-                            type = current_lookup[0],
-                            id = (string)result.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
-                            name = "$none$",
-                            value = "$none$",
-                            place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                            place1 = (string)result.Attribute("MDLinkIdentity"),
-                            foundation = current_lookup[2],
-                            value_type = "$none$"
-                        };
+//                }
+//                else if (current_lookup[3] == "2")
+//                {
+//                    results =
+//                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
+//                        select new Thing
+//                        {
+//                            type = current_lookup[0],
+//                            id = (string)result.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
+//                            name = "$none$",
+//                            value = "$none$",
+//                            place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                            place1 = (string)result.Attribute("MDLinkIdentity"),
+//                            foundation = current_lookup[2],
+//                            value_type = "$none$"
+//                        };
 
-                    tuple_types = tuple_types.Concat(results.ToList());
+//                    tuple_types = tuple_types.Concat(results.ToList());
 
-                }
-                else if (current_lookup[3] == "4")
-                {
-                    results =
-                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
-                        where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == current_lookup[4]
-                        select new Thing
-                        {
-                            type = current_lookup[0],
-                            id = (string)result.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
-                            name = "$none$",
-                            value = "$none$",
-                            place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                            place1 = (string)result.Attribute("MDLinkIdentity"),
-                            foundation = current_lookup[2],
-                            value_type = "$none$"
-                        };
+//                }
+//                else if (current_lookup[3] == "4")
+//                {
+//                    results =
+//                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
+//                        where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == current_lookup[4]
+//                        select new Thing
+//                        {
+//                            type = current_lookup[0],
+//                            id = (string)result.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
+//                            name = "$none$",
+//                            value = "$none$",
+//                            place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                            place1 = (string)result.Attribute("MDLinkIdentity"),
+//                            foundation = current_lookup[2],
+//                            value_type = "$none$"
+//                        };
 
-                    tuple_types = tuple_types.Concat(results.ToList());
+//                    tuple_types = tuple_types.Concat(results.ToList());
 
-                }
-                else if (current_lookup[3] == "5")
-                {
-                    results =
-                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
-                        where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == current_lookup[4]
-                        select new Thing
-                        {
-                            type = current_lookup[0],
-                            id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
-                            name = "$none$",
-                            value = "$none$",
-                            place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                            place2 = (string)result.Attribute("MDLinkIdentity"),
-                            foundation = current_lookup[2],
-                            value_type = "$none$"
-                        };
+//                }
+//                else if (current_lookup[3] == "5")
+//                {
+//                    results =
+//                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                        where (string)result.Parent.Attribute("MDPrpName") == current_lookup[1]
+//                        where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == current_lookup[4]
+//                        select new Thing
+//                        {
+//                            type = current_lookup[0],
+//                            id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
+//                            name = "$none$",
+//                            value = "$none$",
+//                            place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                            place2 = (string)result.Attribute("MDLinkIdentity"),
+//                            foundation = current_lookup[2],
+//                            value_type = "$none$"
+//                        };
 
-                    tuple_types = tuple_types.Concat(results.ToList());
+//                    tuple_types = tuple_types.Concat(results.ToList());
 
-                }
+//                }
                 
-            }
+//            }
 
-            tuple_types = tuple_types.GroupBy(x => x.id).Select(grp => grp.First());
+//            tuple_types = tuple_types.GroupBy(x => x.id).Select(grp => grp.First());
 
-            //CV-1
+//            //CV-1
 
-            results =
-                    from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
-                    where (string)result.Parent.Attribute("MDObjMinorTypeName") == "CV-01 Vision (DM2)"
-                    where (string)result.Attribute("MDObjMinorTypeName") == "Capability (DM2)"
-                    select new Thing
-                    {
-                        type = "CV-01 View",
-                        id = "$none$",
-                        name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = ((string)result.Attribute("MDObjName")).Replace("&", " And "),
-                        place1 = (string)result.Parent.Attribute("MDObjId"),
-                        place2 = (string)result.Attribute("MDSymIdDef"),
-                        foundation = "$none$",
-                        value_type = "$Capability Name$"
-                    };
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
+//                    where (string)result.Parent.Attribute("MDObjMinorTypeName") == "CV-01 Vision (DM2)"
+//                    where (string)result.Attribute("MDObjMinorTypeName") == "Capability (DM2)"
+//                    select new Thing
+//                    {
+//                        type = "CV-01 View",
+//                        id = "$none$",
+//                        name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = ((string)result.Attribute("MDObjName")).Replace("&", " And "),
+//                        place1 = (string)result.Parent.Attribute("MDObjId"),
+//                        place2 = (string)result.Attribute("MDSymIdDef"),
+//                        foundation = "$none$",
+//                        value_type = "$Capability Name$"
+//                    };
 
-            if (results.Count() > 0)
-            {
-                values = new List<Thing>();
+//            if (results.Count() > 0)
+//            {
+//                values = new List<Thing>();
 
-                values.Add(new Thing
-                {
-                    type = "Vision",
-                    id = results.First().place1 + "_1",
-                    name = results.First().name,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "Vision",
+//                    id = results.First().place1 + "_1",
+//                    name = results.First().name,
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
 
-                things = things.Concat(values);
+//                things = things.Concat(values);
 
-                CV1_mandatory_views.Add(results.First().place1, values); 
-            }
+//                CV1_mandatory_views.Add(results.First().place1, values); 
+//            }
 
-            foreach (Thing thing in results.ToList())
-            {
-                values = new List<Thing>();
+//            foreach (Thing thing in results.ToList())
+//            {
+//                values = new List<Thing>();
 
-                values.Add(new Thing
-                {
-                    type = "Resource",
-                    id = thing.place2 + "_1",
-                    name = thing.value + "_DesiredResourceState",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "Resource",
+//                    id = thing.place2 + "_1",
+//                    name = thing.value + "_DesiredResourceState",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
 
-                values.Add(new Thing
-                {
-                    type = "MeasureOfEffect",
-                    id = thing.place2 + "_4",
-                    name = thing.value + "_MeasureOfEffect",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "MeasureOfEffect",
+//                    id = thing.place2 + "_4",
+//                    name = thing.value + "_MeasureOfEffect",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
 
-                values.Add(new Thing
-                {
-                    type = "MeasureOfDesire",
-                    id = thing.place2 + "_5",
-                    name = thing.value + "_MeasureOfDesire",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "MeasureOfDesire",
+//                    id = thing.place2 + "_5",
+//                    name = thing.value + "_MeasureOfDesire",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
 
-                things = things.Concat(values);
+//                things = things.Concat(values);
 
-                values = new List<Thing>();
+//                values = new List<Thing>();
 
-                values.Add(new Thing
-                {
-                    type = "visionRealizedByDesiredResourceState",
-                    id = thing.place2 + "_2",
-                    name = thing.value + "_visionRealizedByDesiredResourceState",
-                    value = "$none$",
-                    place1 = thing.place1 + "_1",
-                    place2 = thing.place2 + "_1",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "visionRealizedByDesiredResourceState",
+//                    id = thing.place2 + "_2",
+//                    name = thing.value + "_visionRealizedByDesiredResourceState",
+//                    value = "$none$",
+//                    place1 = thing.place1 + "_1",
+//                    place2 = thing.place2 + "_1",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
 
-                values.Add(new Thing
-                {
-                    type = "desiredResourceStateOfCapability",
-                    id = thing.place2 + "_3",
-                    name = thing.value + "_desiredResourceStateOfCapability",
-                    value = "$none$",
-                    place1 = thing.place2,
-                    place2 = thing.place2 + "_1",
-                    foundation = "WholePartType",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "desiredResourceStateOfCapability",
+//                    id = thing.place2 + "_3",
+//                    name = thing.value + "_desiredResourceStateOfCapability",
+//                    value = "$none$",
+//                    place1 = thing.place2,
+//                    place2 = thing.place2 + "_1",
+//                    foundation = "WholePartType",
+//                    value_type = "$none$"
+//                });
 
-                tuple_types = tuple_types.Concat(values);
+//                tuple_types = tuple_types.Concat(values);
 
-                values = new List<Thing>();
+//                values = new List<Thing>();
 
-                values.Add(new Thing
-                {
-                    type = "effectMeasure",
-                    id = thing.place2 + "_6",
-                    name = thing.value + "_effectMeasure",
-                    value = "$none$",
-                    place1 = thing.place2 + "_1",
-                    place2 = thing.place2 + "_4",
-                    foundation = "superSubtype",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "effectMeasure",
+//                    id = thing.place2 + "_6",
+//                    name = thing.value + "_effectMeasure",
+//                    value = "$none$",
+//                    place1 = thing.place2 + "_1",
+//                    place2 = thing.place2 + "_4",
+//                    foundation = "superSubtype",
+//                    value_type = "$none$"
+//                });
 
-                values.Add(new Thing
-                {
-                    type = "desireMeasure",
-                    id = thing.place2 + "_7",
-                    name = thing.value + "_desireMeasure",
-                    value = "$none$",
-                    place1 = thing.place2 + "_1",
-                    place2 = thing.place2 + "_5",
-                    foundation = "superSubtype",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "desireMeasure",
+//                    id = thing.place2 + "_7",
+//                    name = thing.value + "_desireMeasure",
+//                    value = "$none$",
+//                    place1 = thing.place2 + "_1",
+//                    place2 = thing.place2 + "_5",
+//                    foundation = "superSubtype",
+//                    value_type = "$none$"
+//                });
 
-                tuples = tuples.Concat(values);
+//                tuples = tuples.Concat(values);
 
-                values = new List<Thing>();
+//                values = new List<Thing>();
 
-                values.Add(new Thing
-                {
-                    type = "Resource",
-                    id = thing.place2 + "_1",
-                    name = thing.value + "_DesiredResourceState",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "Resource",
+//                    id = thing.place2 + "_1",
+//                    name = thing.value + "_DesiredResourceState",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
 
-                CV1_optional_views.Add(thing.place2, values);
+//                CV1_optional_views.Add(thing.place2, values);
 
-                values = new List<Thing>();
+//                values = new List<Thing>();
 
-                values.Add(new Thing
-                {
-                    type = "MeasureOfEffect",
-                    id = thing.place2 + "_4",
-                    name = thing.value + "_MeasureOfEffect",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "MeasureOfEffect",
+//                    id = thing.place2 + "_4",
+//                    name = thing.value + "_MeasureOfEffect",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
 
-                values.Add(new Thing
-                {
-                    type = "MeasureOfDesire",
-                    id = thing.place2 + "_5",
-                    name = thing.value + "_MeasureOfDesire",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "MeasureOfDesire",
+//                    id = thing.place2 + "_5",
+//                    name = thing.value + "_MeasureOfDesire",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
 
-                values.Add(new Thing
-                {
-                    type = "visionRealizedByDesiredResourceState",
-                    id = thing.place2 + "_2",
-                    name = thing.value + "_visionRealizedByDesiredResourceState",
-                    value = "$none$",
-                    place1 = thing.place1 + "_1",
-                    place2 = thing.place2 + "_1",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "visionRealizedByDesiredResourceState",
+//                    id = thing.place2 + "_2",
+//                    name = thing.value + "_visionRealizedByDesiredResourceState",
+//                    value = "$none$",
+//                    place1 = thing.place1 + "_1",
+//                    place2 = thing.place2 + "_1",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
 
-                values.Add(new Thing
-                {
-                    type = "desiredResourceStateOfCapability",
-                    id = thing.place2 + "_3",
-                    name = thing.value + "_desiredResourceStateOfCapability",
-                    value = "$none$",
-                    place1 = thing.place2,
-                    place2 = thing.place2 + "_1",
-                    foundation = "WholePartType",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "desiredResourceStateOfCapability",
+//                    id = thing.place2 + "_3",
+//                    name = thing.value + "_desiredResourceStateOfCapability",
+//                    value = "$none$",
+//                    place1 = thing.place2,
+//                    place2 = thing.place2 + "_1",
+//                    foundation = "WholePartType",
+//                    value_type = "$none$"
+//                });
 
-                values.Add(new Thing
-                {
-                    type = "effectMeasure",
-                    id = thing.place2 + "_6",
-                    name = thing.value + "_effectMeasure",
-                    value = "$none$",
-                    place1 = thing.place2 + "_1",
-                    place2 = thing.place2 + "_4",
-                    foundation = "superSubtype",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "effectMeasure",
+//                    id = thing.place2 + "_6",
+//                    name = thing.value + "_effectMeasure",
+//                    value = "$none$",
+//                    place1 = thing.place2 + "_1",
+//                    place2 = thing.place2 + "_4",
+//                    foundation = "superSubtype",
+//                    value_type = "$none$"
+//                });
 
-                values.Add(new Thing
-                {
-                    type = "desireMeasure",
-                    id = thing.place2 + "_7",
-                    name = thing.value + "_desireMeasure",
-                    value = "$none$",
-                    place1 = thing.place2 + "_1",
-                    place2 = thing.place2 + "_5",
-                    foundation = "superSubtype",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "desireMeasure",
+//                    id = thing.place2 + "_7",
+//                    name = thing.value + "_desireMeasure",
+//                    value = "$none$",
+//                    place1 = thing.place2 + "_1",
+//                    place2 = thing.place2 + "_5",
+//                    foundation = "superSubtype",
+//                    value_type = "$none$"
+//                });
 
-                CV1_mandatory_views.Add(thing.place2, values);  
-            }
+//                CV1_mandatory_views.Add(thing.place2, values);  
+//            }
 
-            //CV-4
+//            //CV-4
 
-            results =
-                from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
-                where (string)result.Parent.Attribute("MDObjMinorTypeName") == "CV-04 Capability Dependencies (DM2)"
-                where (string)result.Attribute("MDObjMinorTypeName") == "Capability (DM2)"
-                select new Thing
-                {
-                    type = "CV-04 View",
-                    id = "$none$",
-                    name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                    value = ((string)result.Attribute("MDObjName")).Replace("&", " And "),
-                    place1 = (string)result.Parent.Attribute("MDObjId"),
-                    place2 = (string)result.Attribute("MDSymIdDef"),
-                    foundation = "$none$",
-                    value_type = "$Capability Name$"
-                };
+//            results =
+//                from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
+//                where (string)result.Parent.Attribute("MDObjMinorTypeName") == "CV-04 Capability Dependencies (DM2)"
+//                where (string)result.Attribute("MDObjMinorTypeName") == "Capability (DM2)"
+//                select new Thing
+//                {
+//                    type = "CV-04 View",
+//                    id = "$none$",
+//                    name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                    value = ((string)result.Attribute("MDObjName")).Replace("&", " And "),
+//                    place1 = (string)result.Parent.Attribute("MDObjId"),
+//                    place2 = (string)result.Attribute("MDSymIdDef"),
+//                    foundation = "$none$",
+//                    value_type = "$Capability Name$"
+//                };
 
-            foreach (Thing thing in results.ToList())
-            {
-                values = new List<Thing>();
+//            foreach (Thing thing in results.ToList())
+//            {
+//                values = new List<Thing>();
 
-                values.Add(new Thing
-                {
-                    type = "Resource",
-                    id = thing.place2 + "_1",
-                    name = thing.value + "_DesiredResourceState",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "Resource",
+//                    id = thing.place2 + "_1",
+//                    name = thing.value + "_DesiredResourceState",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
 
-                things = things.Concat(values);
+//                things = things.Concat(values);
 
-                values = new List<Thing>();
+//                values = new List<Thing>();
 
-                values.Add(new Thing
-                {
-                    type = "desiredResourceStateOfCapability",
-                    id = thing.place2 + "_3",
-                    name = thing.value + "_desiredResourceStateOfCapability",
-                    value = "$none$",
-                    place1 = thing.place2,
-                    place2 = thing.place2 + "_1",
-                    foundation = "WholePartType",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "desiredResourceStateOfCapability",
+//                    id = thing.place2 + "_3",
+//                    name = thing.value + "_desiredResourceStateOfCapability",
+//                    value = "$none$",
+//                    place1 = thing.place2,
+//                    place2 = thing.place2 + "_1",
+//                    foundation = "WholePartType",
+//                    value_type = "$none$"
+//                });
 
-                tuple_types = tuple_types.Concat(values);
+//                tuple_types = tuple_types.Concat(values);
 
-                values = new List<Thing>();
+//                values = new List<Thing>();
 
-                values.Add(new Thing
-                {
-                    type = "Resource",
-                    id = thing.place2 + "_1",
-                    name = thing.value + "_DesiredResourceState",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "Resource",
+//                    id = thing.place2 + "_1",
+//                    name = thing.value + "_DesiredResourceState",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
 
-                values2 = new List<Thing>();
-                if(!CV1_optional_views.TryGetValue(thing.place2, out values2))
-                    CV1_optional_views.Add(thing.place2, values);
+//                values2 = new List<Thing>();
+//                if(!CV1_optional_views.TryGetValue(thing.place2, out values2))
+//                    CV1_optional_views.Add(thing.place2, values);
 
-                values = new List<Thing>();
+//                values = new List<Thing>();
 
-                values.Add(new Thing
-                {
-                    type = "desiredResourceStateOfCapability",
-                    id = thing.place2 + "_3",
-                    name = thing.value + "_desiredResourceStateOfCapability",
-                    value = "$none$",
-                    place1 = thing.place2,
-                    place2 = thing.place2 + "_1",
-                    foundation = "WholePartType",
-                    value_type = "$none$"
-                });
+//                values.Add(new Thing
+//                {
+//                    type = "desiredResourceStateOfCapability",
+//                    id = thing.place2 + "_3",
+//                    name = thing.value + "_desiredResourceStateOfCapability",
+//                    value = "$none$",
+//                    place1 = thing.place2,
+//                    place2 = thing.place2 + "_1",
+//                    foundation = "WholePartType",
+//                    value_type = "$none$"
+//                });
 
-                values2 = new List<Thing>();
-                if (!CV4_mandatory_views.TryGetValue(thing.place2, out values2))
-                    CV4_mandatory_views.Add(thing.place2, values);
-            }
+//                values2 = new List<Thing>();
+//                if (!CV4_mandatory_views.TryGetValue(thing.place2, out values2))
+//                    CV4_mandatory_views.Add(thing.place2, values);
+//            }
 
-            // Data Store
+//            // Data Store
 
-            things = things.GroupBy(x => x.id).Select(grp => grp.First());
-            things_dic = things.ToDictionary(x => x.id, x => x);
+//            things = things.GroupBy(x => x.id).Select(grp => grp.First());
+//            things_dic = things.ToDictionary(x => x.id, x => x);
 
-            results =
-                from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                where (string)result.Parent.Attribute("MDPrpName") == "Resources"
-                where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "Data Store (DM2x)"
+//            results =
+//                from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                where (string)result.Parent.Attribute("MDPrpName") == "Resources"
+//                where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "Data Store (DM2x)"
 
-                select new Thing
-                {
-                    type = "WholePartType",
-                    id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                    place2 = (string)result.Attribute("MDLinkIdentity"),
-                    foundation = "WholePartType",
-                    value_type = "$none$"
-                };
+//                select new Thing
+//                {
+//                    type = "WholePartType",
+//                    id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
+//                    name = "$none$",
+//                    value = "$none$",
+//                    place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                    place2 = (string)result.Attribute("MDLinkIdentity"),
+//                    foundation = "WholePartType",
+//                    value_type = "$none$"
+//                };
 
-            tuple_types = tuple_types.Concat(results.ToList());
+//            tuple_types = tuple_types.Concat(results.ToList());
 
-            foreach (Thing thing in results)
-            {
-                if (!things_dic.TryGetValue(thing.place2, out value))
-                {
-                    values = new List<Thing>();
+//            foreach (Thing thing in results)
+//            {
+//                if (!things_dic.TryGetValue(thing.place2, out value))
+//                {
+//                    values = new List<Thing>();
 
-                    values.Add(new Thing
-                    {
-                        type = "Data",
-                        id = thing.place2,
-                        name = "$none$",
-                        value = "$none$",
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = "IndividualType",
-                        value_type = "$none$"
-                    });
+//                    values.Add(new Thing
+//                    {
+//                        type = "Data",
+//                        id = thing.place2,
+//                        name = "$none$",
+//                        value = "$none$",
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = "IndividualType",
+//                        value_type = "$none$"
+//                    });
 
-                    things = things.Concat(values);
-                    things_dic.Add(values.First().id, values.First());
-                }
-            }
+//                    things = things.Concat(values);
+//                    things_dic.Add(values.First().id, values.First());
+//                }
+//            }
 
-            //ARO
+//            //ARO
 
-            results =
-                   from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                   where (string)result.Parent.Attribute("MDPrpName") == "consumingActivity"
-                   from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                   where (string)result3.Parent.Attribute("MDPrpName") == "Resources"
-                   where (string)result.Parent.Parent.Attribute("MDObjId") == (string)result3.Parent.Parent.Attribute("MDObjId")
-                   from result2 in root.Elements("Class").Elements("MDDefinition")
-                   where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                   from result4 in root.Elements("Class").Elements("MDDefinition")
-                   where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
+//            results =
+//                   from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                   where (string)result.Parent.Attribute("MDPrpName") == "consumingActivity"
+//                   from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                   where (string)result3.Parent.Attribute("MDPrpName") == "Resources"
+//                   where (string)result.Parent.Parent.Attribute("MDObjId") == (string)result3.Parent.Parent.Attribute("MDObjId")
+//                   from result2 in root.Elements("Class").Elements("MDDefinition")
+//                   where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                   from result4 in root.Elements("Class").Elements("MDDefinition")
+//                   where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
                    
 
-                   select new Thing
-                   {
-                       type = "activityConsumesResource",
-                       id = (string)result.Parent.Parent.Attribute("MDObjId") + "_2",
-                       name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                       value = (string)result.Parent.Parent.Attribute("MDObjId"),
-                       place1 = (string)result3.Attribute("MDLinkIdentity"),
-                       place2 = (string)result.Attribute("MDLinkIdentity"),
-                       foundation = "CoupleType",
-                       value_type = "$id$"
-                   };
+//                   select new Thing
+//                   {
+//                       type = "activityConsumesResource",
+//                       id = (string)result.Parent.Parent.Attribute("MDObjId") + "_2",
+//                       name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                       value = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                       place1 = (string)result3.Attribute("MDLinkIdentity"),
+//                       place2 = (string)result.Attribute("MDLinkIdentity"),
+//                       foundation = "CoupleType",
+//                       value_type = "$id$"
+//                   };
 
-            tuple_types = tuple_types.Concat(results);
-            aro = results.GroupBy(x=>(string)x.value).ToDictionary(y => y.Key, y => y.ToList());
-            MergeDictionaries(OV5b_aro_mandatory_views, aro);
-            aro2 = results.GroupBy(x => (string)x.value).ToDictionary(y => y.Key, y => y.ToList());
-            MergeDictionaries(OV6c_aro_optional_views, aro2);
+//            tuple_types = tuple_types.Concat(results);
+//            aro = results.GroupBy(x=>(string)x.value).ToDictionary(y => y.Key, y => y.ToList());
+//            MergeDictionaries(OV5b_aro_mandatory_views, aro);
+//            aro2 = results.GroupBy(x => (string)x.value).ToDictionary(y => y.Key, y => y.ToList());
+//            MergeDictionaries(OV6c_aro_optional_views, aro2);
 
 
-            foreach (Thing thing in results.ToList())
-            {
-                if (things_dic.TryGetValue(thing.place1, out value))
-                {
-                    values = new List<Thing>();
-                    values.Add(value);
-                    OV5b_aro_optional_views.Add((string)thing.value, values);
-                    MergeDictionaries(OV6c_aro_optional_views, new Dictionary<string, List<Thing>>() { { (string)thing.value, values } });
-                }
-            }
+//            foreach (Thing thing in results.ToList())
+//            {
+//                if (things_dic.TryGetValue(thing.place1, out value))
+//                {
+//                    values = new List<Thing>();
+//                    values.Add(value);
+//                    OV5b_aro_optional_views.Add((string)thing.value, values);
+//                    MergeDictionaries(OV6c_aro_optional_views, new Dictionary<string, List<Thing>>() { { (string)thing.value, values } });
+//                }
+//            }
 
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    from result2 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result.Parent.Attribute("MDPrpName") == "consumingActivity"
-                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                    select new Thing
-                    {
-                        type = "activityConsumesResource",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = "$none$",
-                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        place2 = (string)result.Attribute("MDLinkIdentity"),
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    };
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    from result2 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result.Parent.Attribute("MDPrpName") == "consumingActivity"
+//                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                    select new Thing
+//                    {
+//                        type = "activityConsumesResource",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = "$none$",
+//                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        place2 = (string)result.Attribute("MDLinkIdentity"),
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    };
 
-            foreach (Thing thing in results.ToList())
-            {
-                if (aro.TryGetValue(thing.id, out values))
-                    continue;
+//            foreach (Thing thing in results.ToList())
+//            {
+//                if (aro.TryGetValue(thing.id, out values))
+//                    continue;
 
-                errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: Resource\r\n");
+//                errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: Resource\r\n");
 
-                //values = new List<Thing>();
+//                //values = new List<Thing>();
 
-                //values.Add(new Thing
-                //{
-                //    type = "Resource",
-                //    id = thing.id + "_1",
-                //    name = thing.name,
-                //    value = "$none$",
-                //    place1 = "$none$",
-                //    place2 = "$none$",
-                //    foundation = "IndividualType",
-                //    value_type = "$none$"
-                //});
+//                //values.Add(new Thing
+//                //{
+//                //    type = "Resource",
+//                //    id = thing.id + "_1",
+//                //    name = thing.name,
+//                //    value = "$none$",
+//                //    place1 = "$none$",
+//                //    place2 = "$none$",
+//                //    foundation = "IndividualType",
+//                //    value_type = "$none$"
+//                //});
 
-                //things = things.Concat(values);
-                //things_dic.Add(values.First().id, values.First());
-                //OV5b_aro_optional_views.Add(thing.id, values);
+//                //things = things.Concat(values);
+//                //things_dic.Add(values.First().id, values.First());
+//                //OV5b_aro_optional_views.Add(thing.id, values);
 
-                //values = new List<Thing>();
+//                //values = new List<Thing>();
 
-                //values.Add(new Thing
-                //{
-                //    type = "Resource",
-                //    id = thing.id + "_1",
-                //    name = thing.name,
-                //    value = "$none$",
-                //    place1 = "$none$",
-                //    place2 = "$none$",
-                //    foundation = "IndividualType",
-                //    value_type = "$none$"
-                //});
+//                //values.Add(new Thing
+//                //{
+//                //    type = "Resource",
+//                //    id = thing.id + "_1",
+//                //    name = thing.name,
+//                //    value = "$none$",
+//                //    place1 = "$none$",
+//                //    place2 = "$none$",
+//                //    foundation = "IndividualType",
+//                //    value_type = "$none$"
+//                //});
 
-                //values.Add(new Thing
-                //{
-                //    type = "activityConsumesResource",
-                //    id = thing.id + "_2",
-                //    name = "ARO",
-                //    value = "$none$",
-                //    place1 = thing.id + "_1",
-                //    place2 = thing.place2,
-                //    foundation = "CoupleType",
-                //    value_type = "$none$"
-                //});
+//                //values.Add(new Thing
+//                //{
+//                //    type = "activityConsumesResource",
+//                //    id = thing.id + "_2",
+//                //    name = "ARO",
+//                //    value = "$none$",
+//                //    place1 = thing.id + "_1",
+//                //    place2 = thing.place2,
+//                //    foundation = "CoupleType",
+//                //    value_type = "$none$"
+//                //});
 
-                //OV6c_aro_optional_views.Add(thing.id, values);
+//                //OV6c_aro_optional_views.Add(thing.id, values);
 
-                //values = new List<Thing>();
+//                //values = new List<Thing>();
 
-                //values.Add(new Thing
-                //{
-                //    type = "activityConsumesResource",
-                //    id = thing.id + "_2",
-                //    name = "ARO",
-                //    value = "$none$",
-                //    place1 = thing.id + "_1",
-                //    place2 = thing.place2,
-                //    foundation = "CoupleType",
-                //    value_type = "$none$"
-                //});
+//                //values.Add(new Thing
+//                //{
+//                //    type = "activityConsumesResource",
+//                //    id = thing.id + "_2",
+//                //    name = "ARO",
+//                //    value = "$none$",
+//                //    place1 = thing.id + "_1",
+//                //    place2 = thing.place2,
+//                //    foundation = "CoupleType",
+//                //    value_type = "$none$"
+//                //});
 
-                //tuple_types = tuple_types.Concat(values);
-                //OV5b_aro_mandatory_views.Add(thing.id, values);
+//                //tuple_types = tuple_types.Concat(values);
+//                //OV5b_aro_mandatory_views.Add(thing.id, values);
 
-            }
+//            }
 
-            results =
-                   from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                   where (string)result.Parent.Attribute("MDPrpName") == "producingActivity"
-                   from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                   where (string)result3.Parent.Attribute("MDPrpName") == "Resources"
-                   where (string)result.Parent.Parent.Attribute("MDObjId") == (string)result3.Parent.Parent.Attribute("MDObjId")
-                   from result4 in root.Elements("Class").Elements("MDDefinition")
-                   where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
-                   from result2 in root.Elements("Class").Elements("MDDefinition")
-                   where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//            results =
+//                   from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                   where (string)result.Parent.Attribute("MDPrpName") == "producingActivity"
+//                   from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                   where (string)result3.Parent.Attribute("MDPrpName") == "Resources"
+//                   where (string)result.Parent.Parent.Attribute("MDObjId") == (string)result3.Parent.Parent.Attribute("MDObjId")
+//                   from result4 in root.Elements("Class").Elements("MDDefinition")
+//                   where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
+//                   from result2 in root.Elements("Class").Elements("MDDefinition")
+//                   where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
 
-                   select new Thing
-                   {
-                       type = "activityProducesResource",
-                       id = (string)result.Parent.Parent.Attribute("MDObjId") + "_3",
-                       name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                       value = (string)result.Parent.Parent.Attribute("MDObjId"),
-                       place2 = (string)result3.Attribute("MDLinkIdentity"),
-                       place1 = (string)result.Attribute("MDLinkIdentity"),
-                       foundation = "CoupleType",
-                       value_type = "$id$"
-                   };
+//                   select new Thing
+//                   {
+//                       type = "activityProducesResource",
+//                       id = (string)result.Parent.Parent.Attribute("MDObjId") + "_3",
+//                       name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                       value = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                       place2 = (string)result3.Attribute("MDLinkIdentity"),
+//                       place1 = (string)result.Attribute("MDLinkIdentity"),
+//                       foundation = "CoupleType",
+//                       value_type = "$id$"
+//                   };
 
-            tuple_types = tuple_types.Concat(results);
-            aro = results.GroupBy(x => (string)x.value).ToDictionary(y => y.Key, y => y.ToList());
-            MergeDictionaries(OV5b_aro_mandatory_views, aro);
-            aro2 = results.GroupBy(x => (string)x.value).ToDictionary(y => y.Key, y => y.ToList());
-            MergeDictionaries(OV6c_aro_optional_views, aro2);
+//            tuple_types = tuple_types.Concat(results);
+//            aro = results.GroupBy(x => (string)x.value).ToDictionary(y => y.Key, y => y.ToList());
+//            MergeDictionaries(OV5b_aro_mandatory_views, aro);
+//            aro2 = results.GroupBy(x => (string)x.value).ToDictionary(y => y.Key, y => y.ToList());
+//            MergeDictionaries(OV6c_aro_optional_views, aro2);
 
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    from result2 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result.Parent.Attribute("MDPrpName") == "producingActivity"
-                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                    select new Thing
-                    {
-                        type = "activityProducesResource",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = "$none$",
-                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        place2 = (string)result.Attribute("MDLinkIdentity"),
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    };
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    from result2 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result.Parent.Attribute("MDPrpName") == "producingActivity"
+//                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                    select new Thing
+//                    {
+//                        type = "activityProducesResource",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = "$none$",
+//                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        place2 = (string)result.Attribute("MDLinkIdentity"),
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    };
 
-            foreach (Thing thing in results.ToList())
-            {
-                if (aro.TryGetValue(thing.id, out values))
-                    continue;
+//            foreach (Thing thing in results.ToList())
+//            {
+//                if (aro.TryGetValue(thing.id, out values))
+//                    continue;
 
-                errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: Resource\r\n");
+//                errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: Resource\r\n");
 
-                //values = new List<Thing>();
+//                //values = new List<Thing>();
 
-                //values.Add(new Thing
-                //{
-                //    type = "activityProducesResource",
-                //    id = thing.id + "_3",
-                //    name = "ARO",
-                //    value = "$none$",
-                //    place1 = thing.place2,
-                //    place2 = thing.id + "_1",
-                //    foundation = "CoupleType",
-                //    value_type = "$none$"
-                //});
+//                //values.Add(new Thing
+//                //{
+//                //    type = "activityProducesResource",
+//                //    id = thing.id + "_3",
+//                //    name = "ARO",
+//                //    value = "$none$",
+//                //    place1 = thing.place2,
+//                //    place2 = thing.id + "_1",
+//                //    foundation = "CoupleType",
+//                //    value_type = "$none$"
+//                //});
                 
-                //tuple_types = tuple_types.Concat(values);
+//                //tuple_types = tuple_types.Concat(values);
 
-                //results_dic = new Dictionary<string, List<Thing>>();
+//                //results_dic = new Dictionary<string, List<Thing>>();
 
-                //results_dic.Add(thing.id, values);
+//                //results_dic.Add(thing.id, values);
 
-                //MergeDictionaries(OV6c_aro_optional_views, results_dic);
-                //MergeDictionaries(OV5b_aro_mandatory_views, results_dic);
-            }
+//                //MergeDictionaries(OV6c_aro_optional_views, results_dic);
+//                //MergeDictionaries(OV5b_aro_mandatory_views, results_dic);
+//            }
 
-            //activityChangesResource
+//            //activityChangesResource
 
-            results_dic =
-                    (from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty")
-                     where (string)result.Attribute("MDPrpName") == "Behavior"
-                     select new
-                     {
-                         key = (string)result.Parent.Attribute("MDObjId"),
-                         value = new List<Thing> {new Thing
-                                            {
-                                                type = "ActivityChangesResource",
-                                                id = (string)result.Parent.Attribute("MDObjId"),
-                                                name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                                                value = (string)result.Attribute("MDPrpValue"),
-                                                place1 = "$none$",
-                                                place2 = "$none$",
-                                                foundation = "$none$",
-                                                value_type = "$none$"
-                                            }}
-                     }).ToDictionary(a => a.key, a => a.value);
+//            results_dic =
+//                    (from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty")
+//                     where (string)result.Attribute("MDPrpName") == "Behavior"
+//                     select new
+//                     {
+//                         key = (string)result.Parent.Attribute("MDObjId"),
+//                         value = new List<Thing> {new Thing
+//                                            {
+//                                                type = "ActivityChangesResource",
+//                                                id = (string)result.Parent.Attribute("MDObjId"),
+//                                                name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                                                value = (string)result.Attribute("MDPrpValue"),
+//                                                place1 = "$none$",
+//                                                place2 = "$none$",
+//                                                foundation = "$none$",
+//                                                value_type = "$none$"
+//                                            }}
+//                     }).ToDictionary(a => a.key, a => a.value);
 
-            if (results_dic.Count() > 0)
-            {
-                results =
-                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                        where (string)result.Parent.Attribute("MDPrpName") == "Activity"
-                        from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                        where (string)result3.Parent.Attribute("MDPrpName") == "Resource"
-                        where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
-                        from result2 in root.Elements("Class").Elements("MDDefinition")
-                        where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                        from result4 in root.Elements("Class").Elements("MDDefinition")
-                        where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
-                        select new Thing
-                        {
-                            type = (((string)(results_dic[(string)result.Parent.Parent.Attribute("MDObjId")].First().value) == "Consumes") ? "activityConsumesResource" : "activityProducesResource"),
-                            id = (string)result.Parent.Parent.Attribute("MDObjId"),
-                            name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                            value = "$none$",
-                            place1 = (((string)(results_dic[(string)result.Parent.Parent.Attribute("MDObjId")].First().value) == "Consumes") ? (string)result3.Attribute("MDLinkIdentity") : (string)result.Attribute("MDLinkIdentity")),
-                            place2 = (((string)(results_dic[(string)result.Parent.Parent.Attribute("MDObjId")].First().value) == "Consumes") ? (string)result.Attribute("MDLinkIdentity") : (string)result3.Attribute("MDLinkIdentity")),
-                            foundation = "CoupleType",
-                            value_type = "$none$"
-                        };
+//            if (results_dic.Count() > 0)
+//            {
+//                results =
+//                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                        where (string)result.Parent.Attribute("MDPrpName") == "Activity"
+//                        from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                        where (string)result3.Parent.Attribute("MDPrpName") == "Resource"
+//                        where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+//                        from result2 in root.Elements("Class").Elements("MDDefinition")
+//                        where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                        from result4 in root.Elements("Class").Elements("MDDefinition")
+//                        where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
+//                        select new Thing
+//                        {
+//                            type = (((string)(results_dic[(string)result.Parent.Parent.Attribute("MDObjId")].First().value) == "Consumes") ? "activityConsumesResource" : "activityProducesResource"),
+//                            id = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                            name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                            value = "$none$",
+//                            place1 = (((string)(results_dic[(string)result.Parent.Parent.Attribute("MDObjId")].First().value) == "Consumes") ? (string)result3.Attribute("MDLinkIdentity") : (string)result.Attribute("MDLinkIdentity")),
+//                            place2 = (((string)(results_dic[(string)result.Parent.Parent.Attribute("MDObjId")].First().value) == "Consumes") ? (string)result.Attribute("MDLinkIdentity") : (string)result3.Attribute("MDLinkIdentity")),
+//                            foundation = "CoupleType",
+//                            value_type = "$none$"
+//                        };
 
-                tuple_types = tuple_types.Concat(results.ToList());
+//                tuple_types = tuple_types.Concat(results.ToList());
 
-                values_dic = results.ToDictionary(x => x.id, x => x);
-                foreach (Thing thing in results_dic.Select(x=>x.Value.First()).ToList())
-                {
-                    if (!values_dic.TryGetValue(thing.id, out value))
-                    {
-                        errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: Resource\r\n");
-                    }
-                }
-            }
+//                values_dic = results.ToDictionary(x => x.id, x => x);
+//                foreach (Thing thing in results_dic.Select(x=>x.Value.First()).ToList())
+//                {
+//                    if (!values_dic.TryGetValue(thing.id, out value))
+//                    {
+//                        errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: Resource\r\n");
+//                    }
+//                }
+//            }
 
-            //activityPerformedByPerformer
+//            //activityPerformedByPerformer
 
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result.Parent.Attribute("MDPrpName") == "Activity"
-                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result3.Parent.Attribute("MDPrpName") == "Performer"
-                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
-                    from result2 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                    from result4 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
-
-
-                    select new Thing
-                    {
-                        type = "activityPerformedByPerformer",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = "$none$",
-                        place1 = (string)result3.Attribute("MDLinkIdentity"),
-                        place2 = (string)result.Attribute("MDLinkIdentity"),
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    };
-
-            tuple_types = tuple_types.Concat(results.ToList());
-
-            values_dic = results.ToDictionary(a => a.id, a => a);
-
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result.Parent.Attribute("MDPrpName") == "Activity"
-                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result3.Parent.Attribute("MDPrpName") == "Performer"
-                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
-                    //from result2 in root.Elements("Class").Elements("MDDefinition")
-                    //from result4 in root.Elements("Class").Elements("MDDefinition")
-                    //where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                    //where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result.Parent.Attribute("MDPrpName") == "Activity"
+//                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result3.Parent.Attribute("MDPrpName") == "Performer"
+//                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+//                    from result2 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                    from result4 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
 
 
-                    select new Thing
-                    {
-                        type = "activityPerformedByPerformer",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = (string)result3.Parent.Attribute("MDPrpValue"),
-                        place1 = (string)result3.Attribute("MDLinkIdentity"),
-                        place2 = (string)result.Attribute("MDLinkIdentity"),
-                        foundation = "CoupleType",
-                        value_type = "$view name$"
-                    };
+//                    select new Thing
+//                    {
+//                        type = "activityPerformedByPerformer",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = "$none$",
+//                        place1 = (string)result3.Attribute("MDLinkIdentity"),
+//                        place2 = (string)result.Attribute("MDLinkIdentity"),
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    };
 
-            values = new List<Thing>();
-            values2 = new List<Thing>();
+//            tuple_types = tuple_types.Concat(results.ToList());
 
-            foreach (Thing thing in results)
-            {
+//            values_dic = results.ToDictionary(a => a.id, a => a);
 
-                if (!values_dic.TryGetValue(thing.id, out value))
-                {
-                    //    values2.Add(thing);
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result.Parent.Attribute("MDPrpName") == "Activity"
+//                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result3.Parent.Attribute("MDPrpName") == "Performer"
+//                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+//                    //from result2 in root.Elements("Class").Elements("MDDefinition")
+//                    //from result4 in root.Elements("Class").Elements("MDDefinition")
+//                    //where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                    //where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
 
-                    if (!things_dic.TryGetValue(thing.place2, out value))
-                    {
-                        errors_list.Add(thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: Activity\r\n");
-                    //    value = new Thing
-                    //    {
-                    //        type = "Activity",
-                    //        id = thing.place2,
-                    //        name = thing.name,
-                    //        value = "$none$",
-                    //        place1 = "$none$",
-                    //        place2 = "$none$",
-                    //        foundation = "IndividualType",
-                    //        value_type = "$none$"
-                    //    };
-                    //    values.Add(value);
-                    //    things_dic.Add(thing.place2, value);
-                    }
 
-                    if (!things_dic.TryGetValue(thing.place1, out value))
-                    {
-                        if (((string)thing.value).Contains("Service"))
-                        {
-                            errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: Service\r\n");
-                    //        value = new Thing
-                    //        {
-                    //            type = "Service",
-                    //            id = thing.place1,
-                    //            name = thing.name,
-                    //            value = "$none$",
-                    //            place1 = "$none$",
-                    //            place2 = "$none$",
-                    //            foundation = "IndividualType",
-                    //            value_type = "$none$"
-                    //        };
-                    //        values.Add(value);
-                    //        things_dic.Add(thing.place1, value);
-                        }
-                        else if (((string)thing.value).Contains("System"))
-                        {
-                            errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: System\r\n");
-                    //        value = new Thing
-                    //        {
-                    //            type = "System",
-                    //            id = thing.place1,
-                    //            name = thing.name,
-                    //            value = "$none$",
-                    //            place1 = "$none$",
-                    //            place2 = "$none$",
-                    //            foundation = "IndividualType",
-                    //            value_type = "$none$"
-                    //        };
-                    //        values.Add(value);
-                    //        things_dic.Add(thing.place1, value);
-                        }
-                        else
-                        {
-                            errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: Performer\r\n");
-                    //        value = new Thing
-                    //        {
-                    //            type = "Performer",
-                    //            id = thing.place1,
-                    //            name = thing.name,
-                    //            value = "$none$",
-                    //            place1 = "$none$",
-                    //            place2 = "$none$",
-                    //            foundation = "IndividualType",
-                    //            value_type = "$none$"
-                    //        };
-                    //        values.Add(value);
-                    //        things_dic.Add(thing.place1, value);
-                        }
-                    }
-                }
-            }
+//                    select new Thing
+//                    {
+//                        type = "activityPerformedByPerformer",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = (string)result3.Parent.Attribute("MDPrpValue"),
+//                        place1 = (string)result3.Attribute("MDLinkIdentity"),
+//                        place2 = (string)result.Attribute("MDLinkIdentity"),
+//                        foundation = "CoupleType",
+//                        value_type = "$view name$"
+//                    };
 
-            //things = things.Concat(values);
+//            values = new List<Thing>();
+//            values2 = new List<Thing>();
 
-            //tuple_types = tuple_types.Concat(values2);
+//            foreach (Thing thing in results)
+//            {
 
-            //Needlines
+//                if (!values_dic.TryGetValue(thing.id, out value))
+//                {
+//                    //    values2.Add(thing);
 
-            //values = new List<Thing>();
+//                    if (!things_dic.TryGetValue(thing.place2, out value))
+//                    {
+//                        errors_list.Add(thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: Activity\r\n");
+//                    //    value = new Thing
+//                    //    {
+//                    //        type = "Activity",
+//                    //        id = thing.place2,
+//                    //        name = thing.name,
+//                    //        value = "$none$",
+//                    //        place1 = "$none$",
+//                    //        place2 = "$none$",
+//                    //        foundation = "IndividualType",
+//                    //        value_type = "$none$"
+//                    //    };
+//                    //    values.Add(value);
+//                    //    things_dic.Add(thing.place2, value);
+//                    }
 
-            //values_dic = things_dic.Where(x => x.Value.type == "Resource" || x.Value.type == "Data").ToDictionary(p => p.Key, p => p.Value);
-            ////var acr3 = tuple_types.Where(x => x.type == "activityConsumesResource").Where(x => temp_dic.ContainsKey(x.place1)).GroupBy(x => x.place2).Where(x => x.Count() == 1).Select(grp => grp.First());
-            //values_dic2 = tuple_types.Where(x => x.type == "activityConsumesResource").Where(x => values_dic.ContainsKey(x.place1)).GroupBy(x => x.place2).Where(x => x.Count() == 1).ToDictionary(y => y.Key, y => y.First());
-            //results = tuple_types.Where(x => x.type == "activityPerformedByPerformer").GroupBy(x =>x.place2).Where(x => x.Count() == 1).Select(grp => grp.First());
-            ////var app4 = app3.GroupBy(x =>x.place1).Where(x => x.Count() == 1).ToDictionary(y => y.Key, y => y.First());
+//                    if (!things_dic.TryGetValue(thing.place1, out value))
+//                    {
+//                        if (((string)thing.value).Contains("Service"))
+//                        {
+//                            errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: Service\r\n");
+//                    //        value = new Thing
+//                    //        {
+//                    //            type = "Service",
+//                    //            id = thing.place1,
+//                    //            name = thing.name,
+//                    //            value = "$none$",
+//                    //            place1 = "$none$",
+//                    //            place2 = "$none$",
+//                    //            foundation = "IndividualType",
+//                    //            value_type = "$none$"
+//                    //        };
+//                    //        values.Add(value);
+//                    //        things_dic.Add(thing.place1, value);
+//                        }
+//                        else if (((string)thing.value).Contains("System"))
+//                        {
+//                            errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: System\r\n");
+//                    //        value = new Thing
+//                    //        {
+//                    //            type = "System",
+//                    //            id = thing.place1,
+//                    //            name = thing.name,
+//                    //            value = "$none$",
+//                    //            place1 = "$none$",
+//                    //            place2 = "$none$",
+//                    //            foundation = "IndividualType",
+//                    //            value_type = "$none$"
+//                    //        };
+//                    //        values.Add(value);
+//                    //        things_dic.Add(thing.place1, value);
+//                        }
+//                        else
+//                        {
+//                            errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: Performer\r\n");
+//                    //        value = new Thing
+//                    //        {
+//                    //            type = "Performer",
+//                    //            id = thing.place1,
+//                    //            name = thing.name,
+//                    //            value = "$none$",
+//                    //            place1 = "$none$",
+//                    //            place2 = "$none$",
+//                    //            foundation = "IndividualType",
+//                    //            value_type = "$none$"
+//                    //        };
+//                    //        values.Add(value);
+//                    //        things_dic.Add(thing.place1, value);
+//                        }
+//                    }
+//                }
+//            }
 
-            //values_dic.Clear();
-            //foreach (Thing rela in results)
-            //{
-            //    if (values_dic2.TryGetValue(rela.place2, out value))
-            //    {
-            //        if(!values_dic.Remove(rela.place1))
-            //            values_dic.Add(rela.place1, rela);
-            //    }
+//            //things = things.Concat(values);
 
-            //}
+//            //tuple_types = tuple_types.Concat(values2);
 
-            //values_dic.Clear();
-            //foreach (Thing rela in acr3)
-            //{
-            //    if (app4.TryGetValue(rela.place2, out value))
-            //    {
-            //        values_dic.Add(value.place1, value);
-            //    }
+//            //Needlines
 
-            //}
+//            //values = new List<Thing>();
 
-            results_dic = tuple_types.Where(x => x.type == "activityPerformedByPerformer").GroupBy(x => x.place1).ToDictionary(x => x.Key, x => x.ToList());
-            values_dic = tuple_types.Where(x => x.type == "activityProducesResource").GroupBy(x => x.place1).Select(x=>x.First()).ToDictionary(x => x.place1, x => x);
-            values_dic2 = tuple_types.Where(x => x.type == "activityConsumesResource").GroupBy(x => x.place2).Select(x => x.First()).ToDictionary(x => x.place2, x => x);
+//            //values_dic = things_dic.Where(x => x.Value.type == "Resource" || x.Value.type == "Data").ToDictionary(p => p.Key, p => p.Value);
+//            ////var acr3 = tuple_types.Where(x => x.type == "activityConsumesResource").Where(x => temp_dic.ContainsKey(x.place1)).GroupBy(x => x.place2).Where(x => x.Count() == 1).Select(grp => grp.First());
+//            //values_dic2 = tuple_types.Where(x => x.type == "activityConsumesResource").Where(x => values_dic.ContainsKey(x.place1)).GroupBy(x => x.place2).Where(x => x.Count() == 1).ToDictionary(y => y.Key, y => y.First());
+//            //results = tuple_types.Where(x => x.type == "activityPerformedByPerformer").GroupBy(x =>x.place2).Where(x => x.Count() == 1).Select(grp => grp.First());
+//            ////var app4 = app3.GroupBy(x =>x.place1).Where(x => x.Count() == 1).ToDictionary(y => y.Key, y => y.First());
 
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    from result2 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "System Exchange (DM2rx)" && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "Operational Exchange (DM2rx)"
-                        && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "System Data Flow (DM2rx)" && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "Service Data Flow (DM2rx)"
-                    where (string)result.Parent.Attribute("MDPrpName") == "performerTarget" || (string)result.Parent.Attribute("MDPrpName") == "Target" || (string)result.Parent.Attribute("MDPrpName") == "Destination" 
-                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                    select new Thing
-                    {
-                        type = "Resource Flow",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = (string)result.Parent.Attribute("MDPrpName") + "_" + (string)result.Parent.Parent.Attribute("MDObjMinorTypeName"),
-                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        place2 = (string)result.Attribute("MDLinkIdentity"),
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    };
+//            //values_dic.Clear();
+//            //foreach (Thing rela in results)
+//            //{
+//            //    if (values_dic2.TryGetValue(rela.place2, out value))
+//            //    {
+//            //        if(!values_dic.Remove(rela.place1))
+//            //            values_dic.Add(rela.place1, rela);
+//            //    }
 
-            foreach (Thing thing in results.ToList())
-            {
-                if (results_dic.TryGetValue(thing.place2, out values))
-                {
-                    add = true;
-                    foreach (Thing app in values)
-                    {
-                        if(values_dic2.TryGetValue(app.place2,out value))
-                        {
-                            add = false;
-                            break;
-                        }
-                    }
-                    if(add)
-                        errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: activityConsumesResource\r\n");   
-                }
-                else
-                {
-                    errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: activityPerformedByPerformer\r\n");
-                }
+//            //}
 
-                //if (values_dic.TryGetValue(thing.id, out value))
-                //    continue;
+//            //values_dic.Clear();
+//            //foreach (Thing rela in acr3)
+//            //{
+//            //    if (app4.TryGetValue(rela.place2, out value))
+//            //    {
+//            //        values_dic.Add(value.place1, value);
+//            //    }
 
-                //values = new List<Thing>();
+//            //}
+
+//            results_dic = tuple_types.Where(x => x.type == "activityPerformedByPerformer").GroupBy(x => x.place1).ToDictionary(x => x.Key, x => x.ToList());
+//            values_dic = tuple_types.Where(x => x.type == "activityProducesResource").GroupBy(x => x.place1).Select(x=>x.First()).ToDictionary(x => x.place1, x => x);
+//            values_dic2 = tuple_types.Where(x => x.type == "activityConsumesResource").GroupBy(x => x.place2).Select(x => x.First()).ToDictionary(x => x.place2, x => x);
+
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    from result2 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "System Exchange (DM2rx)" && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "Operational Exchange (DM2rx)"
+//                        && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "System Data Flow (DM2rx)" && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "Service Data Flow (DM2rx)"
+//                    where (string)result.Parent.Attribute("MDPrpName") == "performerTarget" || (string)result.Parent.Attribute("MDPrpName") == "Target" || (string)result.Parent.Attribute("MDPrpName") == "Destination" 
+//                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                    select new Thing
+//                    {
+//                        type = "Resource Flow",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = (string)result.Parent.Attribute("MDPrpName") + "_" + (string)result.Parent.Parent.Attribute("MDObjMinorTypeName"),
+//                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        place2 = (string)result.Attribute("MDLinkIdentity"),
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    };
+
+//            foreach (Thing thing in results.ToList())
+//            {
+//                if (results_dic.TryGetValue(thing.place2, out values))
+//                {
+//                    add = true;
+//                    foreach (Thing app in values)
+//                    {
+//                        if(values_dic2.TryGetValue(app.place2,out value))
+//                        {
+//                            add = false;
+//                            break;
+//                        }
+//                    }
+//                    if(add)
+//                        errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: activityConsumesResource\r\n");   
+//                }
+//                else
+//                {
+//                    errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: activityPerformedByPerformer\r\n");
+//                }
+
+//                //if (values_dic.TryGetValue(thing.id, out value))
+//                //    continue;
+
+//                //values = new List<Thing>();
                         
-                //values.Add(new Thing
-                //    {
-                //        type = "Activity",
-                //        id = thing.id + "_1",
-                //        name = thing.name,
-                //        value = "$none$",
-                //        place1 = "$none$",
-                //        place2 = "$none$",
-                //        foundation = "IndividualType",
-                //        value_type = "$none$"
-                //    });
-                //values.Add(new Thing
-                //{
-                //    type = (((string)thing.value).Contains("System") || ((string)thing.value).Contains("Service") ? "Data" : "Resource"),
-                //    id = thing.id + "_2",
-                //    name = (((string)thing.value).Contains("performerTarget") ? "Needline" : "SF"),
-                //    value = "$none$",
-                //    place1 = "$none$",
-                //    place2 = "$none$",
-                //    foundation = "IndividualType",
-                //    value_type = "$none$"
-                //});
-
-                //things = things.Concat(values);
-
-                //values = new List<Thing>();
-
-                //values.Add(new Thing
-                //{
-                //    type = "activityPerformedByPerformer",
-                //    id = thing.id,
-                //    name = thing.name,
-                //    value = "$none$",
-                //    place1 = thing.place2,
-                //    place2 = thing.id + "_1",
-                //    foundation = "CoupleType",
-                //    value_type = "$none$"
-                //});
-
-                //values.Add(new Thing
-                //{
-                //    type = "activityConsumesResource",
-                //    id = thing.id + "_3",
-                //    name = (((string)thing.value).Contains("performerTarget") ? "Needline" : "SF"),
-                //    value = "$none$",
-                //    place1 = thing.id + "_2",
-                //    place2 = thing.id + "_1",
-                //    foundation = "CoupleType",
-                //    value_type = "$none$"
-                //});
-
-                //tuple_types = tuple_types.Concat(values);
-
-                //values = new List<Thing>();
-
-                //values.Add(new Thing
-                //{
-                //    type = (((string)thing.value).Contains("System") || ((string)thing.value).Contains("Service") ? "Data" : "Resource"),
-                //    id = thing.id + "_2",
-                //    name = (((string)thing.value).Contains("performerTarget") ? "Needline" : "SF"),
-                //    value = "$none$",
-                //    place1 = "$none$",
-                //    place2 = "$none$",
-                //    foundation = "IndividualType",
-                //    value_type = "$none$"
-                //});
-
-                //if (!((string)thing.value).Contains("Service") && !((string)thing.value).Contains("System"))
-                //{
-                //    needline_optional_views.Add(thing.id, values);
-                //    values = new List<Thing>();
-                //}
-
-                //values.Add(new Thing
-                //{
-                //    type = "activityPerformedByPerformer",
-                //    id = thing.id,
-                //    name = thing.name,
-                //    value = "$none$",
-                //    place1 = thing.place2,
-                //    place2 = thing.id + "_1",
-                //    foundation = "CoupleType",
-                //    value_type = "$none$"
-                //});
-
-                //values.Add(new Thing
-                //{
-                //    type = "activityConsumesResource",
-                //    id = thing.id + "_3",
-                //    name = (((string)thing.value).Contains("performerTarget") ? "Needline" : "SF"),
-                //    value = "$none$",
-                //    place1 = thing.id + "_2",
-                //    place2 = thing.id + "_1",
-                //    foundation = "CoupleType",
-                //    value_type = "$none$"
-                //});
-
-                //values.Add(new Thing
-                //{
-                //    type = "Activity",
-                //    id = thing.id + "_1",
-                //    name = thing.name,
-                //    value = "$none$",
-                //    place1 = "$none$",
-                //    place2 = "$none$",
-                //    foundation = "IndividualType",
-                //    value_type = "$none$"
-                //});
-
-                //needline_mandatory_views.Add(thing.id, values);
-            }
-
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "System Exchange (DM2rx)" && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "Operational Exchange (DM2rx)"
-                        && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "System Data Flow (DM2rx)" && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "Service Data Flow (DM2rx)"
-                    where (string)result.Parent.Attribute("MDPrpName") == "performerSource" || (string)result.Parent.Attribute("MDPrpName") == "Source"
-                    from result2 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                    select new Thing
-                    {
-                        type = "Resource Flow",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = (string)result.Parent.Attribute("MDPrpName") + "_" + (string)result.Parent.Parent.Attribute("MDObjMinorTypeName"),
-                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        place2 = (string)result.Attribute("MDLinkIdentity"),
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    };
-
-            foreach (Thing thing in results.ToList())
-            {
-
-                if (results_dic.TryGetValue(thing.place2, out values))
-                {
-                    add = true;
-                    foreach (Thing app in values)
-                    {
-                        if (values_dic.TryGetValue(app.place2, out value))
-                        {
-                            add = false;
-                            break;
-                        }
-                    }
-                    if (add)
-                        errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: activityProducesResource\r\n");
-                }
-                else
-                {
-                    errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: activityPerformedByPerformer\r\n");
-                }
-
-                //values = new List<Thing>();
-
-                //values.Add(new Thing
-                //{
-                //    type = "Activity",
-                //    id = thing.id + "_4",
-                //    name = thing.name,
-                //    value = "$none$",
-                //    place1 = "$none$",
-                //    place2 = "$none$",
-                //    foundation = "IndividualType",
-                //    value_type = "$none$"
-                //});
-
-                //things = things.Concat(values);
-
-                //values = new List<Thing>();
-
-                //values.Add(new Thing
-                //{
-                //    type = "activityProducesResource",
-                //    id = thing.id + "_5",
-                //    name = (((string)thing.value).Contains("performerSource") ? "Needline" : "SF"),
-                //    value = "$none$",
-                //    place1 = thing.id + "_4",
-                //    place2 = thing.id + "_2",
-                //    foundation = "CoupleType",
-                //    value_type = "$none$"
-                //});
-
-                //values.Add(new Thing
-                //{
-                //    type = "activityPerformedByPerformer",
-                //    id = thing.id + "_6",
-                //    name = thing.name,
-                //    value = "$none$",
-                //    place1 = thing.place2,
-                //    place2 = thing.id + "_4",
-                //    foundation = "CoupleType",
-                //    value_type = "$none$"
-                //});
-
-                //tuple_types = tuple_types.Concat(values);
-
-                //values = new List<Thing>();
-
-                //values.Add(new Thing
-                //{
-                //    type = "activityProducesResource",
-                //    id = thing.id + "_5",
-                //    name = (((string)thing.value).Contains("performerSource") ? "Needline" : "SF"),
-                //    value = "$none$",
-                //    place1 = thing.id + "_4",
-                //    place2 = thing.id + "_2",
-                //    foundation = "CoupleType",
-                //    value_type = "$none$"
-                //});
-
-                //values.Add(new Thing
-                //{
-                //    type = "Activity",
-                //    id = thing.id + "_4",
-                //    name = thing.name,
-                //    value = "$none$",
-                //    place1 = "$none$",
-                //    place2 = "$none$",
-                //    foundation = "IndividualType",
-                //    value_type = "$none$"
-                //});
-
-                //values.Add(new Thing
-                //{
-                //    type = "activityPerformedByPerformer",
-                //    id = thing.id + "_6",
-                //    name = thing.name,
-                //    value = "$none$",
-                //    place1 = thing.place2,
-                //    place2 = thing.id + "_4",
-                //    foundation = "CoupleType",
-                //    value_type = "$none$"
-                //});
-
-                //results_dic = new Dictionary<string, List<Thing>>();
-
-                //results_dic.Add(thing.id, values);
-
-                //MergeDictionaries(needline_mandatory_views, results_dic);
-            }
-
-            //Supports
-
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    from result2 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result.Parent.Attribute("MDPrpName") == "SupportedBy"
-                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                    select new Thing
-                    {
-                        type = "activityPerformedByPerformer",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = "$none$",
-                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        place2 = (string)result.Attribute("MDLinkIdentity"),
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    };
-
-            foreach (Thing thing in results.ToList())
-            {
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "Activity",
-                    id = thing.id + "_2",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "Resource",
-                    id = thing.id + "_3",
-                    name = "Support",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-
-                things = things.Concat(values);
-
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "activityPerformedByPerformer",
-                    id = thing.id + "_1",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = thing.id,
-                    place2 = thing.id + "_2",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "activityConsumesResource",
-                    id = thing.id + "_4",
-                    name = "Support",
-                    value = "$none$",
-                    place1 = thing.id + "_3",
-                    place2 = thing.id + "_2",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-                tuple_types = tuple_types.Concat(values);
-
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "Resource",
-                    id = thing.id + "_3",
-                    name = "Support",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-                if (!OV2_support_optional_views.ContainsKey(thing.id))
-                    OV2_support_optional_views.Add(thing.id, values);
-
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "activityPerformedByPerformer",
-                    id = thing.id + "_1",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = thing.id,
-                    place2 = thing.id + "_2",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "activityConsumesResource",
-                    id = thing.id + "_4",
-                    name = "Support",
-                    value = "$none$",
-                    place1 = thing.id + "_3",
-                    place2 = thing.id + "_2",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "Activity",
-                    id = thing.id + "_2",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-                if (!OV2_support_mandatory_views.ContainsKey(thing.id))
-                    OV2_support_mandatory_views.Add(thing.id, values);
-
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "activityPerformedByPerformer",
-                    id = thing.id + "_1",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = thing.id,
-                    place2 = thing.id + "_2",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "activityConsumesResource",
-                    id = thing.id + "_4",
-                    name = "Support",
-                    value = "$none$",
-                    place1 = thing.id + "_3",
-                    place2 = thing.id + "_2",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "Activity",
-                    id = thing.id + "_2",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "Resource",
-                    id = thing.id + "_3",
-                    name = "Support",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-                if (!OV4_support_optional_views.ContainsKey(thing.id))
-                    OV4_support_optional_views.Add(thing.id, values);
-            }
-
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    from result2 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result.Parent.Attribute("MDPrpName") == "Supports"
-                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                    select new Thing
-                    {
-                        type = "activityPerformedByPerformer",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = "$none$",
-                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        place2 = (string)result.Attribute("MDLinkIdentity"),
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    };
-
-            foreach (Thing thing in results.ToList())
-            {
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "Activity",
-                    id = thing.id + "_5",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-
-                things = things.Concat(values);
-
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "activityProducesResource",
-                    id = thing.id + "_6",
-                    name = "Support",
-                    value = "$none$",
-                    place1 = thing.id + "_5",
-                    place2 = thing.place2 + thing.place1 + "_3",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "activityPerformedByPerformer",
-                    id = thing.id + "_1",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = thing.id,
-                    place2 = thing.id + "_5",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-                tuple_types = tuple_types.Concat(values);
-
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "activityProducesResource",
-                    id = thing.id + "_6",
-                    name = "Support",
-                    value = "$none$",
-                    place1 = thing.id + "_5",
-                    place2 = thing.place2 + thing.place1 + "_3",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "Activity",
-                    id = thing.id + "_5",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "activityPerformedByPerformer",
-                    id = thing.id + "_1",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = thing.id,
-                    place2 = thing.id + "_5",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-                if (!OV4_support_optional_views_2.ContainsKey(thing.id))
-                    OV4_support_optional_views_2.Add(thing.id, values);
-
-                if (!OV2_support_mandatory_views_2.ContainsKey(thing.id))
-                    OV2_support_mandatory_views_2.Add(thing.id, values);
-
-            }
-
-            MergeDictionaries(OV4_support_optional_views, OV4_support_optional_views_2);
-
-            MergeDictionaries(OV2_support_mandatory_views, OV2_support_mandatory_views_2);
-
-            tuple_types = tuple_types.Distinct();
-
-            things = things.Distinct();
-
-            //Constraint
-
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty")
-                    where (string)result.Attribute("MDPrpName") == "To Cardinality"
-
-                    select new Thing
-                    {
-                        type = "Rule",
-                        id = (string)result.Parent.Attribute("MDObjId"),
-                        name = (string)result.Attribute("MDPrpValue"),
-                        value = "$none$",
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = "IndividualType",
-                        value_type = "$none$"
-                    };
-
-            things = things.Concat(results.ToList());
-
-            //DIV-3 Relationship
-
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "Constraint"
-                    where (string)result.Parent.Attribute("MDPrpName") == "From Table"
-                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result3.Parent.Attribute("MDPrpName") == "To Table"
-                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
-                    from result5 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result5.Parent.Attribute("MDPrpName") == "Foreign Keys and Roles"
-                    where (string)result5.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
-                    from result2 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                    from result4 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
-                    from result6 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result5.Attribute("MDLinkIdentity") == (string)result6.Attribute("MDObjId")
-
-                    select new Thing
-                    {
-                        type = "temp",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result5.Attribute("MDLinkIdentity"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = (string)result5.Attribute("MDLinkIdentity"),
-                        place1 = (string)result.Attribute("MDLinkIdentity"),
-                        place2 = (string)result3.Attribute("MDLinkIdentity"),
-                        foundation = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        value_type = "$FK ID$"
-                    };
-
-            values3 = results.ToList();
-            values_dic = values3.GroupBy(x => x.foundation).Select(grp => grp.First()).ToDictionary(x => x.foundation, x => x);
-
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "Constraint"
-                    where (string)result.Parent.Attribute("MDPrpName") == "From Table"
-                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result3.Parent.Attribute("MDPrpName") == "To Table"
-                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
-                    from result2 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                    from result4 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
-
-                    select new Thing
-                    {
-                        type = "temp",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = "$none$",
-                        place1 = (string)result.Attribute("MDLinkIdentity"),
-                        place2 = (string)result3.Attribute("MDLinkIdentity"),
-                        foundation = "$none$",
-                        value_type = "$PK ID$"
-                    };
-
-            foreach (Thing thing in results)
-            {
-                if(!values_dic.TryGetValue(thing.id,out value))
-                    values3.Add(thing);
-            }
-
-            foreach (Thing thing in values3)
-            {
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "Activity",
-                    id = thing.id + "_2",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-
-                things = things.Concat(values);
-
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "activityPerformedByPerformer",
-                    id = thing.id + "_1",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = thing.place1,
-                    place2 = thing.id + "_2",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-                if ((string)thing.value == "$none$")
-                {
-                    values2 = new List<Thing>();
-
-                    values2.Add(new Thing
-                    {
-                        type = "Data",
-                        id = thing.id + "_9",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = "IndividualType",
-                        value_type = "$none$"
-                    });
-
-                    things = things.Concat(values2);
-
-                    if (thing.foundation == "$none$")
-                    {
-                        if (!DIV3_mandatory.ContainsKey(thing.id))
-                            DIV3_mandatory.Add(thing.id, values2);
-                    }
-                    else
-                    {
-                        if (!DIV3_mandatory.ContainsKey(thing.foundation))
-                            DIV3_mandatory.Add(thing.foundation, values2);
-                    }
-
-                    values.Add(new Thing
-                    {
-                        type = "activityProducesResource",
-                        id = thing.id + "_3",
-                        name = thing.name,
-                        value = "$none$",
-                        place2 = thing.id + "_9",
-                        place1 = thing.id + "_2",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                }
-                else
-                {
-                    values.Add(new Thing
-                    {
-                        type = "activityProducesResource",
-                        id = thing.id + "_3",
-                        name = thing.name,
-                        value = "$none$",
-                        place2 = (string)thing.value,
-                        place1 = thing.id + "_2",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                }
-
-                if (thing.foundation == "$none$")
-                    values.Add(new Thing
-                    {
-                        type = "ruleConstrainsActivity",
-                        id = thing.id + "_7",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.id,
-                        place2 = thing.id + "_2",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                else
-                    values.Add(new Thing
-                    {
-                        type = "ruleConstrainsActivity",
-                        id = thing.id + "_7",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.foundation,
-                        place2 = thing.id + "_2",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-
-                tuple_types = tuple_types.Concat(values);
-
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "activityPerformedByPerformer",
-                    id = thing.id + "_1",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = thing.place1,
-                    place2 = thing.id + "_2",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-                if ((string)thing.value == "$none$")
-                {
-                //    values.Add(new Thing
-                //    {
-                //        type = "Data",
-                //        id = thing.id + "_9",
-                //        name = thing.name,
-                //        value = "$none$",
-                //        place1 = "$none$",
-                //        place2 = "$none$",
-                //        foundation = "IndividualType",
-                //        value_type = "$none$"
-                //    });
-
-                    values.Add(new Thing
-                    {
-                        type = "activityProducesResource",
-                        id = thing.id + "_3",
-                        name = thing.name,
-                        value = "$none$",
-                        place2 = thing.id + "_9",
-                        place1 = thing.id + "_2",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                }
-                else
-                {
-                    values.Add(new Thing
-                    {
-                        type = "activityProducesResource",
-                        id = thing.id + "_3",
-                        name = thing.name,
-                        value = "$none$",
-                        place2 = (string)thing.value,
-                        place1 = thing.id + "_2",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                }
-
-                if (thing.foundation == "$none$")
-                    values.Add(new Thing
-                    {
-                        type = "ruleConstrainsActivity",
-                        id = thing.id + "_7",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.id,
-                        place2 = thing.id + "_2",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                else
-                    values.Add(new Thing
-                    {
-                        type = "ruleConstrainsActivity",
-                        id = thing.id + "_7",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.foundation,
-                        place2 = thing.id + "_2",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-
-                values.Add(new Thing
-                {
-                    type = "Activity",
-                    id = thing.id + "_2",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-                if (thing.foundation == "$none$")
-                {
-                    if (!DIV3_optional.ContainsKey(thing.id))
-                        DIV3_optional.Add(thing.id, values);
-                }
-                else
-                {
-                    if (!DIV3_optional.ContainsKey(thing.foundation))
-                        DIV3_optional.Add(thing.foundation, values);
-                }
-            }
-
-            foreach (Thing thing in values3)
-            {
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "Activity",
-                    id = thing.id + "_4",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-
-                things = things.Concat(values);
-
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "activityPerformedByPerformer",
-                    id = thing.id + "_5",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = thing.place2,
-                    place2 = thing.id + "_4",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-                if ((string)thing.value == "$none$")
-                {
-                    //values2 = new List<Thing>();
-
-                    //values2.Add(new Thing
-                    //{
-                    //    type = "Data",
-                    //    id = thing.id + "_9",
-                    //    name = "Support",
-                    //    value = "$none$",
-                    //    place1 = "$none$",
-                    //    place2 = "$none$",
-                    //    foundation = "IndividualType",
-                    //    value_type = "$none$"
-                    //});
-
-                    //things = things.Concat(values2);
-
-                    values.Add(new Thing
-                    {
-                        type = "activityConsumesResource",
-                        id = thing.id + "_6",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.id + "_9",
-                        place2 = thing.id + "_4",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                }
-                else
-                {
-                    values.Add(new Thing
-                    {
-                        type = "activityConsumesResource",
-                        id = thing.id + "_6",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = (string)thing.value,
-                        place2 = thing.id + "_4",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                }
-
-                if (thing.foundation == "$none$")
-                    values.Add(new Thing
-                    {
-                        type = "ruleConstrainsActivity",
-                        id = thing.id + "_8",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.id,
-                        place2 = thing.id + "_4",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                else
-                    values.Add(new Thing
-                    {
-                        type = "ruleConstrainsActivity",
-                        id = thing.id + "_8",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.foundation,
-                        place2 = thing.id + "_4",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-
-                tuple_types = tuple_types.Concat(values);
-
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "activityPerformedByPerformer",
-                    id = thing.id + "_5",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = thing.place2,
-                    place2 = thing.id + "_4",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-                if ((string)thing.value == "$none$")
-                {
-                    //values.Add(new Thing
-                    //{
-                    //    type = "Data",
-                    //    id = thing.id + "_9",
-                    //    name = "Support",
-                    //    value = "$none$",
-                    //    place1 = "$none$",
-                    //    place2 = "$none$",
-                    //    foundation = "IndividualType",
-                    //    value_type = "$none$"
-                    //});
-
-                    values.Add(new Thing
-                    {
-                        type = "activityConsumesResource",
-                        id = thing.id + "_6",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.id + "_9",
-                        place2 = thing.id + "_4",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                }
-                else
-                {
-                    values.Add(new Thing
-                    {
-                        type = "activityConsumesResource",
-                        id = thing.id + "_6",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = (string)thing.value,
-                        place2 = thing.id + "_4",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                }
-
-                if (thing.foundation == "$none$")
-                    values.Add(new Thing
-                    {
-                        type = "ruleConstrainsActivity",
-                        id = thing.id + "_8",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.foundation,
-                        place2 = thing.id + "_4",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                else
-                    values.Add(new Thing
-                    {
-                        type = "ruleConstrainsActivity",
-                        id = thing.id + "_8",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = (string)thing.value,
-                        place2 = thing.id + "_4",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-
-                values.Add(new Thing
-                {
-                    type = "Activity",
-                    id = thing.id + "_4",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+//                //values.Add(new Thing
+//                //    {
+//                //        type = "Activity",
+//                //        id = thing.id + "_1",
+//                //        name = thing.name,
+//                //        value = "$none$",
+//                //        place1 = "$none$",
+//                //        place2 = "$none$",
+//                //        foundation = "IndividualType",
+//                //        value_type = "$none$"
+//                //    });
+//                //values.Add(new Thing
+//                //{
+//                //    type = (((string)thing.value).Contains("System") || ((string)thing.value).Contains("Service") ? "Data" : "Resource"),
+//                //    id = thing.id + "_2",
+//                //    name = (((string)thing.value).Contains("performerTarget") ? "Needline" : "SF"),
+//                //    value = "$none$",
+//                //    place1 = "$none$",
+//                //    place2 = "$none$",
+//                //    foundation = "IndividualType",
+//                //    value_type = "$none$"
+//                //});
+
+//                //things = things.Concat(values);
+
+//                //values = new List<Thing>();
+
+//                //values.Add(new Thing
+//                //{
+//                //    type = "activityPerformedByPerformer",
+//                //    id = thing.id,
+//                //    name = thing.name,
+//                //    value = "$none$",
+//                //    place1 = thing.place2,
+//                //    place2 = thing.id + "_1",
+//                //    foundation = "CoupleType",
+//                //    value_type = "$none$"
+//                //});
+
+//                //values.Add(new Thing
+//                //{
+//                //    type = "activityConsumesResource",
+//                //    id = thing.id + "_3",
+//                //    name = (((string)thing.value).Contains("performerTarget") ? "Needline" : "SF"),
+//                //    value = "$none$",
+//                //    place1 = thing.id + "_2",
+//                //    place2 = thing.id + "_1",
+//                //    foundation = "CoupleType",
+//                //    value_type = "$none$"
+//                //});
+
+//                //tuple_types = tuple_types.Concat(values);
+
+//                //values = new List<Thing>();
+
+//                //values.Add(new Thing
+//                //{
+//                //    type = (((string)thing.value).Contains("System") || ((string)thing.value).Contains("Service") ? "Data" : "Resource"),
+//                //    id = thing.id + "_2",
+//                //    name = (((string)thing.value).Contains("performerTarget") ? "Needline" : "SF"),
+//                //    value = "$none$",
+//                //    place1 = "$none$",
+//                //    place2 = "$none$",
+//                //    foundation = "IndividualType",
+//                //    value_type = "$none$"
+//                //});
+
+//                //if (!((string)thing.value).Contains("Service") && !((string)thing.value).Contains("System"))
+//                //{
+//                //    needline_optional_views.Add(thing.id, values);
+//                //    values = new List<Thing>();
+//                //}
+
+//                //values.Add(new Thing
+//                //{
+//                //    type = "activityPerformedByPerformer",
+//                //    id = thing.id,
+//                //    name = thing.name,
+//                //    value = "$none$",
+//                //    place1 = thing.place2,
+//                //    place2 = thing.id + "_1",
+//                //    foundation = "CoupleType",
+//                //    value_type = "$none$"
+//                //});
+
+//                //values.Add(new Thing
+//                //{
+//                //    type = "activityConsumesResource",
+//                //    id = thing.id + "_3",
+//                //    name = (((string)thing.value).Contains("performerTarget") ? "Needline" : "SF"),
+//                //    value = "$none$",
+//                //    place1 = thing.id + "_2",
+//                //    place2 = thing.id + "_1",
+//                //    foundation = "CoupleType",
+//                //    value_type = "$none$"
+//                //});
+
+//                //values.Add(new Thing
+//                //{
+//                //    type = "Activity",
+//                //    id = thing.id + "_1",
+//                //    name = thing.name,
+//                //    value = "$none$",
+//                //    place1 = "$none$",
+//                //    place2 = "$none$",
+//                //    foundation = "IndividualType",
+//                //    value_type = "$none$"
+//                //});
+
+//                //needline_mandatory_views.Add(thing.id, values);
+//            }
+
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "System Exchange (DM2rx)" && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "Operational Exchange (DM2rx)"
+//                        && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "System Data Flow (DM2rx)" && (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") != "Service Data Flow (DM2rx)"
+//                    where (string)result.Parent.Attribute("MDPrpName") == "performerSource" || (string)result.Parent.Attribute("MDPrpName") == "Source"
+//                    from result2 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                    select new Thing
+//                    {
+//                        type = "Resource Flow",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = (string)result.Parent.Attribute("MDPrpName") + "_" + (string)result.Parent.Parent.Attribute("MDObjMinorTypeName"),
+//                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        place2 = (string)result.Attribute("MDLinkIdentity"),
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    };
+
+//            foreach (Thing thing in results.ToList())
+//            {
+
+//                if (results_dic.TryGetValue(thing.place2, out values))
+//                {
+//                    add = true;
+//                    foreach (Thing app in values)
+//                    {
+//                        if (values_dic.TryGetValue(app.place2, out value))
+//                        {
+//                            add = false;
+//                            break;
+//                        }
+//                    }
+//                    if (add)
+//                        errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: activityProducesResource\r\n");
+//                }
+//                else
+//                {
+//                    errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: activityPerformedByPerformer\r\n");
+//                }
+
+//                //values = new List<Thing>();
+
+//                //values.Add(new Thing
+//                //{
+//                //    type = "Activity",
+//                //    id = thing.id + "_4",
+//                //    name = thing.name,
+//                //    value = "$none$",
+//                //    place1 = "$none$",
+//                //    place2 = "$none$",
+//                //    foundation = "IndividualType",
+//                //    value_type = "$none$"
+//                //});
+
+//                //things = things.Concat(values);
+
+//                //values = new List<Thing>();
+
+//                //values.Add(new Thing
+//                //{
+//                //    type = "activityProducesResource",
+//                //    id = thing.id + "_5",
+//                //    name = (((string)thing.value).Contains("performerSource") ? "Needline" : "SF"),
+//                //    value = "$none$",
+//                //    place1 = thing.id + "_4",
+//                //    place2 = thing.id + "_2",
+//                //    foundation = "CoupleType",
+//                //    value_type = "$none$"
+//                //});
+
+//                //values.Add(new Thing
+//                //{
+//                //    type = "activityPerformedByPerformer",
+//                //    id = thing.id + "_6",
+//                //    name = thing.name,
+//                //    value = "$none$",
+//                //    place1 = thing.place2,
+//                //    place2 = thing.id + "_4",
+//                //    foundation = "CoupleType",
+//                //    value_type = "$none$"
+//                //});
+
+//                //tuple_types = tuple_types.Concat(values);
+
+//                //values = new List<Thing>();
+
+//                //values.Add(new Thing
+//                //{
+//                //    type = "activityProducesResource",
+//                //    id = thing.id + "_5",
+//                //    name = (((string)thing.value).Contains("performerSource") ? "Needline" : "SF"),
+//                //    value = "$none$",
+//                //    place1 = thing.id + "_4",
+//                //    place2 = thing.id + "_2",
+//                //    foundation = "CoupleType",
+//                //    value_type = "$none$"
+//                //});
+
+//                //values.Add(new Thing
+//                //{
+//                //    type = "Activity",
+//                //    id = thing.id + "_4",
+//                //    name = thing.name,
+//                //    value = "$none$",
+//                //    place1 = "$none$",
+//                //    place2 = "$none$",
+//                //    foundation = "IndividualType",
+//                //    value_type = "$none$"
+//                //});
+
+//                //values.Add(new Thing
+//                //{
+//                //    type = "activityPerformedByPerformer",
+//                //    id = thing.id + "_6",
+//                //    name = thing.name,
+//                //    value = "$none$",
+//                //    place1 = thing.place2,
+//                //    place2 = thing.id + "_4",
+//                //    foundation = "CoupleType",
+//                //    value_type = "$none$"
+//                //});
+
+//                //results_dic = new Dictionary<string, List<Thing>>();
+
+//                //results_dic.Add(thing.id, values);
+
+//                //MergeDictionaries(needline_mandatory_views, results_dic);
+//            }
+
+//            //Supports
+
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    from result2 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result.Parent.Attribute("MDPrpName") == "SupportedBy"
+//                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                    select new Thing
+//                    {
+//                        type = "activityPerformedByPerformer",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = "$none$",
+//                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        place2 = (string)result.Attribute("MDLinkIdentity"),
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    };
+
+//            foreach (Thing thing in results.ToList())
+//            {
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "Activity",
+//                    id = thing.id + "_2",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "Resource",
+//                    id = thing.id + "_3",
+//                    name = "Support",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+
+//                things = things.Concat(values);
+
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "activityPerformedByPerformer",
+//                    id = thing.id + "_1",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = thing.id,
+//                    place2 = thing.id + "_2",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "activityConsumesResource",
+//                    id = thing.id + "_4",
+//                    name = "Support",
+//                    value = "$none$",
+//                    place1 = thing.id + "_3",
+//                    place2 = thing.id + "_2",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+//                tuple_types = tuple_types.Concat(values);
+
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "Resource",
+//                    id = thing.id + "_3",
+//                    name = "Support",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+//                if (!OV2_support_optional_views.ContainsKey(thing.id))
+//                    OV2_support_optional_views.Add(thing.id, values);
+
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "activityPerformedByPerformer",
+//                    id = thing.id + "_1",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = thing.id,
+//                    place2 = thing.id + "_2",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "activityConsumesResource",
+//                    id = thing.id + "_4",
+//                    name = "Support",
+//                    value = "$none$",
+//                    place1 = thing.id + "_3",
+//                    place2 = thing.id + "_2",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "Activity",
+//                    id = thing.id + "_2",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+//                if (!OV2_support_mandatory_views.ContainsKey(thing.id))
+//                    OV2_support_mandatory_views.Add(thing.id, values);
+
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "activityPerformedByPerformer",
+//                    id = thing.id + "_1",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = thing.id,
+//                    place2 = thing.id + "_2",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "activityConsumesResource",
+//                    id = thing.id + "_4",
+//                    name = "Support",
+//                    value = "$none$",
+//                    place1 = thing.id + "_3",
+//                    place2 = thing.id + "_2",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "Activity",
+//                    id = thing.id + "_2",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "Resource",
+//                    id = thing.id + "_3",
+//                    name = "Support",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+//                if (!OV4_support_optional_views.ContainsKey(thing.id))
+//                    OV4_support_optional_views.Add(thing.id, values);
+//            }
+
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    from result2 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result.Parent.Attribute("MDPrpName") == "Supports"
+//                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                    select new Thing
+//                    {
+//                        type = "activityPerformedByPerformer",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = "$none$",
+//                        place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        place2 = (string)result.Attribute("MDLinkIdentity"),
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    };
+
+//            foreach (Thing thing in results.ToList())
+//            {
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "Activity",
+//                    id = thing.id + "_5",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+
+//                things = things.Concat(values);
+
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "activityProducesResource",
+//                    id = thing.id + "_6",
+//                    name = "Support",
+//                    value = "$none$",
+//                    place1 = thing.id + "_5",
+//                    place2 = thing.place2 + thing.place1 + "_3",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "activityPerformedByPerformer",
+//                    id = thing.id + "_1",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = thing.id,
+//                    place2 = thing.id + "_5",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+//                tuple_types = tuple_types.Concat(values);
+
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "activityProducesResource",
+//                    id = thing.id + "_6",
+//                    name = "Support",
+//                    value = "$none$",
+//                    place1 = thing.id + "_5",
+//                    place2 = thing.place2 + thing.place1 + "_3",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "Activity",
+//                    id = thing.id + "_5",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "activityPerformedByPerformer",
+//                    id = thing.id + "_1",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = thing.id,
+//                    place2 = thing.id + "_5",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+//                if (!OV4_support_optional_views_2.ContainsKey(thing.id))
+//                    OV4_support_optional_views_2.Add(thing.id, values);
+
+//                if (!OV2_support_mandatory_views_2.ContainsKey(thing.id))
+//                    OV2_support_mandatory_views_2.Add(thing.id, values);
+
+//            }
+
+//            MergeDictionaries(OV4_support_optional_views, OV4_support_optional_views_2);
+
+//            MergeDictionaries(OV2_support_mandatory_views, OV2_support_mandatory_views_2);
+
+//            tuple_types = tuple_types.Distinct();
+
+//            things = things.Distinct();
+
+//            //Constraint
+
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty")
+//                    where (string)result.Attribute("MDPrpName") == "To Cardinality"
+
+//                    select new Thing
+//                    {
+//                        type = "Rule",
+//                        id = (string)result.Parent.Attribute("MDObjId"),
+//                        name = (string)result.Attribute("MDPrpValue"),
+//                        value = "$none$",
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = "IndividualType",
+//                        value_type = "$none$"
+//                    };
+
+//            things = things.Concat(results.ToList());
+
+//            //DIV-3 Relationship
+
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "Constraint"
+//                    where (string)result.Parent.Attribute("MDPrpName") == "From Table"
+//                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result3.Parent.Attribute("MDPrpName") == "To Table"
+//                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+//                    from result5 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result5.Parent.Attribute("MDPrpName") == "Foreign Keys and Roles"
+//                    where (string)result5.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+//                    from result2 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                    from result4 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
+//                    from result6 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result5.Attribute("MDLinkIdentity") == (string)result6.Attribute("MDObjId")
+
+//                    select new Thing
+//                    {
+//                        type = "temp",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result5.Attribute("MDLinkIdentity"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = (string)result5.Attribute("MDLinkIdentity"),
+//                        place1 = (string)result.Attribute("MDLinkIdentity"),
+//                        place2 = (string)result3.Attribute("MDLinkIdentity"),
+//                        foundation = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        value_type = "$FK ID$"
+//                    };
+
+//            values3 = results.ToList();
+//            values_dic = values3.GroupBy(x => x.foundation).Select(grp => grp.First()).ToDictionary(x => x.foundation, x => x);
+
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "Constraint"
+//                    where (string)result.Parent.Attribute("MDPrpName") == "From Table"
+//                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result3.Parent.Attribute("MDPrpName") == "To Table"
+//                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+//                    from result2 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                    from result4 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
+
+//                    select new Thing
+//                    {
+//                        type = "temp",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = "$none$",
+//                        place1 = (string)result.Attribute("MDLinkIdentity"),
+//                        place2 = (string)result3.Attribute("MDLinkIdentity"),
+//                        foundation = "$none$",
+//                        value_type = "$PK ID$"
+//                    };
+
+//            foreach (Thing thing in results)
+//            {
+//                if(!values_dic.TryGetValue(thing.id,out value))
+//                    values3.Add(thing);
+//            }
+
+//            foreach (Thing thing in values3)
+//            {
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "Activity",
+//                    id = thing.id + "_2",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+
+//                things = things.Concat(values);
+
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "activityPerformedByPerformer",
+//                    id = thing.id + "_1",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = thing.place1,
+//                    place2 = thing.id + "_2",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+//                if ((string)thing.value == "$none$")
+//                {
+//                    values2 = new List<Thing>();
+
+//                    values2.Add(new Thing
+//                    {
+//                        type = "Data",
+//                        id = thing.id + "_9",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = "IndividualType",
+//                        value_type = "$none$"
+//                    });
+
+//                    things = things.Concat(values2);
+
+//                    if (thing.foundation == "$none$")
+//                    {
+//                        if (!DIV3_mandatory.ContainsKey(thing.id))
+//                            DIV3_mandatory.Add(thing.id, values2);
+//                    }
+//                    else
+//                    {
+//                        if (!DIV3_mandatory.ContainsKey(thing.foundation))
+//                            DIV3_mandatory.Add(thing.foundation, values2);
+//                    }
+
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityProducesResource",
+//                        id = thing.id + "_3",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place2 = thing.id + "_9",
+//                        place1 = thing.id + "_2",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                }
+//                else
+//                {
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityProducesResource",
+//                        id = thing.id + "_3",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place2 = (string)thing.value,
+//                        place1 = thing.id + "_2",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                }
+
+//                if (thing.foundation == "$none$")
+//                    values.Add(new Thing
+//                    {
+//                        type = "ruleConstrainsActivity",
+//                        id = thing.id + "_7",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.id,
+//                        place2 = thing.id + "_2",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                else
+//                    values.Add(new Thing
+//                    {
+//                        type = "ruleConstrainsActivity",
+//                        id = thing.id + "_7",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.foundation,
+//                        place2 = thing.id + "_2",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+
+//                tuple_types = tuple_types.Concat(values);
+
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "activityPerformedByPerformer",
+//                    id = thing.id + "_1",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = thing.place1,
+//                    place2 = thing.id + "_2",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+//                if ((string)thing.value == "$none$")
+//                {
+//                //    values.Add(new Thing
+//                //    {
+//                //        type = "Data",
+//                //        id = thing.id + "_9",
+//                //        name = thing.name,
+//                //        value = "$none$",
+//                //        place1 = "$none$",
+//                //        place2 = "$none$",
+//                //        foundation = "IndividualType",
+//                //        value_type = "$none$"
+//                //    });
+
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityProducesResource",
+//                        id = thing.id + "_3",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place2 = thing.id + "_9",
+//                        place1 = thing.id + "_2",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                }
+//                else
+//                {
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityProducesResource",
+//                        id = thing.id + "_3",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place2 = (string)thing.value,
+//                        place1 = thing.id + "_2",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                }
+
+//                if (thing.foundation == "$none$")
+//                    values.Add(new Thing
+//                    {
+//                        type = "ruleConstrainsActivity",
+//                        id = thing.id + "_7",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.id,
+//                        place2 = thing.id + "_2",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                else
+//                    values.Add(new Thing
+//                    {
+//                        type = "ruleConstrainsActivity",
+//                        id = thing.id + "_7",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.foundation,
+//                        place2 = thing.id + "_2",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+
+//                values.Add(new Thing
+//                {
+//                    type = "Activity",
+//                    id = thing.id + "_2",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+//                if (thing.foundation == "$none$")
+//                {
+//                    if (!DIV3_optional.ContainsKey(thing.id))
+//                        DIV3_optional.Add(thing.id, values);
+//                }
+//                else
+//                {
+//                    if (!DIV3_optional.ContainsKey(thing.foundation))
+//                        DIV3_optional.Add(thing.foundation, values);
+//                }
+//            }
+
+//            foreach (Thing thing in values3)
+//            {
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "Activity",
+//                    id = thing.id + "_4",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+
+//                things = things.Concat(values);
+
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "activityPerformedByPerformer",
+//                    id = thing.id + "_5",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = thing.place2,
+//                    place2 = thing.id + "_4",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+//                if ((string)thing.value == "$none$")
+//                {
+//                    //values2 = new List<Thing>();
+
+//                    //values2.Add(new Thing
+//                    //{
+//                    //    type = "Data",
+//                    //    id = thing.id + "_9",
+//                    //    name = "Support",
+//                    //    value = "$none$",
+//                    //    place1 = "$none$",
+//                    //    place2 = "$none$",
+//                    //    foundation = "IndividualType",
+//                    //    value_type = "$none$"
+//                    //});
+
+//                    //things = things.Concat(values2);
+
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityConsumesResource",
+//                        id = thing.id + "_6",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.id + "_9",
+//                        place2 = thing.id + "_4",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                }
+//                else
+//                {
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityConsumesResource",
+//                        id = thing.id + "_6",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = (string)thing.value,
+//                        place2 = thing.id + "_4",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                }
+
+//                if (thing.foundation == "$none$")
+//                    values.Add(new Thing
+//                    {
+//                        type = "ruleConstrainsActivity",
+//                        id = thing.id + "_8",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.id,
+//                        place2 = thing.id + "_4",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                else
+//                    values.Add(new Thing
+//                    {
+//                        type = "ruleConstrainsActivity",
+//                        id = thing.id + "_8",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.foundation,
+//                        place2 = thing.id + "_4",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+
+//                tuple_types = tuple_types.Concat(values);
+
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "activityPerformedByPerformer",
+//                    id = thing.id + "_5",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = thing.place2,
+//                    place2 = thing.id + "_4",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+//                if ((string)thing.value == "$none$")
+//                {
+//                    //values.Add(new Thing
+//                    //{
+//                    //    type = "Data",
+//                    //    id = thing.id + "_9",
+//                    //    name = "Support",
+//                    //    value = "$none$",
+//                    //    place1 = "$none$",
+//                    //    place2 = "$none$",
+//                    //    foundation = "IndividualType",
+//                    //    value_type = "$none$"
+//                    //});
+
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityConsumesResource",
+//                        id = thing.id + "_6",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.id + "_9",
+//                        place2 = thing.id + "_4",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                }
+//                else
+//                {
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityConsumesResource",
+//                        id = thing.id + "_6",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = (string)thing.value,
+//                        place2 = thing.id + "_4",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                }
+
+//                if (thing.foundation == "$none$")
+//                    values.Add(new Thing
+//                    {
+//                        type = "ruleConstrainsActivity",
+//                        id = thing.id + "_8",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.foundation,
+//                        place2 = thing.id + "_4",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                else
+//                    values.Add(new Thing
+//                    {
+//                        type = "ruleConstrainsActivity",
+//                        id = thing.id + "_8",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = (string)thing.value,
+//                        place2 = thing.id + "_4",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+
+//                values.Add(new Thing
+//                {
+//                    type = "Activity",
+//                    id = thing.id + "_4",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
           
-                 MergeDictionaries(DIV3_optional, new Dictionary<string,List<Thing>>(){{thing.id,values}});
-            }
+//                 MergeDictionaries(DIV3_optional, new Dictionary<string,List<Thing>>(){{thing.id,values}});
+//            }
 
-            //State transition
+//            //State transition
 
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result.Parent.Attribute("MDPrpName") == "To"
-                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result3.Parent.Attribute("MDPrpName") == "From"
-                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
-                    from result2 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                    from result4 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
-
-
-                    select new Thing
-                    {
-                        type = "BeforeAfterType",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = "$none$",
-                        place1 = (string)result3.Attribute("MDLinkIdentity"),
-                        place2 = (string)result.Attribute("MDLinkIdentity"),
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    };
-
-            tuple_types = tuple_types.Concat(results.ToList());
-
-            //Capability Dependency
-
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result.Parent.Attribute("MDPrpName") == "To Capability"
-                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result3.Parent.Attribute("MDPrpName") == "From Capability"
-                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
-                    from result2 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                    from result4 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result.Parent.Attribute("MDPrpName") == "To"
+//                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result3.Parent.Attribute("MDPrpName") == "From"
+//                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+//                    from result2 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                    from result4 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
 
 
-                    select new Thing
-                    {
-                        type = "BeforeAfterType",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = "$none$",
-                        place1 = (string)result3.Attribute("MDLinkIdentity"),
-                        place2 = (string)result.Attribute("MDLinkIdentity"),
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    };
+//                    select new Thing
+//                    {
+//                        type = "BeforeAfterType",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = "$none$",
+//                        place1 = (string)result3.Attribute("MDLinkIdentity"),
+//                        place2 = (string)result.Attribute("MDLinkIdentity"),
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    };
 
-            tuple_types = tuple_types.Concat(results.ToList());
+//            tuple_types = tuple_types.Concat(results.ToList());
 
-            //System Milestone Dependency
+//            //Capability Dependency
 
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result.Parent.Attribute("MDPrpName") == "To Milestone"
-                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result3.Parent.Attribute("MDPrpName") == "From Milestone"
-                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
-                    from result2 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                    from result4 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result.Parent.Attribute("MDPrpName") == "To Capability"
+//                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result3.Parent.Attribute("MDPrpName") == "From Capability"
+//                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+//                    from result2 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                    from result4 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
 
 
-                    select new Thing
-                    {
-                        type = "BeforeAfterType",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = "$none$",
-                        place1 = (string)result3.Attribute("MDLinkIdentity"),
-                        place2 = (string)result.Attribute("MDLinkIdentity"),
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    };
+//                    select new Thing
+//                    {
+//                        type = "BeforeAfterType",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = "$none$",
+//                        place1 = (string)result3.Attribute("MDLinkIdentity"),
+//                        place2 = (string)result.Attribute("MDLinkIdentity"),
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    };
 
-            tuple_types = tuple_types.Concat(results.ToList());
+//            tuple_types = tuple_types.Concat(results.ToList());
 
-            //activityPartOfProjectType
+//            //System Milestone Dependency
 
-            results =
-                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                        where (string)result.Parent.Attribute("MDPrpName") == "Milestones"
-                        select new Thing
-                        {
-                            type = "activityPartOfProjectType",
-                            id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
-                            name = "$none$",
-                            value = "$none$",
-                            place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                            place2 = (string)result.Attribute("MDLinkIdentity"),
-                            foundation = "WholePartType",
-                            value_type = "$none$"
-                        };
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result.Parent.Attribute("MDPrpName") == "To Milestone"
+//                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result3.Parent.Attribute("MDPrpName") == "From Milestone"
+//                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+//                    from result2 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                    from result4 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
 
-                values = results.ToList();
 
-                results =
-                            from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                            where (string)result.Parent.Attribute("MDPrpName") == "Project"
-                            select new Thing
-                            {
-                                type = "activityPartOfProjectType",
-                                id = (string)result.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
-                                name = "$none$",
-                                value = "$none$",
-                                place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                                place1 = (string)result.Attribute("MDLinkIdentity"),
-                                foundation = "WholePartType",
-                                value_type = "$none$"
-                            };
+//                    select new Thing
+//                    {
+//                        type = "BeforeAfterType",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = "$none$",
+//                        place1 = (string)result3.Attribute("MDLinkIdentity"),
+//                        place2 = (string)result.Attribute("MDLinkIdentity"),
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    };
 
-                values.AddRange(results.ToList());
+//            tuple_types = tuple_types.Concat(results.ToList());
 
-            tuple_types = tuple_types.Concat(values.GroupBy(x => x.id).Select(grp => grp.First()));
+//            //activityPartOfProjectType
 
-            //activityPerformedByPerformer - Milestones
+//            results =
+//                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                        where (string)result.Parent.Attribute("MDPrpName") == "Milestones"
+//                        select new Thing
+//                        {
+//                            type = "activityPartOfProjectType",
+//                            id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
+//                            name = "$none$",
+//                            value = "$none$",
+//                            place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                            place2 = (string)result.Attribute("MDLinkIdentity"),
+//                            foundation = "WholePartType",
+//                            value_type = "$none$"
+//                        };
 
-            results =
-                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                        where (string)result.Parent.Attribute("MDPrpName") == "Milestones"
-                        select new Thing
-                        {
-                            type = "activityPerformedByPerformer",
-                            id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
-                            name = "$none$",
-                            value = "$none$",
-                            place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                            place2 = (string)result.Attribute("MDLinkIdentity"),
-                            foundation = "CoupleType",
-                            value_type = "$none$"
-                        };
+//                values = results.ToList();
 
-            values = results.ToList();
+//                results =
+//                            from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                            where (string)result.Parent.Attribute("MDPrpName") == "Project"
+//                            select new Thing
+//                            {
+//                                type = "activityPartOfProjectType",
+//                                id = (string)result.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
+//                                name = "$none$",
+//                                value = "$none$",
+//                                place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                                place1 = (string)result.Attribute("MDLinkIdentity"),
+//                                foundation = "WholePartType",
+//                                value_type = "$none$"
+//                            };
 
-            results =
-                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                        where (string)result.Parent.Attribute("MDPrpName") == "In Item"
-                        select new Thing
-                        {
-                            type = "activityPerformedByPerformer",
-                            id = (string)result.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
-                            name = "$none$",
-                            value = "$none$",
-                            place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
-                            place1 = (string)result.Attribute("MDLinkIdentity"),
-                            foundation = "CoupleType",
-                            value_type = "$none$"
-                        };
+//                values.AddRange(results.ToList());
 
-            values.AddRange(results.ToList());
+//            tuple_types = tuple_types.Concat(values.GroupBy(x => x.id).Select(grp => grp.First()));
 
-            tuple_types = tuple_types.Concat(values.GroupBy(x => x.id).Select(grp => grp.First()));
+//            //activityPerformedByPerformer - Milestones
 
-            //Milestone Date
+//            results =
+//                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                        where (string)result.Parent.Attribute("MDPrpName") == "Milestones"
+//                        select new Thing
+//                        {
+//                            type = "activityPerformedByPerformer",
+//                            id = (string)result.Parent.Parent.Attribute("MDObjId") + (string)result.Attribute("MDLinkIdentity"),
+//                            name = "$none$",
+//                            value = "$none$",
+//                            place1 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                            place2 = (string)result.Attribute("MDLinkIdentity"),
+//                            foundation = "CoupleType",
+//                            value_type = "$none$"
+//                        };
 
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty")
-                    where (string)result.Attribute("MDPrpName") == "Milestone Date"
+//            values = results.ToList();
 
-                    select new Thing
-                    {
-                        type = "HappensInType",
-                        id = (string)result.Parent.Attribute("MDObjId") + "_t2",
-                        name = "$none$",
-                        value = (string)result.Attribute("MDPrpValue"),
-                        place1 = (string)result.Parent.Attribute("MDObjId") + "_t1",
-                        place2 = (string)result.Parent.Attribute("MDObjId"),
-                        foundation = "WholePartType",
-                        value_type = "$period$"
-                    };
+//            results =
+//                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                        where (string)result.Parent.Attribute("MDPrpName") == "In Item"
+//                        select new Thing
+//                        {
+//                            type = "activityPerformedByPerformer",
+//                            id = (string)result.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
+//                            name = "$none$",
+//                            value = "$none$",
+//                            place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                            place1 = (string)result.Attribute("MDLinkIdentity"),
+//                            foundation = "CoupleType",
+//                            value_type = "$none$"
+//                        };
 
-            tuple_types = tuple_types.Concat(results.ToList());
+//            values.AddRange(results.ToList());
 
-            foreach (Thing thing in results)
-            {
-                values = new List<Thing>();
+//            tuple_types = tuple_types.Concat(values.GroupBy(x => x.id).Select(grp => grp.First()));
 
-                values.Add(new Thing
-                {
-                    type = "PeriodType",
-                    id = thing.place2 + "_t1",
-                    name = (string)thing.value,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+//            //Milestone Date
 
-                things = things.Concat(values);
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty")
+//                    where (string)result.Attribute("MDPrpName") == "Milestone Date"
 
-                values = new List<Thing>();
+//                    select new Thing
+//                    {
+//                        type = "HappensInType",
+//                        id = (string)result.Parent.Attribute("MDObjId") + "_t2",
+//                        name = "$none$",
+//                        value = (string)result.Attribute("MDPrpValue"),
+//                        place1 = (string)result.Parent.Attribute("MDObjId") + "_t1",
+//                        place2 = (string)result.Parent.Attribute("MDObjId"),
+//                        foundation = "WholePartType",
+//                        value_type = "$period$"
+//                    };
 
-                values.Add(new Thing
-                {
-                    type = "PeriodType",
-                    id = thing.place2 + "_t1",
-                    name = (string)thing.value,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+//            tuple_types = tuple_types.Concat(results.ToList());
 
-                values.Add(thing);
+//            foreach (Thing thing in results)
+//            {
+//                values = new List<Thing>();
 
-                period_dic.Add(thing.place2, values);
-            }
+//                values.Add(new Thing
+//                {
+//                    type = "PeriodType",
+//                    id = thing.place2 + "_t1",
+//                    name = (string)thing.value,
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
 
-            //Data Type
+//                things = things.Concat(values);
 
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty")
-                    where (string)result.Attribute("MDPrpName") == "SQL Data Type"
+//                values = new List<Thing>();
 
-                    select new Thing
-                    {
-                        type = "typeInstance",
-                        id = (string)result.Parent.Attribute("MDObjId") + "_12",
-                        name = "$none$",
-                        value = (string)result.Attribute("MDPrpValue"),
-                        place1 = (string)result.Parent.Attribute("MDObjId") + "_11",
-                        place2 = (string)result.Parent.Attribute("MDObjId"),
-                        foundation = "typeInstance",
-                        value_type = "$datatype$"
-                    };
+//                values.Add(new Thing
+//                {
+//                    type = "PeriodType",
+//                    id = thing.place2 + "_t1",
+//                    name = (string)thing.value,
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
 
-            tuples = tuples.Concat(results.ToList());
+//                values.Add(thing);
 
-            foreach (Thing thing in results)
-            {
-                values = new List<Thing>();
+//                period_dic.Add(thing.place2, values);
+//            }
 
-                values.Add(new Thing
-                {
-                    type = "DataType",
-                    id = thing.place2 + "_11",
-                    name = (string)thing.value,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+//            //Data Type
 
-                things = things.Concat(values);
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty")
+//                    where (string)result.Attribute("MDPrpName") == "SQL Data Type"
 
-                values = new List<Thing>();
+//                    select new Thing
+//                    {
+//                        type = "typeInstance",
+//                        id = (string)result.Parent.Attribute("MDObjId") + "_12",
+//                        name = "$none$",
+//                        value = (string)result.Attribute("MDPrpValue"),
+//                        place1 = (string)result.Parent.Attribute("MDObjId") + "_11",
+//                        place2 = (string)result.Parent.Attribute("MDObjId"),
+//                        foundation = "typeInstance",
+//                        value_type = "$datatype$"
+//                    };
 
-                values.Add(new Thing
-                {
-                    type = "DataType",
-                    id = thing.place2 + "_11",
-                    name = (string)thing.value,
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+//            tuples = tuples.Concat(results.ToList());
 
-                //values.Add(thing);
+//            foreach (Thing thing in results)
+//            {
+//                values = new List<Thing>();
 
-                datatype_optional_dic.Add(thing.place2, new List<Thing>(){thing});
-                datatype_mandatory_dic.Add(thing.place2, values);
-            }
+//                values.Add(new Thing
+//                {
+//                    type = "DataType",
+//                    id = thing.place2 + "_11",
+//                    name = (string)thing.value,
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
 
-            //activityPartOfCapability
+//                things = things.Concat(values);
 
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result.Parent.Attribute("MDPrpName") == "Activity"
-                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result3.Parent.Attribute("MDPrpName") == "Capability"
-                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
-                    from result2 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                    from result4 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "DataType",
+//                    id = thing.place2 + "_11",
+//                    name = (string)thing.value,
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+
+//                //values.Add(thing);
+
+//                datatype_optional_dic.Add(thing.place2, new List<Thing>(){thing});
+//                datatype_mandatory_dic.Add(thing.place2, values);
+//            }
+
+//            //activityPartOfCapability
+
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result.Parent.Attribute("MDPrpName") == "Activity"
+//                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result3.Parent.Attribute("MDPrpName") == "Capability"
+//                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+//                    from result2 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                    from result4 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
                     
 
-                    select new Thing
-                    {
-                        type = "activityPartOfCapability",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = "$none$",
-                        place1 = (string)result3.Attribute("MDLinkIdentity"),
-                        place2 = (string)result.Attribute("MDLinkIdentity"),
-                        foundation = "WholePartType",
-                        value_type = "$none$"
-                    };
+//                    select new Thing
+//                    {
+//                        type = "activityPartOfCapability",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = "$none$",
+//                        place1 = (string)result3.Attribute("MDLinkIdentity"),
+//                        place2 = (string)result.Attribute("MDLinkIdentity"),
+//                        foundation = "WholePartType",
+//                        value_type = "$none$"
+//                    };
 
-            tuple_types = tuple_types.Concat(results.ToList());
+//            tuple_types = tuple_types.Concat(results.ToList());
 
-            //DIV-2 Relationship
+//            //DIV-2 Relationship
 
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result.Parent.Attribute("MDPrpName") == "From Entity"
-                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result3.Parent.Attribute("MDPrpName") == "To Entity"
-                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
-                    from result2 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
-                    from result4 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
-
-
-                    select new Thing
-                    {
-                        type = "OverlapType",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = "$none$",
-                        place1 = (string)result3.Attribute("MDLinkIdentity"),
-                        place2 = (string)result.Attribute("MDLinkIdentity"),
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    };
-
-            tuple_types = tuple_types.Concat(results.ToList());
-
-            //things_dic
-
-            things_dic = things.ToDictionary(x => x.id, x => x);
-
-            //System Exchange (DM2rx)
-
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result.Parent.Attribute("MDPrpName") == "Source"
-                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result3.Parent.Attribute("MDPrpName") == "Target"
-                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
-                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "System Exchange (DM2rx)"
-
-                    select new Thing
-                    {
-                        type = "temp",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = "$none$",
-                        place1 = (string)result.Attribute("MDLinkIdentity"),
-                        place2 = (string)result3.Attribute("MDLinkIdentity"),
-                        foundation = "$none$",
-                        value_type = "$none$"
-                    };
-
-            values_dic = tuple_types.Where(x => x.type == "activityPerformedByPerformer").ToDictionary(x => x.id, x => x);
-
-            foreach (Thing thing in results)
-            {
-                values = new List<Thing>();
-                values2 = new List<Thing>();
-                mandatory_list  = new List<Thing>();
-
-                values_dic.TryGetValue(thing.place1, out value);
-
-                values.Add(new Thing
-                {
-                    type = "activityProducesResource",
-                    id = thing.place1 + "_1",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = thing.id,
-                    place2 = value.place2,
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-                mandatory_list.Add(value);
-                mandatory_list.Add(things_dic[value.place1]);
-                mandatory_list.Add(things_dic[value.place2]);
-
-                values2.Add(new Thing
-                {
-                    type = "Data",
-                    id = thing.id,
-                    name = "Resource",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-
-                things_dic.Add(thing.id, new Thing
-                {
-                    type = "Data",
-                    id = thing.id,
-                    name = "Resource",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result.Parent.Attribute("MDPrpName") == "From Entity"
+//                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result3.Parent.Attribute("MDPrpName") == "To Entity"
+//                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+//                    from result2 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result.Attribute("MDLinkIdentity") == (string)result2.Attribute("MDObjId")
+//                    from result4 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
 
 
-                values_dic.TryGetValue(thing.place2, out value);
+//                    select new Thing
+//                    {
+//                        type = "OverlapType",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = "$none$",
+//                        place1 = (string)result3.Attribute("MDLinkIdentity"),
+//                        place2 = (string)result.Attribute("MDLinkIdentity"),
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    };
 
-                values.Add(new Thing
-                {
-                    type = "activityConsumesResource",
-                    id = thing.id + "_2",
-                    name = thing.name,
-                    value = "$none$",
-                    place1 = value.place2,
-                    place2 = thing.id,
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
+//            tuple_types = tuple_types.Concat(results.ToList());
+
+//            //things_dic
+
+//            things_dic = things.ToDictionary(x => x.id, x => x);
+
+//            //System Exchange (DM2rx)
+
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result.Parent.Attribute("MDPrpName") == "Source"
+//                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result3.Parent.Attribute("MDPrpName") == "Target"
+//                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+//                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "System Exchange (DM2rx)"
+
+//                    select new Thing
+//                    {
+//                        type = "temp",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = "$none$",
+//                        place1 = (string)result.Attribute("MDLinkIdentity"),
+//                        place2 = (string)result3.Attribute("MDLinkIdentity"),
+//                        foundation = "$none$",
+//                        value_type = "$none$"
+//                    };
+
+//            values_dic = tuple_types.Where(x => x.type == "activityPerformedByPerformer").ToDictionary(x => x.id, x => x);
+
+//            foreach (Thing thing in results)
+//            {
+//                values = new List<Thing>();
+//                values2 = new List<Thing>();
+//                mandatory_list  = new List<Thing>();
+
+//                values_dic.TryGetValue(thing.place1, out value);
+
+//                values.Add(new Thing
+//                {
+//                    type = "activityProducesResource",
+//                    id = thing.place1 + "_1",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = thing.id,
+//                    place2 = value.place2,
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+//                mandatory_list.Add(value);
+//                mandatory_list.Add(things_dic[value.place1]);
+//                mandatory_list.Add(things_dic[value.place2]);
+
+//                values2.Add(new Thing
+//                {
+//                    type = "Data",
+//                    id = thing.id,
+//                    name = "Resource",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+
+//                things_dic.Add(thing.id, new Thing
+//                {
+//                    type = "Data",
+//                    id = thing.id,
+//                    name = "Resource",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
 
 
-                mandatory_list.Add(value);
-                mandatory_list.Add(things_dic[value.place1]);
-                mandatory_list.Add(things_dic[value.place2]);
-                mandatory_list.AddRange(values);
-                mandatory_list.AddRange(values2);
+//                values_dic.TryGetValue(thing.place2, out value);
 
-                needline_mandatory_views.Add(thing.id, mandatory_list);
-            }
+//                values.Add(new Thing
+//                {
+//                    type = "activityConsumesResource",
+//                    id = thing.id + "_2",
+//                    name = thing.name,
+//                    value = "$none$",
+//                    place1 = value.place2,
+//                    place2 = thing.id,
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
 
-            things = things.Concat(values2);
 
-            tuple_types = tuple_types.Concat(values);
+//                mandatory_list.Add(value);
+//                mandatory_list.Add(things_dic[value.place1]);
+//                mandatory_list.Add(things_dic[value.place2]);
+//                mandatory_list.AddRange(values);
+//                mandatory_list.AddRange(values2);
 
-            //System Data Flow (DM2rx)
+//                needline_mandatory_views.Add(thing.id, mandatory_list);
+//            }
 
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result.Parent.Attribute("MDPrpName") == "Source"
-                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "System Data Flow (DM2rx)"
-                    from result2 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result2.Parent.Attribute("MDPrpName") == "Destination"
-                    where (string)result2.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
-                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result3.Parent.Attribute("MDPrpName") == "Resources"
-                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result2.Parent.Parent.Attribute("MDObjId")
-                    from result4 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
+//            things = things.Concat(values2);
 
-                    select new Thing
-                    {
-                        type = "temp",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = (string)result3.Attribute("MDLinkIdentity"),
-                        place1 = (string)result.Attribute("MDLinkIdentity"),
-                        place2 = (string)result2.Attribute("MDLinkIdentity"),
-                        //foundation = (string)result4.Attribute("MDObjId"),
-                        value_type = "$resources$"
-                    };
+//            tuple_types = tuple_types.Concat(values);
 
-            //results2 = tuple_types.Where(x => x.type == "activityPerformedByPerformer");//.GroupBy(x => x.place2).Where(x => x.Count() == 1).Select(grp => grp.First());
-            //values_dic = results2.GroupBy(x =>x.place2).Where(x => x.Count() == 1).ToDictionary(y => y.Key, y => y.First());
+//            //System Data Flow (DM2rx)
 
-            foreach (Thing thing in results)
-            {
-                values = new List<Thing>();
-                values2 = new List<Thing>();
-                mandatory_list = new List<Thing>();
-                bool needs_data = false;
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result.Parent.Attribute("MDPrpName") == "Source"
+//                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "System Data Flow (DM2rx)"
+//                    from result2 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result2.Parent.Attribute("MDPrpName") == "Destination"
+//                    where (string)result2.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+//                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result3.Parent.Attribute("MDPrpName") == "Resources"
+//                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result2.Parent.Parent.Attribute("MDObjId")
+//                    from result4 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
+
+//                    select new Thing
+//                    {
+//                        type = "temp",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = (string)result3.Attribute("MDLinkIdentity"),
+//                        place1 = (string)result.Attribute("MDLinkIdentity"),
+//                        place2 = (string)result2.Attribute("MDLinkIdentity"),
+//                        //foundation = (string)result4.Attribute("MDObjId"),
+//                        value_type = "$resources$"
+//                    };
+
+//            //results2 = tuple_types.Where(x => x.type == "activityPerformedByPerformer");//.GroupBy(x => x.place2).Where(x => x.Count() == 1).Select(grp => grp.First());
+//            //values_dic = results2.GroupBy(x =>x.place2).Where(x => x.Count() == 1).ToDictionary(y => y.Key, y => y.First());
+
+//            foreach (Thing thing in results)
+//            {
+//                values = new List<Thing>();
+//                values2 = new List<Thing>();
+//                mandatory_list = new List<Thing>();
+//                bool needs_data = false;
  
-                if (things_dic.TryGetValue((string)thing.value, out value2))
-                {
-                    if (value2.type != "Data")
-                    {
-                        values2.Add(new Thing
-                        {
-                            type = "Data",
-                            id = thing.id + "_7",
-                            name = thing.name,
-                            value = "$none$",
-                            place1 = "$none$",
-                            place2 = "$none$",
-                            foundation = "IndividualType",
-                            value_type = "$none$"
-                        });
+//                if (things_dic.TryGetValue((string)thing.value, out value2))
+//                {
+//                    if (value2.type != "Data")
+//                    {
+//                        values2.Add(new Thing
+//                        {
+//                            type = "Data",
+//                            id = thing.id + "_7",
+//                            name = thing.name,
+//                            value = "$none$",
+//                            place1 = "$none$",
+//                            place2 = "$none$",
+//                            foundation = "IndividualType",
+//                            value_type = "$none$"
+//                        });
 
-                        things_dic.Add(thing.id + "_7", new Thing
-                        {
-                            type = "Data",
-                            id = thing.id + "_7",
-                            name = thing.name,
-                            value = "$none$",
-                            place1 = "$none$",
-                            place2 = "$none$",
-                            foundation = "IndividualType",
-                            value_type = "$none$"
-                        });
+//                        things_dic.Add(thing.id + "_7", new Thing
+//                        {
+//                            type = "Data",
+//                            id = thing.id + "_7",
+//                            name = thing.name,
+//                            value = "$none$",
+//                            place1 = "$none$",
+//                            place2 = "$none$",
+//                            foundation = "IndividualType",
+//                            value_type = "$none$"
+//                        });
 
-                        needs_data = true;
-                    }
-                    else
-                    {
-                        mandatory_list.Add(value2);
-                    }
-                }
+//                        needs_data = true;
+//                    }
+//                    else
+//                    {
+//                        mandatory_list.Add(value2);
+//                    }
+//                }
 
-                things_dic.TryGetValue(thing.place1, out value);
+//                things_dic.TryGetValue(thing.place1, out value);
 
-                if (value.type != "Activity")// || !values_dic.TryGetValue(thing.place1, out value2))
-                {
-                    values2.Add(new Thing
-                    {
-                        type = "Activity",
-                        id = thing.id + "_1",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = "IndividualType",
-                        value_type = "$none$"
-                    });
+//                if (value.type != "Activity")// || !values_dic.TryGetValue(thing.place1, out value2))
+//                {
+//                    values2.Add(new Thing
+//                    {
+//                        type = "Activity",
+//                        id = thing.id + "_1",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = "IndividualType",
+//                        value_type = "$none$"
+//                    });
 
-                    things_dic.Add(thing.id + "_1", new Thing
-                    {
-                        type = "Activity",
-                        id = thing.id + "_1",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = "IndividualType",
-                        value_type = "$none$"
-                    });
+//                    things_dic.Add(thing.id + "_1", new Thing
+//                    {
+//                        type = "Activity",
+//                        id = thing.id + "_1",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = "IndividualType",
+//                        value_type = "$none$"
+//                    });
 
-                    values.Add(new Thing
-                    {
-                        type = "activityProducesResource",
-                        id = thing.id + "_3",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.id + "_1",
-                        place2 = (needs_data ? thing.id + "_7" : (string)thing.value),
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityProducesResource",
+//                        id = thing.id + "_3",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.id + "_1",
+//                        place2 = (needs_data ? thing.id + "_7" : (string)thing.value),
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
 
-                    values.Add(new Thing
-                    {
-                        type = "activityPerformedByPerformer",
-                        id = thing.id + "_5",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.place1,
-                        place2 = thing.id + "_1",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityPerformedByPerformer",
+//                        id = thing.id + "_5",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.place1,
+//                        place2 = thing.id + "_1",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
 
-                }
-                else
-                {
-                    values.Add(new Thing
-                    {
-                        type = "activityProducesResource",
-                        id = thing.id + "_3",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.place1,
-                        place2 = (needs_data ? thing.id + "_7" : (string)thing.value),
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                }
+//                }
+//                else
+//                {
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityProducesResource",
+//                        id = thing.id + "_3",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.place1,
+//                        place2 = (needs_data ? thing.id + "_7" : (string)thing.value),
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                }
 
-                things_dic.TryGetValue(thing.place2, out value);
+//                things_dic.TryGetValue(thing.place2, out value);
 
-                if (value.type != "Activity")// || !values_dic.TryGetValue(thing.place2, out value2))
-                {
-                    values2.Add(new Thing
-                    {
-                        type = "Activity",
-                        id = thing.id + "_2",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = "IndividualType",
-                        value_type = "$none$"
-                    });
+//                if (value.type != "Activity")// || !values_dic.TryGetValue(thing.place2, out value2))
+//                {
+//                    values2.Add(new Thing
+//                    {
+//                        type = "Activity",
+//                        id = thing.id + "_2",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = "IndividualType",
+//                        value_type = "$none$"
+//                    });
 
-                    things_dic.Add(thing.id + "_2", new Thing
-                    {
-                        type = "Activity",
-                        id = thing.id + "_2",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = "IndividualType",
-                        value_type = "$none$"
-                    });
+//                    things_dic.Add(thing.id + "_2", new Thing
+//                    {
+//                        type = "Activity",
+//                        id = thing.id + "_2",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = "IndividualType",
+//                        value_type = "$none$"
+//                    });
 
-                    values.Add(new Thing
-                    {
-                        type = "activityConsumesResource",
-                        id = thing.id + "_4",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = (needs_data ? thing.id + "_7" : (string)thing.value),
-                        place2 = thing.id + "_2",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityConsumesResource",
+//                        id = thing.id + "_4",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = (needs_data ? thing.id + "_7" : (string)thing.value),
+//                        place2 = thing.id + "_2",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
 
-                    values.Add(new Thing
-                    {
-                        type = "activityPerformedByPerformer",
-                        id = thing.id + "_6",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.place2,
-                        place2 = thing.id + "_2",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                }
-                else
-                {
-                    values.Add(new Thing
-                    {
-                        type = "activityConsumesResource",
-                        id = thing.id + "_4",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = (needs_data ? thing.id + "_7" : (string)thing.value),
-                        place2 = thing.place2,
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                }
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityPerformedByPerformer",
+//                        id = thing.id + "_6",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.place2,
+//                        place2 = thing.id + "_2",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                }
+//                else
+//                {
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityConsumesResource",
+//                        id = thing.id + "_4",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = (needs_data ? thing.id + "_7" : (string)thing.value),
+//                        place2 = thing.place2,
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                }
 
-                mandatory_list.AddRange(values);
-                if (values2.Count>0)
-                    mandatory_list.AddRange(values2);
+//                mandatory_list.AddRange(values);
+//                if (values2.Count>0)
+//                    mandatory_list.AddRange(values2);
 
-                needline_mandatory_views.Add(thing.id, mandatory_list);
+//                needline_mandatory_views.Add(thing.id, mandatory_list);
             
-            }
+//            }
             
-            if (values2.Count > 0)
-                things = things.Concat(values2);
-
-            tuple_types = tuple_types.Concat(values);
-
-            //Service Data Flow (DM2rx)
-
-            results =
-                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result.Parent.Attribute("MDPrpName") == "Source"
-                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "Service Data Flow (DM2rx)"
-                    from result2 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result2.Parent.Attribute("MDPrpName") == "Destination"
-                    where (string)result2.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
-                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                    where (string)result3.Parent.Attribute("MDPrpName") == "Resources"
-                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result2.Parent.Parent.Attribute("MDObjId")
-                    from result4 in root.Elements("Class").Elements("MDDefinition")
-                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
-
-                    select new Thing
-                    {
-                        type = "temp",
-                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
-                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        value = (string)result3.Attribute("MDLinkIdentity"),
-                        place1 = (string)result.Attribute("MDLinkIdentity"),
-                        place2 = (string)result2.Attribute("MDLinkIdentity"),
-                        //foundation = (string)result4.Attribute("MDObjId"),
-                        value_type = "$resources$"
-                    };
-
-            //results2 = tuple_types.Where(x => x.type == "activityPerformedByPerformer");//.GroupBy(x => x.place2).Where(x => x.Count() == 1).Select(grp => grp.First());
-            //values_dic = results2.GroupBy(x =>x.place2).Where(x => x.Count() == 1).ToDictionary(y => y.Key, y => y.First());
-
-            foreach (Thing thing in results)
-            {
-                values = new List<Thing>();
-                values2 = new List<Thing>();
-                mandatory_list = new List<Thing>();
-                bool needs_data = false;
-
-                if (things_dic.TryGetValue((string)thing.value, out value2))
-                {
-                    if (value2.type != "Data")
-                    {
-                        values2.Add(new Thing
-                        {
-                            type = "Data",
-                            id = thing.id + "_7",
-                            name = thing.name,
-                            value = "$none$",
-                            place1 = "$none$",
-                            place2 = "$none$",
-                            foundation = "IndividualType",
-                            value_type = "$none$"
-                        });
-
-                        things_dic.Add(thing.id + "_7", new Thing
-                        {
-                            type = "Data",
-                            id = thing.id + "_7",
-                            name = thing.name,
-                            value = "$none$",
-                            place1 = "$none$",
-                            place2 = "$none$",
-                            foundation = "IndividualType",
-                            value_type = "$none$"
-                        });
-
-                        needs_data = true;
-                    }
-                    else
-                    {
-                        mandatory_list.Add(value2);
-                    }
-                }
-
-                things_dic.TryGetValue(thing.place1, out value);
-
-                if (value.type != "Activity")// || !values_dic.TryGetValue(thing.place1, out value2))
-                {
-                    values2.Add(new Thing
-                    {
-                        type = "Activity",
-                        id = thing.id + "_1",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = "IndividualType",
-                        value_type = "$none$"
-                    });
-
-                    things_dic.Add(thing.id + "_1", new Thing
-                    {
-                        type = "Activity",
-                        id = thing.id + "_1",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = "IndividualType",
-                        value_type = "$none$"
-                    });
-
-                    values.Add(new Thing
-                    {
-                        type = "activityProducesResource",
-                        id = thing.id + "_3",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.id + "_1",
-                        place2 = (needs_data ? thing.id + "_7" : (string)thing.value),
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-
-                    values.Add(new Thing
-                    {
-                        type = "activityPerformedByPerformer",
-                        id = thing.id + "_5",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.place1,
-                        place2 = thing.id + "_1",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-
-                }
-                else
-                {
-                    values.Add(new Thing
-                    {
-                        type = "activityProducesResource",
-                        id = thing.id + "_3",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.place1,
-                        place2 = (needs_data ? thing.id + "_7" : (string)thing.value),
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                }
-
-                things_dic.TryGetValue(thing.place2, out value);
-
-                if (value.type != "Activity")// || !values_dic.TryGetValue(thing.place2, out value2))
-                {
-                    values2.Add(new Thing
-                    {
-                        type = "Activity",
-                        id = thing.id + "_2",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = "IndividualType",
-                        value_type = "$none$"
-                    });
-
-                    things_dic.Add(thing.id + "_2", new Thing
-                    {
-                        type = "Activity",
-                        id = thing.id + "_2",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = "IndividualType",
-                        value_type = "$none$"
-                    });
-
-                    values.Add(new Thing
-                    {
-                        type = "activityConsumesResource",
-                        id = thing.id + "_4",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = (needs_data ? thing.id + "_7" : (string)thing.value),
-                        place2 = thing.id + "_2",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-
-                    values.Add(new Thing
-                    {
-                        type = "activityPerformedByPerformer",
-                        id = thing.id + "_6",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = thing.place2,
-                        place2 = thing.id + "_2",
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                }
-                else
-                {
-                    values.Add(new Thing
-                    {
-                        type = "activityConsumesResource",
-                        id = thing.id + "_4",
-                        name = thing.name,
-                        value = "$none$",
-                        place1 = (needs_data ? thing.id + "_7" : (string)thing.value),
-                        place2 = thing.place2,
-                        foundation = "CoupleType",
-                        value_type = "$none$"
-                    });
-                }
-
-                mandatory_list.AddRange(values);
-                if (values2.Count > 0)
-                    mandatory_list.AddRange(values2);
-
-                needline_mandatory_views.Add(thing.id, mandatory_list);
-
-            }
-
-            if (values2.Count > 0)
-                things = things.Concat(values2);
-
-            tuple_types = tuple_types.Concat(values);
-
-            //Organization Owns Projects and PV-1
-
-            //results =
-            //            from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-            //            where (string)result.Parent.Attribute("MDPrpName") == "Organization Owns Projects"
-            //            from result2 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-            //            where (string)result2.Parent.Attribute("MDPrpName") == "Milestones"
-            //            where (string)result.Attribute("MDLinkIdentity") == (string)result2.Parent.Parent.Attribute("MDObjId")
-
-            //            select new Thing
-            //            {
-            //                type = "activityPerformedByPerformer",
-            //                id = (string)result2.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
-            //                name = ((string)result2.Attribute("MDLinkName")).Replace("&quot", "").Replace("\"",""),
-            //                value = new Tuple<string, string>((string)result.Parent.Parent.Parent.Element("MDDiagram").Attribute("MDObjId"), (string)result2.Parent.Parent.Attribute("MDObjId")),
-            //                place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
-            //                place1 = (string)result2.Attribute("MDLinkIdentity"),
-            //                foundation = "CoupleType",
-            //                value_type = "$view and project$"
-            //            };
-
-            //    IEnumerable<Thing> tuple_types_temp = results.ToList();
-
-            results =
-                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
-                        where (string)result.Parent.Attribute("MDPrpName") == "Project Owned By Organization"
-                        from result2 in result.Parent.Parent.Elements("MDProperty").Elements("MDLink")
-                        where (string)result2.Parent.Attribute("MDPrpName") == "Milestones"
-
-                        select new Thing
-                        {
-                            type = "activityPerformedByPerformer",
-                            id = (string)result2.Attribute("MDLinkIdentity") + (string)result.Attribute("MDLinkIdentity"),
-                            name = ((string)result2.Attribute("MDLinkName")).Replace("&quot","").Replace("\"",""),
-                            //value = new Tuple<string, string>((string)result.Parent.Parent.Parent.Element("MDDiagram").Attribute("MDObjId"), (string)result.Parent.Parent.Attribute("MDObjId")),
-                            value = (string)result.Parent.Parent.Attribute("MDObjId"),
-                            place2 = (string)result.Attribute("MDLinkIdentity"),
-                            place1 = (string)result2.Attribute("MDLinkIdentity"),
-                            foundation = "CoupleType",
-                            value_type = "$view and project$"
-                        };
-
-            if (results.Count() > 0)
-            {
-                IEnumerable<Thing> tuple_types_temp = results.ToList();
-
-                //tuple_types_temp = tuple_types_temp.Concat(results.ToList());
-
-                //tuple_types_temp = tuple_types_temp.GroupBy(x => x.id).Select(grp => grp.First());
-
-                tuple_types = tuple_types.Concat(tuple_types_temp);
-
-                results2 = tuple_types_temp;
-
-                foreach (Thing thing in tuple_types_temp)
-                {
-                    if (things_dic.TryGetValue(thing.place1, out value))
-                    {
-                        results2 = results2.Concat(new[] { value });
-                    }
-                    else
-                    {
-                        values = new List<Thing>();
-
-                        values.Add(new Thing
-                        {
-                            type = "Activity",
-                            id = thing.place1,
-                            name = thing.name,
-                            value = thing.value,
-                            place2 = "$none$",
-                            place1 = "$none$",
-                            foundation = "IndividualType",
-                            value_type = "$view and project$"
-
-                        });
-
-                        things = things.Concat(values);
-
-                        things_dic.Add(thing.place1, values.First());
-
-                        results2 = results2.Concat(values);
-
-                        values = new List<Thing>();
-
-                        values.Add(new Thing
-                        {
-                            type = "activityPartOfProjectType",
-                            id = (string)thing.value + thing.place1,
-                            name = "$none$",
-                            value = thing.value,
-                            place1 = (string)thing.value,
-                            place2 = thing.place1,
-                            foundation = "IndividualType",
-                            value_type = "$view and project$"
-
-                        });
-
-                        tuple_types = tuple_types.Concat(values);
-
-                        results2 = results2.Concat(values);
-                    }
-                }
-
-                results =
-                           from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
-                           where (string)result.Parent.Attribute("MDObjMinorTypeName") == "PV-01 Project Portfolio Relationships (DM2)" || (string)result.Parent.Attribute("MDObjMinorTypeName") == "PV-01 Project Portfolio Relationships At Time (DM2)"
-                           where (string)result.Attribute("MDObjMinorTypeName") == "Project (DM2)"
-
-                           select new Thing
-                           {
-                               type = "temp",
-                               id = (string)result.Parent.Attribute("MDObjId") + "_" + (string)result.Attribute("MDSymIdDef"),
-                               place1 = (string)result.Parent.Attribute("MDObjId"),
-                               place2 = (string)result.Attribute("MDSymIdDef")
-                           };
-
-                results_dic = results2.GroupBy(y => (string)y.value).ToDictionary(z => z.Key, z => z.ToList());
-
-                sorted_results = results.GroupBy(x => x.place1).Select(group => group.Distinct().ToList()).ToList();
-
-                foreach (List<Thing> view in sorted_results)
-                {
-                    values2 = new List<Thing>();
-
-                    foreach (Thing thing in view)
-                    {
-                        values = new List<Thing>();
-
-                        if (results_dic.TryGetValue(thing.place2, out values))
-                        {
-                            values2.AddRange(values);
-                        }
-                    }
-                    PV1_mandatory_views.Add(view.First().place1, values2);
-                }
-            }
-                    //PV1_mandatory_views = tuple_types_temp_new.GroupBy(y => ((Tuple<string, string>)y.value).Item1).ToDictionary(z => ((Tuple<string, string>)z.First().value).Item1, z => z.ToList());
-
-            //ToLists
-                    values3 = tuples.ToList();
-                    values4 = tuple_types.ToList();
-                    things = null;
-                    tuples = null;
-                    tuple_types = null;
-
-            //AV-2
-
-            sorted_results = new List<List<Thing>>();
-            optional_list = new List<Thing>();
-            values = new List<Thing>();
-
-            foreach (Thing thing in things_dic.Select(kvp => kvp.Value).ToList().OrderBy(x => x.type).ToList())
-            {
-                optional_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$"});
-                values.Add(new Thing { id = "_1", type = "AV-2", place2 = thing.id, value = thing.type, place1 = "_1"});
-            }
-
-            sorted_results.Add(values);
-
-            sorted_results_new = new List<List<Thing>>();
-            Add_Tuples(ref sorted_results, ref sorted_results_new, values3, ref errors_list);
-            Add_Tuples(ref sorted_results, ref sorted_results_new, values4, ref errors_list);
-            sorted_results = sorted_results_new;
-
-            foreach (Thing thing in sorted_results.First())
-            {
-                if ((string)thing.value == "superSubtype" || (string)thing.value == "WholePartType")
-                    optional_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
-            }
-
-            views.Add(new View { type = "AV-2", id = "_1", name = "NEAR AV-2", optional = optional_list, mandatory = new List<Thing>() });
-
-            ////OV-3
-
-            //mandatory_list = new List<Thing>();
-            //values = new List<Thing>();
-            //optional_list = new List<Thing>();
-            //sorted_results = new List<List<Thing>>();
-
-            //values_dic2 = things_dic.Where(x => x.Value.type == "Resource").ToDictionary(p => p.Key, p => p.Value);
-
-            //results = values4.Where(x => x.type == "activityConsumesResource").Where(x => values_dic2.ContainsKey(x.place1));
-            //values_dic = values4.Where(x => x.type == "activityProducesResource").GroupBy(x => x.place2).Where(x => x.Count() == 1).Select(grp => grp.First()).ToDictionary(x => x.place2, x=>x);
-
-            //foreach (Thing rela in results)
-            //{
-            //    if(values_dic.TryGetValue(rela.place1, out value))
-            //    {
-            //        values.Add(rela);
-            //        values.Add(value);
-            //    }
-
-            //}
-
-            //count = 0;
-            //count2 = values.Count();
-
-            ////var duplicateKeys = app2.GroupBy(x => x.place2)
-            ////            .Where(group => group.Count() > 1)
-            ////            .Select(group => group.Key);
-
-            ////List<string> test = duplicateKeys.ToList();
-
-            //values_dic2 = values4.Where(x => x.type == "activityPerformedByPerformer").Where(x => Allowed_Element("OV-3", x.place1, ref things_dic)).GroupBy(x => x.place2).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
-
-            //while (count < count2)
-            //{
-            //    add = false;
-
-            //    foreach (Thing thing in values)
-            //    {
-            //        if (values_dic2.TryGetValue(values[count].place2, out value))
-            //            if (values_dic2.TryGetValue(values[count + 1].place1, out value2))
-            //            {
-            //                add = true;
-            //                values.Add(value);
-            //                values.Add(value2);
-            //                break;
-            //            }
-            //    }
-
-
-            //    if (add == true)
-            //    {
-            //        count = count + 2;
-            //    }
-            //    else
-            //    {
-            //        values.RemoveAt(count);
-            //        values.RemoveAt(count);
-            //        count2 = count2 - 2;
-            //    }
-            //}
-
-            //sorted_results.Add(Add_Places(things_dic, values));
-
-            //foreach (Thing thing in sorted_results.First())
-            //{
-            //    temp = Find_Mandatory_Optional(thing.type, "OV-3", "OV-3", "_2", ref errors_list);
-            //    if (temp == "Mandatory")
-            //        mandatory_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
-            //    if (temp == "Optional")
-            //        optional_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
-            //}
-
-            //if (sorted_results.First().Count() > 0)
-            //    views.Add(new View { type = "OV-3", id = "_2", name = "NEAR OV-3", optional = optional_list, mandatory = mandatory_list });
-
-            //SV-6
-
-            mandatory_list = new List<Thing>();
-            values = new List<Thing>();
-            optional_list = new List<Thing>();
-            sorted_results = new List<List<Thing>>();
-
-            values_dic2 = things_dic.Where(x => x.Value.type == "Data").ToDictionary(p => p.Key, p => p.Value);
-
-            results = values4.Where(x => x.type == "activityConsumesResource").Where(x => values_dic2.ContainsKey(x.place1));
-            values_dic = values4.Where(x => x.type == "activityProducesResource").GroupBy(x => x.place2).Where(x => x.Count() == 1).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
-
-            foreach (Thing rela in results)
-            {
-                if (values_dic.TryGetValue(rela.place1, out value))
-                {
-                    values.Add(rela);
-                    values.Add(value);
-                }
-
-            }
-
-            count = 0;
-            count2 = values.Count();
-
-            //var duplicateKeys = app2.GroupBy(x => x.place2)
-            //            .Where(group => group.Count() > 1)
-            //            .Select(group => group.Key);
-
-            //List<string> test = duplicateKeys.ToList();
-
-            values_dic2 = values4.Where(x => x.type == "activityPerformedByPerformer").Where(x => Allowed_Element("SV-6", x.place1, ref things_dic)).GroupBy(x => x.place2).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
-
-            while (count < count2)
-            {
-                add = false;
-
-                foreach (Thing thing in values)
-                {
-                    if (values_dic2.TryGetValue(values[count].place2, out value))
-                        if (values_dic2.TryGetValue(values[count + 1].place1, out value2))
-                        {
-                            add = true;
-                            values.Add(value);
-                            values.Add(value2);
-                            break;
-                        }
-                }
-
-
-                if (add == true)
-                {
-                    count = count + 2;
-                }
-                else
-                {
-                    values.RemoveAt(count);
-                    values.RemoveAt(count);
-                    count2 = count2 - 2;
-                }
-            }
-
-            sorted_results.Add(Add_Places(things_dic, values));
-
-            foreach (Thing thing in sorted_results.First())
-            {
-                temp = Find_Mandatory_Optional(thing.type, "SV-6", "SV-6", "_3", ref errors_list);
-                if (temp == "Mandatory")
-                    mandatory_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
-                if (temp == "Optional")
-                    optional_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
-            }
-
-            if (sorted_results.First().Count() > 0)
-                views.Add(new View { type = "SV-6", id = "_3", name = "NEAR SV-6", optional = optional_list, mandatory = mandatory_list });
-
-            //SvcV-6
-
-            mandatory_list = new List<Thing>();
-            values = new List<Thing>();
-            optional_list = new List<Thing>();
-            sorted_results = new List<List<Thing>>();
-
-            values_dic2 = things_dic.Where(x => x.Value.type == "Data").ToDictionary(p => p.Key, p => p.Value);
-
-            results = values4.Where(x => x.type == "activityConsumesResource").Where(x => values_dic2.ContainsKey(x.place1));
-            values_dic = values4.Where(x => x.type == "activityProducesResource").GroupBy(x => x.place2).Where(x => x.Count() == 1).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
-
-            foreach (Thing rela in results)
-            {
-                if (values_dic.TryGetValue(rela.place1, out value))
-                {
-                    values.Add(rela);
-                    values.Add(value);
-                }
-
-            }
-
-            count = 0;
-            count2 = values.Count();
-
-            //var duplicateKeys = app2.GroupBy(x => x.place2)
-            //            .Where(group => group.Count() > 1)
-            //            .Select(group => group.Key);
-
-            //List<string> test = duplicateKeys.ToList();
-
-            values_dic2 = values4.Where(x => x.type == "activityPerformedByPerformer").Where(x => Allowed_Element("SvcV-6", x.place1, ref things_dic)).GroupBy(x => x.place2).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
-
-            while (count < count2)
-            {
-                add = false;
-
-                foreach (Thing thing in values)
-                {
-                    if (values_dic2.TryGetValue(values[count].place2, out value))
-                        if (values_dic2.TryGetValue(values[count + 1].place1, out value2))
-                        {
-                            add = true;
-                            values.Add(value);
-                            values.Add(value2);
-                            break;
-                        }
-                }
-
-
-                if (add == true)
-                {
-                    count = count + 2;
-                }
-                else
-                {
-                    values.RemoveAt(count);
-                    values.RemoveAt(count);
-                    count2 = count2 - 2;
-                }
-            }
-
-            sorted_results.Add(Add_Places(things_dic, values));
-
-            foreach (Thing thing in sorted_results.First())
-            {
-
-                temp = Find_Mandatory_Optional(thing.type, "SvcV-6", "SvcV-6", "_4", ref errors_list);
-                if (temp == "Mandatory")
-                    mandatory_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
-                if (temp == "Optional")
-                    optional_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
-
-                if ((string)thing.type == "Service")
-                {
-                    values = new List<Thing>();
-
-                    values.Add(new Thing
-                    {
-                        type = "ServiceDescription",
-                        id = thing.place2 + "_2",
-                        name = thing.place2 + "_Description",
-                        value = "$none$",
-                        place1 = "$none$",
-                        place2 = "$none$",
-                        foundation = "Individual",
-                        value_type = "$none$"
-                    });
-
-                    values.Add(new Thing
-                    {
-                        type = "serviceDescribedBy",
-                        id = thing.place2 + "_1",
-                        name = "$none$",
-                        value = "$none$",
-                        place1 = thing.id,
-                        place2 = thing.id + "_2",
-                        foundation = "namedBy",
-                        value_type = "$none$"
-                    });
-
-                    mandatory_list.AddRange(values);
-                }
-            }
-
-            if (sorted_results.First().Count() > 0)
-                views.Add(new View { type = "SvcV-6", id = "_4", name = "NEAR SvcV-6", optional = optional_list, mandatory = mandatory_list });
-
-            //DIV-3 Parts
-
-            results_dic = values4.Where(x => x.type == "WholePartType").GroupBy(x => x.place1).ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
-
-            //Diagramming
-
-            locations =
-                    from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
-                    where (string)result.Attribute("MDSymIdDef") != null
-                        || (string)result.Attribute("MDObjMinorTypeName") == "Picture" || (string)result.Attribute("MDObjMinorTypeName") == "Doc Block"
-                    select new Location
-                    {
-                        id = ((string)result.Attribute("MDObjMinorTypeName") == "Picture" || (string)result.Attribute("MDObjMinorTypeName") == "Doc Block") ? (string)result.Parent.Attribute("MDObjId") + (string)result.Attribute("MDObjId") : (string)result.Parent.Attribute("MDObjId") + (string)result.Attribute("MDObjId"),
-                        top_left_x = (string)result.Attribute("MDSymLocX"),
-                        top_left_y = (string)result.Attribute("MDSymLocY"),
-                        bottom_right_x = ((int)result.Attribute("MDSymLocX") + (int)result.Attribute("MDSymSizeX")).ToString(),
-                        bottom_right_y = ((int)result.Attribute("MDSymLocY") - (int)result.Attribute("MDSymSizeY")).ToString(),
-                        element_id = ((string)result.Attribute("MDObjMinorTypeName") == "Picture" || (string)result.Attribute("MDObjMinorTypeName") == "Doc Block") ? (string)result.Attribute("MDObjId") : (string)result.Attribute("MDSymIdDef")
-                    };
-
-            foreach (Location location in locations)
-            {
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "Information",
-                    id = location.id + "_12",
-                    name = "Diagramming Information",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "Point",
-                    id = location.id + "_16",
-                    name = "Top Left Location",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "PointType",
-                    id = location.id + "_14",
-                    name = "Top Left LocationType",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "Point",
-                    id = location.id + "_26",
-                    name = "Bottome Right Location",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "PointType",
-                    id = location.id + "_24",
-                    name = "Bottome Right LocationType",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_18",
-                    name = "Top Left X Location",
-                    value = location.top_left_x,
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue",
-                });
-
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_20",
-                    name = "Top Left Y Location",
-                    value = location.top_left_y,
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_22",
-                    name = "Top Left Z Location",
-                    value = "0",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_28",
-                    name = "Bottom Right X Location",
-                    value = location.bottom_right_x,
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_30",
-                    name = "Bottom Right Y Location",
-                    value = location.bottom_right_y,
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_32",
-                    name = "Bottom Right Z Location",
-                    value = "0",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
-
-                values5.AddRange(values);
-
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "describedBy",
-                    id = location.id + "_11",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.element_id,
-                    place2 = location.id + "_12",
-                    foundation = "namedBy",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "typeInstance",
-                    id = location.id + "_15",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_14",
-                    place2 = location.id + "_16",
-                    foundation = "typeInstance",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "typeInstance",
-                    id = location.id + "_25",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_24",
-                    place2 = location.id + "_26",
-                    foundation = "typeInstance",
-                    value_type = "$none$"
-                });
-
-
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_17",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_18",
-                    place2 = location.id + "_16",
-                    foundation = "typeInstance",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_19",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_20",
-                    place2 = location.id + "_16",
-                    foundation = "typeInstance",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_21",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_22",
-                    place2 = location.id + "_16",
-                    foundation = "typeInstance",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_27",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_28",
-                    place2 = location.id + "_26",
-                    foundation = "typeInstance",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_29",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_30",
-                    place2 = location.id + "_26",
-                    foundation = "typeInstance",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_31",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_32",
-                    place2 = location.id + "_26",
-                    foundation = "typeInstance",
-                    value_type = "$none$"
-                });
-
-                values7.AddRange(values);
-
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "resourceInLocationType",
-                    id = location.id + "_13",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_12",
-                    place2 = location.id + "_14",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "resourceInLocationType",
-                    id = location.id + "_23",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_12",
-                    place2 = location.id + "_24",
-                    foundation = "CoupleType",
-                    value_type = "$none$"
-                });
-
-
-                values6.AddRange(values);
-            }
-
-            locations = null;
-            values = null;
-            values2 = null;
-            values_dic = null;
-            values_dic2 = null;
-            results2 = null;
-
-            //Views
-
-            foreach (string[] current_lookup in View_Lookup)
-            {
-                sorted_results = new List<List<Thing>>();
-
-                results =
-                    from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
-                    where (string)result.Parent.Attribute("MDObjMinorTypeName") == current_lookup[1]
-                    where (string)result.Attribute("MDSymIdDef") != null
-                        || ((string)result.Attribute("MDObjMinorTypeName") == "Picture"
-                        || (string)result.Attribute("MDObjMinorTypeName") == "Doc Block")
-                    select new Thing
-                    {
-                        type = current_lookup[0],
-                        id = (string)result.Parent.Attribute("MDObjId") + (string)result.Attribute("MDSymIdDef"),
-                        name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
-                        place1 = (string)result.Parent.Attribute("MDObjId"),
-                        place2 = (string)result.Attribute("MDSymIdDef"),
-                        value = (string)result.Attribute("MDSymIdDef"),
-                        //value = Find_Def_DM2_Type((string)result.Attribute("MDSymIdDef"),ref values5),
-                        foundation = "$none$",
-                        value_type = "$element_type$"
-                    };
-                view_holder.Add(results.ToList());
-            }
-
-            root = null;
-
-            foreach (List<Thing> view_elements in view_holder)
-            {
-                //foreach (Thing thing in values)
-                int max = view_elements.Count;
-                for (int i = 0; i < max; i++)
-                {
-                    Thing thing = view_elements[i];
-                    //thing.value = (string) Find_Def_DM2_Type((string)thing.value, values5.ToList());
-                    if (thing.place2 != null)
-                    {
-                        if (things_dic.TryGetValue(thing.place2, out value))
-                            thing.value = (string)value.type;
-
-                        if (thing.type == "DIV-3")
-                        {
-                            values2 = new List<Thing>();
+//            if (values2.Count > 0)
+//                things = things.Concat(values2);
+
+//            tuple_types = tuple_types.Concat(values);
+
+//            //Service Data Flow (DM2rx)
+
+//            results =
+//                    from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result.Parent.Attribute("MDPrpName") == "Source"
+//                    where (string)result.Parent.Parent.Attribute("MDObjMinorTypeName") == "Service Data Flow (DM2rx)"
+//                    from result2 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result2.Parent.Attribute("MDPrpName") == "Destination"
+//                    where (string)result2.Parent.Parent.Attribute("MDObjId") == (string)result.Parent.Parent.Attribute("MDObjId")
+//                    from result3 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                    where (string)result3.Parent.Attribute("MDPrpName") == "Resources"
+//                    where (string)result3.Parent.Parent.Attribute("MDObjId") == (string)result2.Parent.Parent.Attribute("MDObjId")
+//                    from result4 in root.Elements("Class").Elements("MDDefinition")
+//                    where (string)result3.Attribute("MDLinkIdentity") == (string)result4.Attribute("MDObjId")
+
+//                    select new Thing
+//                    {
+//                        type = "temp",
+//                        id = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                        name = ((string)result.Parent.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        value = (string)result3.Attribute("MDLinkIdentity"),
+//                        place1 = (string)result.Attribute("MDLinkIdentity"),
+//                        place2 = (string)result2.Attribute("MDLinkIdentity"),
+//                        //foundation = (string)result4.Attribute("MDObjId"),
+//                        value_type = "$resources$"
+//                    };
+
+//            //results2 = tuple_types.Where(x => x.type == "activityPerformedByPerformer");//.GroupBy(x => x.place2).Where(x => x.Count() == 1).Select(grp => grp.First());
+//            //values_dic = results2.GroupBy(x =>x.place2).Where(x => x.Count() == 1).ToDictionary(y => y.Key, y => y.First());
+
+//            foreach (Thing thing in results)
+//            {
+//                values = new List<Thing>();
+//                values2 = new List<Thing>();
+//                mandatory_list = new List<Thing>();
+//                bool needs_data = false;
+
+//                if (things_dic.TryGetValue((string)thing.value, out value2))
+//                {
+//                    if (value2.type != "Data")
+//                    {
+//                        values2.Add(new Thing
+//                        {
+//                            type = "Data",
+//                            id = thing.id + "_7",
+//                            name = thing.name,
+//                            value = "$none$",
+//                            place1 = "$none$",
+//                            place2 = "$none$",
+//                            foundation = "IndividualType",
+//                            value_type = "$none$"
+//                        });
+
+//                        things_dic.Add(thing.id + "_7", new Thing
+//                        {
+//                            type = "Data",
+//                            id = thing.id + "_7",
+//                            name = thing.name,
+//                            value = "$none$",
+//                            place1 = "$none$",
+//                            place2 = "$none$",
+//                            foundation = "IndividualType",
+//                            value_type = "$none$"
+//                        });
+
+//                        needs_data = true;
+//                    }
+//                    else
+//                    {
+//                        mandatory_list.Add(value2);
+//                    }
+//                }
+
+//                things_dic.TryGetValue(thing.place1, out value);
+
+//                if (value.type != "Activity")// || !values_dic.TryGetValue(thing.place1, out value2))
+//                {
+//                    values2.Add(new Thing
+//                    {
+//                        type = "Activity",
+//                        id = thing.id + "_1",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = "IndividualType",
+//                        value_type = "$none$"
+//                    });
+
+//                    things_dic.Add(thing.id + "_1", new Thing
+//                    {
+//                        type = "Activity",
+//                        id = thing.id + "_1",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = "IndividualType",
+//                        value_type = "$none$"
+//                    });
+
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityProducesResource",
+//                        id = thing.id + "_3",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.id + "_1",
+//                        place2 = (needs_data ? thing.id + "_7" : (string)thing.value),
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityPerformedByPerformer",
+//                        id = thing.id + "_5",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.place1,
+//                        place2 = thing.id + "_1",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+
+//                }
+//                else
+//                {
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityProducesResource",
+//                        id = thing.id + "_3",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.place1,
+//                        place2 = (needs_data ? thing.id + "_7" : (string)thing.value),
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                }
+
+//                things_dic.TryGetValue(thing.place2, out value);
+
+//                if (value.type != "Activity")// || !values_dic.TryGetValue(thing.place2, out value2))
+//                {
+//                    values2.Add(new Thing
+//                    {
+//                        type = "Activity",
+//                        id = thing.id + "_2",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = "IndividualType",
+//                        value_type = "$none$"
+//                    });
+
+//                    things_dic.Add(thing.id + "_2", new Thing
+//                    {
+//                        type = "Activity",
+//                        id = thing.id + "_2",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = "IndividualType",
+//                        value_type = "$none$"
+//                    });
+
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityConsumesResource",
+//                        id = thing.id + "_4",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = (needs_data ? thing.id + "_7" : (string)thing.value),
+//                        place2 = thing.id + "_2",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityPerformedByPerformer",
+//                        id = thing.id + "_6",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = thing.place2,
+//                        place2 = thing.id + "_2",
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                }
+//                else
+//                {
+//                    values.Add(new Thing
+//                    {
+//                        type = "activityConsumesResource",
+//                        id = thing.id + "_4",
+//                        name = thing.name,
+//                        value = "$none$",
+//                        place1 = (needs_data ? thing.id + "_7" : (string)thing.value),
+//                        place2 = thing.place2,
+//                        foundation = "CoupleType",
+//                        value_type = "$none$"
+//                    });
+//                }
+
+//                mandatory_list.AddRange(values);
+//                if (values2.Count > 0)
+//                    mandatory_list.AddRange(values2);
+
+//                needline_mandatory_views.Add(thing.id, mandatory_list);
+
+//            }
+
+//            if (values2.Count > 0)
+//                things = things.Concat(values2);
+
+//            tuple_types = tuple_types.Concat(values);
+
+//            //Organization Owns Projects and PV-1
+
+//            //results =
+//            //            from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//            //            where (string)result.Parent.Attribute("MDPrpName") == "Organization Owns Projects"
+//            //            from result2 in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//            //            where (string)result2.Parent.Attribute("MDPrpName") == "Milestones"
+//            //            where (string)result.Attribute("MDLinkIdentity") == (string)result2.Parent.Parent.Attribute("MDObjId")
+
+//            //            select new Thing
+//            //            {
+//            //                type = "activityPerformedByPerformer",
+//            //                id = (string)result2.Attribute("MDLinkIdentity") + (string)result.Parent.Parent.Attribute("MDObjId"),
+//            //                name = ((string)result2.Attribute("MDLinkName")).Replace("&quot", "").Replace("\"",""),
+//            //                value = new Tuple<string, string>((string)result.Parent.Parent.Parent.Element("MDDiagram").Attribute("MDObjId"), (string)result2.Parent.Parent.Attribute("MDObjId")),
+//            //                place2 = (string)result.Parent.Parent.Attribute("MDObjId"),
+//            //                place1 = (string)result2.Attribute("MDLinkIdentity"),
+//            //                foundation = "CoupleType",
+//            //                value_type = "$view and project$"
+//            //            };
+
+//            //    IEnumerable<Thing> tuple_types_temp = results.ToList();
+
+//            results =
+//                        from result in root.Elements("Class").Elements("MDDefinition").Elements("MDProperty").Elements("MDLink")
+//                        where (string)result.Parent.Attribute("MDPrpName") == "Project Owned By Organization"
+//                        from result2 in result.Parent.Parent.Elements("MDProperty").Elements("MDLink")
+//                        where (string)result2.Parent.Attribute("MDPrpName") == "Milestones"
+
+//                        select new Thing
+//                        {
+//                            type = "activityPerformedByPerformer",
+//                            id = (string)result2.Attribute("MDLinkIdentity") + (string)result.Attribute("MDLinkIdentity"),
+//                            name = ((string)result2.Attribute("MDLinkName")).Replace("&quot","").Replace("\"",""),
+//                            //value = new Tuple<string, string>((string)result.Parent.Parent.Parent.Element("MDDiagram").Attribute("MDObjId"), (string)result.Parent.Parent.Attribute("MDObjId")),
+//                            value = (string)result.Parent.Parent.Attribute("MDObjId"),
+//                            place2 = (string)result.Attribute("MDLinkIdentity"),
+//                            place1 = (string)result2.Attribute("MDLinkIdentity"),
+//                            foundation = "CoupleType",
+//                            value_type = "$view and project$"
+//                        };
+
+//            if (results.Count() > 0)
+//            {
+//                IEnumerable<Thing> tuple_types_temp = results.ToList();
+
+//                //tuple_types_temp = tuple_types_temp.Concat(results.ToList());
+
+//                //tuple_types_temp = tuple_types_temp.GroupBy(x => x.id).Select(grp => grp.First());
+
+//                tuple_types = tuple_types.Concat(tuple_types_temp);
+
+//                results2 = tuple_types_temp;
+
+//                foreach (Thing thing in tuple_types_temp)
+//                {
+//                    if (things_dic.TryGetValue(thing.place1, out value))
+//                    {
+//                        results2 = results2.Concat(new[] { value });
+//                    }
+//                    else
+//                    {
+//                        values = new List<Thing>();
+
+//                        values.Add(new Thing
+//                        {
+//                            type = "Activity",
+//                            id = thing.place1,
+//                            name = thing.name,
+//                            value = thing.value,
+//                            place2 = "$none$",
+//                            place1 = "$none$",
+//                            foundation = "IndividualType",
+//                            value_type = "$view and project$"
+
+//                        });
+
+//                        things = things.Concat(values);
+
+//                        things_dic.Add(thing.place1, values.First());
+
+//                        results2 = results2.Concat(values);
+
+//                        values = new List<Thing>();
+
+//                        values.Add(new Thing
+//                        {
+//                            type = "activityPartOfProjectType",
+//                            id = (string)thing.value + thing.place1,
+//                            name = "$none$",
+//                            value = thing.value,
+//                            place1 = (string)thing.value,
+//                            place2 = thing.place1,
+//                            foundation = "IndividualType",
+//                            value_type = "$view and project$"
+
+//                        });
+
+//                        tuple_types = tuple_types.Concat(values);
+
+//                        results2 = results2.Concat(values);
+//                    }
+//                }
+
+//                results =
+//                           from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
+//                           where (string)result.Parent.Attribute("MDObjMinorTypeName") == "PV-01 Project Portfolio Relationships (DM2)" || (string)result.Parent.Attribute("MDObjMinorTypeName") == "PV-01 Project Portfolio Relationships At Time (DM2)"
+//                           where (string)result.Attribute("MDObjMinorTypeName") == "Project (DM2)"
+
+//                           select new Thing
+//                           {
+//                               type = "temp",
+//                               id = (string)result.Parent.Attribute("MDObjId") + "_" + (string)result.Attribute("MDSymIdDef"),
+//                               place1 = (string)result.Parent.Attribute("MDObjId"),
+//                               place2 = (string)result.Attribute("MDSymIdDef")
+//                           };
+
+//                results_dic = results2.GroupBy(y => (string)y.value).ToDictionary(z => z.Key, z => z.ToList());
+
+//                sorted_results = results.GroupBy(x => x.place1).Select(group => group.Distinct().ToList()).ToList();
+
+//                foreach (List<Thing> view in sorted_results)
+//                {
+//                    values2 = new List<Thing>();
+
+//                    foreach (Thing thing in view)
+//                    {
+//                        values = new List<Thing>();
+
+//                        if (results_dic.TryGetValue(thing.place2, out values))
+//                        {
+//                            values2.AddRange(values);
+//                        }
+//                    }
+//                    PV1_mandatory_views.Add(view.First().place1, values2);
+//                }
+//            }
+//                    //PV1_mandatory_views = tuple_types_temp_new.GroupBy(y => ((Tuple<string, string>)y.value).Item1).ToDictionary(z => ((Tuple<string, string>)z.First().value).Item1, z => z.ToList());
+
+//            //ToLists
+//                    values3 = tuples.ToList();
+//                    values4 = tuple_types.ToList();
+//                    things = null;
+//                    tuples = null;
+//                    tuple_types = null;
+
+//            //AV-2
+
+//            sorted_results = new List<List<Thing>>();
+//            optional_list = new List<Thing>();
+//            values = new List<Thing>();
+
+//            foreach (Thing thing in things_dic.Select(kvp => kvp.Value).ToList().OrderBy(x => x.type).ToList())
+//            {
+//                optional_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$"});
+//                values.Add(new Thing { id = "_1", type = "AV-2", place2 = thing.id, value = thing.type, place1 = "_1"});
+//            }
+
+//            sorted_results.Add(values);
+
+//            sorted_results_new = new List<List<Thing>>();
+//            Add_Tuples(ref sorted_results, ref sorted_results_new, values3, ref errors_list);
+//            Add_Tuples(ref sorted_results, ref sorted_results_new, values4, ref errors_list);
+//            sorted_results = sorted_results_new;
+
+//            foreach (Thing thing in sorted_results.First())
+//            {
+//                if ((string)thing.value == "superSubtype" || (string)thing.value == "WholePartType")
+//                    optional_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+//            }
+
+//            views.Add(new View { type = "AV-2", id = "_1", name = "NEAR AV-2", optional = optional_list, mandatory = new List<Thing>() });
+
+//            ////OV-3
+
+//            //mandatory_list = new List<Thing>();
+//            //values = new List<Thing>();
+//            //optional_list = new List<Thing>();
+//            //sorted_results = new List<List<Thing>>();
+
+//            //values_dic2 = things_dic.Where(x => x.Value.type == "Resource").ToDictionary(p => p.Key, p => p.Value);
+
+//            //results = values4.Where(x => x.type == "activityConsumesResource").Where(x => values_dic2.ContainsKey(x.place1));
+//            //values_dic = values4.Where(x => x.type == "activityProducesResource").GroupBy(x => x.place2).Where(x => x.Count() == 1).Select(grp => grp.First()).ToDictionary(x => x.place2, x=>x);
+
+//            //foreach (Thing rela in results)
+//            //{
+//            //    if(values_dic.TryGetValue(rela.place1, out value))
+//            //    {
+//            //        values.Add(rela);
+//            //        values.Add(value);
+//            //    }
+
+//            //}
+
+//            //count = 0;
+//            //count2 = values.Count();
+
+//            ////var duplicateKeys = app2.GroupBy(x => x.place2)
+//            ////            .Where(group => group.Count() > 1)
+//            ////            .Select(group => group.Key);
+
+//            ////List<string> test = duplicateKeys.ToList();
+
+//            //values_dic2 = values4.Where(x => x.type == "activityPerformedByPerformer").Where(x => Allowed_Element("OV-3", x.place1, ref things_dic)).GroupBy(x => x.place2).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
+
+//            //while (count < count2)
+//            //{
+//            //    add = false;
+
+//            //    foreach (Thing thing in values)
+//            //    {
+//            //        if (values_dic2.TryGetValue(values[count].place2, out value))
+//            //            if (values_dic2.TryGetValue(values[count + 1].place1, out value2))
+//            //            {
+//            //                add = true;
+//            //                values.Add(value);
+//            //                values.Add(value2);
+//            //                break;
+//            //            }
+//            //    }
+
+
+//            //    if (add == true)
+//            //    {
+//            //        count = count + 2;
+//            //    }
+//            //    else
+//            //    {
+//            //        values.RemoveAt(count);
+//            //        values.RemoveAt(count);
+//            //        count2 = count2 - 2;
+//            //    }
+//            //}
+
+//            //sorted_results.Add(Add_Places(things_dic, values));
+
+//            //foreach (Thing thing in sorted_results.First())
+//            //{
+//            //    temp = Find_Mandatory_Optional(thing.type, "OV-3", "OV-3", "_2", ref errors_list);
+//            //    if (temp == "Mandatory")
+//            //        mandatory_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
+//            //    if (temp == "Optional")
+//            //        optional_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
+//            //}
+
+//            //if (sorted_results.First().Count() > 0)
+//            //    views.Add(new View { type = "OV-3", id = "_2", name = "NEAR OV-3", optional = optional_list, mandatory = mandatory_list });
+
+//            //SV-6
+
+//            mandatory_list = new List<Thing>();
+//            values = new List<Thing>();
+//            optional_list = new List<Thing>();
+//            sorted_results = new List<List<Thing>>();
+
+//            values_dic2 = things_dic.Where(x => x.Value.type == "Data").ToDictionary(p => p.Key, p => p.Value);
+
+//            results = values4.Where(x => x.type == "activityConsumesResource").Where(x => values_dic2.ContainsKey(x.place1));
+//            values_dic = values4.Where(x => x.type == "activityProducesResource").GroupBy(x => x.place2).Where(x => x.Count() == 1).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
+
+//            foreach (Thing rela in results)
+//            {
+//                if (values_dic.TryGetValue(rela.place1, out value))
+//                {
+//                    values.Add(rela);
+//                    values.Add(value);
+//                }
+
+//            }
+
+//            count = 0;
+//            count2 = values.Count();
+
+//            //var duplicateKeys = app2.GroupBy(x => x.place2)
+//            //            .Where(group => group.Count() > 1)
+//            //            .Select(group => group.Key);
+
+//            //List<string> test = duplicateKeys.ToList();
+
+//            values_dic2 = values4.Where(x => x.type == "activityPerformedByPerformer").Where(x => Allowed_Element("SV-6", x.place1, ref things_dic)).GroupBy(x => x.place2).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
+
+//            while (count < count2)
+//            {
+//                add = false;
+
+//                foreach (Thing thing in values)
+//                {
+//                    if (values_dic2.TryGetValue(values[count].place2, out value))
+//                        if (values_dic2.TryGetValue(values[count + 1].place1, out value2))
+//                        {
+//                            add = true;
+//                            values.Add(value);
+//                            values.Add(value2);
+//                            break;
+//                        }
+//                }
+
+
+//                if (add == true)
+//                {
+//                    count = count + 2;
+//                }
+//                else
+//                {
+//                    values.RemoveAt(count);
+//                    values.RemoveAt(count);
+//                    count2 = count2 - 2;
+//                }
+//            }
+
+//            sorted_results.Add(Add_Places(things_dic, values));
+
+//            foreach (Thing thing in sorted_results.First())
+//            {
+//                temp = Find_Mandatory_Optional(thing.type, "SV-6", "SV-6", "_3", ref errors_list);
+//                if (temp == "Mandatory")
+//                    mandatory_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
+//                if (temp == "Optional")
+//                    optional_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
+//            }
+
+//            if (sorted_results.First().Count() > 0)
+//                views.Add(new View { type = "SV-6", id = "_3", name = "NEAR SV-6", optional = optional_list, mandatory = mandatory_list });
+
+//            //SvcV-6
+
+//            mandatory_list = new List<Thing>();
+//            values = new List<Thing>();
+//            optional_list = new List<Thing>();
+//            sorted_results = new List<List<Thing>>();
+
+//            values_dic2 = things_dic.Where(x => x.Value.type == "Data").ToDictionary(p => p.Key, p => p.Value);
+
+//            results = values4.Where(x => x.type == "activityConsumesResource").Where(x => values_dic2.ContainsKey(x.place1));
+//            values_dic = values4.Where(x => x.type == "activityProducesResource").GroupBy(x => x.place2).Where(x => x.Count() == 1).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
+
+//            foreach (Thing rela in results)
+//            {
+//                if (values_dic.TryGetValue(rela.place1, out value))
+//                {
+//                    values.Add(rela);
+//                    values.Add(value);
+//                }
+
+//            }
+
+//            count = 0;
+//            count2 = values.Count();
+
+//            //var duplicateKeys = app2.GroupBy(x => x.place2)
+//            //            .Where(group => group.Count() > 1)
+//            //            .Select(group => group.Key);
+
+//            //List<string> test = duplicateKeys.ToList();
+
+//            values_dic2 = values4.Where(x => x.type == "activityPerformedByPerformer").Where(x => Allowed_Element("SvcV-6", x.place1, ref things_dic)).GroupBy(x => x.place2).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
+
+//            while (count < count2)
+//            {
+//                add = false;
+
+//                foreach (Thing thing in values)
+//                {
+//                    if (values_dic2.TryGetValue(values[count].place2, out value))
+//                        if (values_dic2.TryGetValue(values[count + 1].place1, out value2))
+//                        {
+//                            add = true;
+//                            values.Add(value);
+//                            values.Add(value2);
+//                            break;
+//                        }
+//                }
+
+
+//                if (add == true)
+//                {
+//                    count = count + 2;
+//                }
+//                else
+//                {
+//                    values.RemoveAt(count);
+//                    values.RemoveAt(count);
+//                    count2 = count2 - 2;
+//                }
+//            }
+
+//            sorted_results.Add(Add_Places(things_dic, values));
+
+//            foreach (Thing thing in sorted_results.First())
+//            {
+
+//                temp = Find_Mandatory_Optional(thing.type, "SvcV-6", "SvcV-6", "_4", ref errors_list);
+//                if (temp == "Mandatory")
+//                    mandatory_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
+//                if (temp == "Optional")
+//                    optional_list.Add(new Thing { id = thing.id, type = thing.type, value = "$none$", value_type = "$none$" });
+
+//                if ((string)thing.type == "Service")
+//                {
+//                    values = new List<Thing>();
+
+//                    values.Add(new Thing
+//                    {
+//                        type = "ServiceDescription",
+//                        id = thing.place2 + "_2",
+//                        name = thing.place2 + "_Description",
+//                        value = "$none$",
+//                        place1 = "$none$",
+//                        place2 = "$none$",
+//                        foundation = "Individual",
+//                        value_type = "$none$"
+//                    });
+
+//                    values.Add(new Thing
+//                    {
+//                        type = "serviceDescribedBy",
+//                        id = thing.place2 + "_1",
+//                        name = "$none$",
+//                        value = "$none$",
+//                        place1 = thing.id,
+//                        place2 = thing.id + "_2",
+//                        foundation = "namedBy",
+//                        value_type = "$none$"
+//                    });
+
+//                    mandatory_list.AddRange(values);
+//                }
+//            }
+
+//            if (sorted_results.First().Count() > 0)
+//                views.Add(new View { type = "SvcV-6", id = "_4", name = "NEAR SvcV-6", optional = optional_list, mandatory = mandatory_list });
+
+//            //DIV-3 Parts
+
+//            results_dic = values4.Where(x => x.type == "WholePartType").GroupBy(x => x.place1).ToDictionary(gdc => gdc.Key, gdc => gdc.ToList());
+
+//            //Diagramming
+
+//            locations =
+//                    from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
+//                    where (string)result.Attribute("MDSymIdDef") != null
+//                        || (string)result.Attribute("MDObjMinorTypeName") == "Picture" || (string)result.Attribute("MDObjMinorTypeName") == "Doc Block"
+//                    select new Location
+//                    {
+//                        id = ((string)result.Attribute("MDObjMinorTypeName") == "Picture" || (string)result.Attribute("MDObjMinorTypeName") == "Doc Block") ? (string)result.Parent.Attribute("MDObjId") + (string)result.Attribute("MDObjId") : (string)result.Parent.Attribute("MDObjId") + (string)result.Attribute("MDObjId"),
+//                        top_left_x = (string)result.Attribute("MDSymLocX"),
+//                        top_left_y = (string)result.Attribute("MDSymLocY"),
+//                        bottom_right_x = ((int)result.Attribute("MDSymLocX") + (int)result.Attribute("MDSymSizeX")).ToString(),
+//                        bottom_right_y = ((int)result.Attribute("MDSymLocY") - (int)result.Attribute("MDSymSizeY")).ToString(),
+//                        element_id = ((string)result.Attribute("MDObjMinorTypeName") == "Picture" || (string)result.Attribute("MDObjMinorTypeName") == "Doc Block") ? (string)result.Attribute("MDObjId") : (string)result.Attribute("MDSymIdDef")
+//                    };
+
+//            foreach (Location location in locations)
+//            {
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "Information",
+//                    id = location.id + "_12",
+//                    name = "Diagramming Information",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "Point",
+//                    id = location.id + "_16",
+//                    name = "Top Left Location",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "PointType",
+//                    id = location.id + "_14",
+//                    name = "Top Left LocationType",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "Point",
+//                    id = location.id + "_26",
+//                    name = "Bottome Right Location",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "PointType",
+//                    id = location.id + "_24",
+//                    name = "Bottome Right LocationType",
+//                    value = "$none$",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "SpatialMeasure",
+//                    id = location.id + "_18",
+//                    name = "Top Left X Location",
+//                    value = location.top_left_x,
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "numericValue",
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "SpatialMeasure",
+//                    id = location.id + "_20",
+//                    name = "Top Left Y Location",
+//                    value = location.top_left_y,
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "numericValue"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "SpatialMeasure",
+//                    id = location.id + "_22",
+//                    name = "Top Left Z Location",
+//                    value = "0",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "numericValue"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "SpatialMeasure",
+//                    id = location.id + "_28",
+//                    name = "Bottom Right X Location",
+//                    value = location.bottom_right_x,
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "numericValue"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "SpatialMeasure",
+//                    id = location.id + "_30",
+//                    name = "Bottom Right Y Location",
+//                    value = location.bottom_right_y,
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "numericValue"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "SpatialMeasure",
+//                    id = location.id + "_32",
+//                    name = "Bottom Right Z Location",
+//                    value = "0",
+//                    place1 = "$none$",
+//                    place2 = "$none$",
+//                    foundation = "IndividualType",
+//                    value_type = "numericValue"
+//                });
+
+//                values5.AddRange(values);
+
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "describedBy",
+//                    id = location.id + "_11",
+//                    name = "$none$",
+//                    value = "$none$",
+//                    place1 = location.element_id,
+//                    place2 = location.id + "_12",
+//                    foundation = "namedBy",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "typeInstance",
+//                    id = location.id + "_15",
+//                    name = "$none$",
+//                    value = "$none$",
+//                    place1 = location.id + "_14",
+//                    place2 = location.id + "_16",
+//                    foundation = "typeInstance",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "typeInstance",
+//                    id = location.id + "_25",
+//                    name = "$none$",
+//                    value = "$none$",
+//                    place1 = location.id + "_24",
+//                    place2 = location.id + "_26",
+//                    foundation = "typeInstance",
+//                    value_type = "$none$"
+//                });
+
+
+//                values.Add(new Thing
+//                {
+//                    type = "measureOfIndividualPoint",
+//                    id = location.id + "_17",
+//                    name = "$none$",
+//                    value = "$none$",
+//                    place1 = location.id + "_18",
+//                    place2 = location.id + "_16",
+//                    foundation = "typeInstance",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "measureOfIndividualPoint",
+//                    id = location.id + "_19",
+//                    name = "$none$",
+//                    value = "$none$",
+//                    place1 = location.id + "_20",
+//                    place2 = location.id + "_16",
+//                    foundation = "typeInstance",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "measureOfIndividualPoint",
+//                    id = location.id + "_21",
+//                    name = "$none$",
+//                    value = "$none$",
+//                    place1 = location.id + "_22",
+//                    place2 = location.id + "_16",
+//                    foundation = "typeInstance",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "measureOfIndividualPoint",
+//                    id = location.id + "_27",
+//                    name = "$none$",
+//                    value = "$none$",
+//                    place1 = location.id + "_28",
+//                    place2 = location.id + "_26",
+//                    foundation = "typeInstance",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "measureOfIndividualPoint",
+//                    id = location.id + "_29",
+//                    name = "$none$",
+//                    value = "$none$",
+//                    place1 = location.id + "_30",
+//                    place2 = location.id + "_26",
+//                    foundation = "typeInstance",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "measureOfIndividualPoint",
+//                    id = location.id + "_31",
+//                    name = "$none$",
+//                    value = "$none$",
+//                    place1 = location.id + "_32",
+//                    place2 = location.id + "_26",
+//                    foundation = "typeInstance",
+//                    value_type = "$none$"
+//                });
+
+//                values7.AddRange(values);
+
+//                values = new List<Thing>();
+
+//                values.Add(new Thing
+//                {
+//                    type = "resourceInLocationType",
+//                    id = location.id + "_13",
+//                    name = "$none$",
+//                    value = "$none$",
+//                    place1 = location.id + "_12",
+//                    place2 = location.id + "_14",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+//                values.Add(new Thing
+//                {
+//                    type = "resourceInLocationType",
+//                    id = location.id + "_23",
+//                    name = "$none$",
+//                    value = "$none$",
+//                    place1 = location.id + "_12",
+//                    place2 = location.id + "_24",
+//                    foundation = "CoupleType",
+//                    value_type = "$none$"
+//                });
+
+
+//                values6.AddRange(values);
+//            }
+
+//            locations = null;
+//            values = null;
+//            values2 = null;
+//            values_dic = null;
+//            values_dic2 = null;
+//            results2 = null;
+
+//            //Views
+
+//            foreach (string[] current_lookup in View_Lookup)
+//            {
+//                sorted_results = new List<List<Thing>>();
+
+//                results =
+//                    from result in root.Elements("Class").Elements("MDDiagram").Elements("MDSymbol")
+//                    where (string)result.Parent.Attribute("MDObjMinorTypeName") == current_lookup[1]
+//                    where (string)result.Attribute("MDSymIdDef") != null
+//                        || ((string)result.Attribute("MDObjMinorTypeName") == "Picture"
+//                        || (string)result.Attribute("MDObjMinorTypeName") == "Doc Block")
+//                    select new Thing
+//                    {
+//                        type = current_lookup[0],
+//                        id = (string)result.Parent.Attribute("MDObjId") + (string)result.Attribute("MDSymIdDef"),
+//                        name = ((string)result.Parent.Attribute("MDObjName")).Replace("&", " And "),
+//                        place1 = (string)result.Parent.Attribute("MDObjId"),
+//                        place2 = (string)result.Attribute("MDSymIdDef"),
+//                        value = (string)result.Attribute("MDSymIdDef"),
+//                        //value = Find_Def_DM2_Type((string)result.Attribute("MDSymIdDef"),ref values5),
+//                        foundation = "$none$",
+//                        value_type = "$element_type$"
+//                    };
+//                view_holder.Add(results.ToList());
+//            }
+
+//            root = null;
+
+//            foreach (List<Thing> view_elements in view_holder)
+//            {
+//                //foreach (Thing thing in values)
+//                int max = view_elements.Count;
+//                for (int i = 0; i < max; i++)
+//                {
+//                    Thing thing = view_elements[i];
+//                    //thing.value = (string) Find_Def_DM2_Type((string)thing.value, values5.ToList());
+//                    if (thing.place2 != null)
+//                    {
+//                        if (things_dic.TryGetValue(thing.place2, out value))
+//                            thing.value = (string)value.type;
+
+//                        if (thing.type == "DIV-3")
+//                        {
+//                            values2 = new List<Thing>();
                             
-                            if (results_dic.TryGetValue(thing.place2, out values2))
-                            {
-                                foreach (Thing item in values2)
-                                {
-                                    view_elements.Add(new Thing
-                                    {
-                                        type = thing.type,
-                                        id = thing.id,
-                                        name = thing.name,
-                                        value = thing.value,
-                                        place1 = thing.place1,
-                                        place2 = item.place2,
-                                        foundation = thing.foundation,
-                                        value_type = thing.value_type
-                                    });
-                                    max++;
-                                }
-                            }
-                        }
-                    }
-                }
+//                            if (results_dic.TryGetValue(thing.place2, out values2))
+//                            {
+//                                foreach (Thing item in values2)
+//                                {
+//                                    view_elements.Add(new Thing
+//                                    {
+//                                        type = thing.type,
+//                                        id = thing.id,
+//                                        name = thing.name,
+//                                        value = thing.value,
+//                                        place1 = thing.place1,
+//                                        place2 = item.place2,
+//                                        foundation = thing.foundation,
+//                                        value_type = thing.value_type
+//                                    });
+//                                    max++;
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
 
-                sorted_results = view_elements.GroupBy(x => x.place1).Select(group => group.Distinct().ToList()).ToList();
+//                sorted_results = view_elements.GroupBy(x => x.place1).Select(group => group.Distinct().ToList()).ToList();
 
-                sorted_results_new = new List<List<Thing>>();
-                Add_Tuples(ref sorted_results, ref sorted_results_new, values3, ref errors_list);
-                Add_Tuples(ref sorted_results, ref sorted_results_new, values4, ref errors_list);
-                sorted_results = sorted_results_new;
+//                sorted_results_new = new List<List<Thing>>();
+//                Add_Tuples(ref sorted_results, ref sorted_results_new, values3, ref errors_list);
+//                Add_Tuples(ref sorted_results, ref sorted_results_new, values4, ref errors_list);
+//                sorted_results = sorted_results_new;
 
-                foreach (List<Thing> view in sorted_results)
-                {
+//                foreach (List<Thing> view in sorted_results)
+//                {
 
-                    if (view.Count() == 0)
-                        continue;
+//                    if (view.Count() == 0)
+//                        continue;
 
-                    mandatory_list = new List<Thing>();
-                    optional_list = new List<Thing>();
+//                    mandatory_list = new List<Thing>();
+//                    optional_list = new List<Thing>();
 
-                    if (view.First().type == "CV-1")
-                    {
-                        if (CV1_mandatory_views.TryGetValue(view.First().place1, out values))
-                            mandatory_list.AddRange(values);
-                    }
+//                    if (view.First().type == "CV-1")
+//                    {
+//                        if (CV1_mandatory_views.TryGetValue(view.First().place1, out values))
+//                            mandatory_list.AddRange(values);
+//                    }
 
-                    if (view.First().type == "PV-1")
-                    {
-                        values = new List<Thing>();
-                        if (PV1_mandatory_views.TryGetValue(view.First().place1, out values))
-                            mandatory_list.AddRange(values);
-                    }
+//                    if (view.First().type == "PV-1")
+//                    {
+//                        values = new List<Thing>();
+//                        if (PV1_mandatory_views.TryGetValue(view.First().place1, out values))
+//                            mandatory_list.AddRange(values);
+//                    }
 
-                    foreach (Thing thing in view)
-                    {
-                        if (thing.place2 != null)
-                        {
-                            if (((string)thing.value).Substring(0, 1) != "_")
-                            {
-                                temp = Find_Mandatory_Optional((string)thing.value, view.First().name, thing.type, thing.place1, ref errors_list);
-                                if (temp == "Mandatory")
-                                {
-                                    mandatory_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
-                                }
-                                if (temp == "Optional")
-                                {
-                                    optional_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
-                                }
-                            }
+//                    foreach (Thing thing in view)
+//                    {
+//                        if (thing.place2 != null)
+//                        {
+//                            if (((string)thing.value).Substring(0, 1) != "_")
+//                            {
+//                                temp = Find_Mandatory_Optional((string)thing.value, view.First().name, thing.type, thing.place1, ref errors_list);
+//                                if (temp == "Mandatory")
+//                                {
+//                                    mandatory_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+//                                }
+//                                if (temp == "Optional")
+//                                {
+//                                    optional_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+//                                }
+//                            }
 
-                            values = new List<Thing>();
-                            if (needline_mandatory_views.TryGetValue(thing.place2, out values))
-                            {
-                                if (Allowed_Needline(thing.type, values, ref things_dic) == true)
-                                {
-                                    mandatory_list.AddRange(values);
-                                    //if (!view.First().type.Contains("SV-4") && !view.First().type.Contains("SvcV-4") && !view.First().type.Contains("SV-10b"))
-                                    if (needline_optional_views.TryGetValue(thing.place2, out values2))
-                                        optional_list.AddRange(values2);
-                                        //optional_list.AddRange(needline_optional_views[thing.place2]);
-                                }
-                            }
+//                            values = new List<Thing>();
+//                            if (needline_mandatory_views.TryGetValue(thing.place2, out values))
+//                            {
+//                                if (Allowed_Needline(thing.type, values, ref things_dic) == true)
+//                                {
+//                                    mandatory_list.AddRange(values);
+//                                    //if (!view.First().type.Contains("SV-4") && !view.First().type.Contains("SvcV-4") && !view.First().type.Contains("SV-10b"))
+//                                    if (needline_optional_views.TryGetValue(thing.place2, out values2))
+//                                        optional_list.AddRange(values2);
+//                                        //optional_list.AddRange(needline_optional_views[thing.place2]);
+//                                }
+//                            }
 
-                            values = new List<Thing>();
-                            if (description_views.TryGetValue(thing.place2, out values))
-                                optional_list.AddRange(values);
+//                            values = new List<Thing>();
+//                            if (description_views.TryGetValue(thing.place2, out values))
+//                                optional_list.AddRange(values);
 
-                            values = new List<Thing>();
-                            if (period_dic.TryGetValue(thing.place2, out values))
-                                optional_list.AddRange(values);
+//                            values = new List<Thing>();
+//                            if (period_dic.TryGetValue(thing.place2, out values))
+//                                optional_list.AddRange(values);
 
-                            values = new List<Thing>();
-                            if (datatype_mandatory_dic.TryGetValue(thing.place2, out values))
-                                mandatory_list.AddRange(values);
+//                            values = new List<Thing>();
+//                            if (datatype_mandatory_dic.TryGetValue(thing.place2, out values))
+//                                mandatory_list.AddRange(values);
 
-                            values = new List<Thing>();
-                            if (datatype_optional_dic.TryGetValue(thing.place2, out values))
-                                optional_list.AddRange(values);
+//                            values = new List<Thing>();
+//                            if (datatype_optional_dic.TryGetValue(thing.place2, out values))
+//                                optional_list.AddRange(values);
 
-                            if (thing.type.Contains("SvcV"))
-                            {
-                                if ((string)thing.value == "Service")
-                                {
-                                    values = new List<Thing>();
+//                            if (thing.type.Contains("SvcV"))
+//                            {
+//                                if ((string)thing.value == "Service")
+//                                {
+//                                    values = new List<Thing>();
 
-                                    values.Add(new Thing
-                                    {
-                                        type = "ServiceDescription",
-                                        id = thing.place2 + "_2",
-                                        name = thing.place2 + "_Description",
-                                        value = "$none$",
-                                        place1 = "$none$",
-                                        place2 = "$none$",
-                                        foundation = "Individual",
-                                        value_type = "$none$"
-                                    });
+//                                    values.Add(new Thing
+//                                    {
+//                                        type = "ServiceDescription",
+//                                        id = thing.place2 + "_2",
+//                                        name = thing.place2 + "_Description",
+//                                        value = "$none$",
+//                                        place1 = "$none$",
+//                                        place2 = "$none$",
+//                                        foundation = "Individual",
+//                                        value_type = "$none$"
+//                                    });
 
-                                    values.Add(new Thing
-                                    {
-                                        type = "serviceDescribedBy",
-                                        id = thing.place2 + "_1",
-                                        name = "$none$",
-                                        value = "$none$",
-                                        place1 = thing.id,
-                                        place2 = thing.id + "_2",
-                                        foundation = "namedBy",
-                                        value_type = "$none$"
-                                    });
+//                                    values.Add(new Thing
+//                                    {
+//                                        type = "serviceDescribedBy",
+//                                        id = thing.place2 + "_1",
+//                                        name = "$none$",
+//                                        value = "$none$",
+//                                        place1 = thing.id,
+//                                        place2 = thing.id + "_2",
+//                                        foundation = "namedBy",
+//                                        value_type = "$none$"
+//                                    });
 
-                                    mandatory_list.AddRange(values);
+//                                    mandatory_list.AddRange(values);
 
-                                    values = new List<Thing>();
+//                                    values = new List<Thing>();
 
-                                    values.Add(new Thing
-                                    {
-                                        type = "ServiceDescription",
-                                        id = thing.place2 + "_2",
-                                        name = thing.place2 + "_Description",
-                                        value = "$none$",
-                                        place1 = "$none$",
-                                        place2 = "$none$",
-                                        foundation = "Individual",
-                                        value_type = "$none$"
-                                    });
+//                                    values.Add(new Thing
+//                                    {
+//                                        type = "ServiceDescription",
+//                                        id = thing.place2 + "_2",
+//                                        name = thing.place2 + "_Description",
+//                                        value = "$none$",
+//                                        place1 = "$none$",
+//                                        place2 = "$none$",
+//                                        foundation = "Individual",
+//                                        value_type = "$none$"
+//                                    });
 
-                                    values5.AddRange(values);
+//                                    values5.AddRange(values);
 
-                                    values = new List<Thing>();
+//                                    values = new List<Thing>();
 
-                                    values.Add(new Thing
-                                    {
-                                        type = "serviceDescribedBy",
-                                        id = thing.place2 + "_1",
-                                        name = "$none$",
-                                        value = "$none$",
-                                        place1 = thing.id,
-                                        place2 = thing.id + "_2",
-                                        foundation = "namedBy",
-                                        value_type = "$none$"
-                                    });
+//                                    values.Add(new Thing
+//                                    {
+//                                        type = "serviceDescribedBy",
+//                                        id = thing.place2 + "_1",
+//                                        name = "$none$",
+//                                        value = "$none$",
+//                                        place1 = thing.id,
+//                                        place2 = thing.id + "_2",
+//                                        foundation = "namedBy",
+//                                        value_type = "$none$"
+//                                    });
 
-                                    values7.AddRange(values);
-                                }
-                            }
-                            else if (thing.type == "OV-6c")
-                            {
-                                values = new List<Thing>();
-                                if (OV6c_aro_optional_views.TryGetValue(thing.place2, out values))
-                                {
-                                    optional_list.AddRange(values);
-                                }
-                            }
-                            else if (thing.type == "OV-5b" || thing.type == "OV-6b")
-                            {
-                                values = new List<Thing>();
-                                if (OV5b_aro_optional_views.TryGetValue(thing.place2, out values))
-                                {
-                                    optional_list.AddRange(values);
-                                    mandatory_list.AddRange(OV5b_aro_mandatory_views[thing.place2]);
-                                }
-                            }
-                            else if (thing.type == "DIV-3")
-                            {
-                                values = new List<Thing>();
-                                if (DIV3_optional.TryGetValue(thing.place2, out values))
-                                {
-                                    optional_list.AddRange(values);
-                                }
-                                values = new List<Thing>();
-                                if (DIV3_mandatory.TryGetValue(thing.place2, out values))
-                                {
-                                    mandatory_list.AddRange(values);
-                                }
-                            }
-                            else if (thing.type == "OV-4")
-                            {
-                                values = new List<Thing>();
-                                if (OV4_support_optional_views.TryGetValue(thing.place2, out values))
-                                    if (Allowed_Class("OV-4",(string)thing.value))
-                                        optional_list.AddRange(values);
-                            }
-                            else if (thing.type == "OV-2")
-                            {
-                                values = new List<Thing>();
-                                if (OV2_support_mandatory_views.TryGetValue(thing.place2, out values))
-                                    if (Allowed_Class("OV-2", (string)thing.value))
-                                        mandatory_list.AddRange(values);
-                                values = new List<Thing>();
-                                if (OV2_support_optional_views.TryGetValue(thing.place2, out values))
-                                    if (Allowed_Class("OV-2", (string)thing.value))
-                                        optional_list.AddRange(values);
-                            }
-                            else if (thing.type == "AV-1" || thing.type.Contains("PV"))
-                            {
-                                if ((string)thing.value == "ProjectType")
-                                {
-                                    values = new List<Thing>();
+//                                    values7.AddRange(values);
+//                                }
+//                            }
+//                            else if (thing.type == "OV-6c")
+//                            {
+//                                values = new List<Thing>();
+//                                if (OV6c_aro_optional_views.TryGetValue(thing.place2, out values))
+//                                {
+//                                    optional_list.AddRange(values);
+//                                }
+//                            }
+//                            else if (thing.type == "OV-5b" || thing.type == "OV-6b")
+//                            {
+//                                values = new List<Thing>();
+//                                if (OV5b_aro_optional_views.TryGetValue(thing.place2, out values))
+//                                {
+//                                    optional_list.AddRange(values);
+//                                    mandatory_list.AddRange(OV5b_aro_mandatory_views[thing.place2]);
+//                                }
+//                            }
+//                            else if (thing.type == "DIV-3")
+//                            {
+//                                values = new List<Thing>();
+//                                if (DIV3_optional.TryGetValue(thing.place2, out values))
+//                                {
+//                                    optional_list.AddRange(values);
+//                                }
+//                                values = new List<Thing>();
+//                                if (DIV3_mandatory.TryGetValue(thing.place2, out values))
+//                                {
+//                                    mandatory_list.AddRange(values);
+//                                }
+//                            }
+//                            else if (thing.type == "OV-4")
+//                            {
+//                                values = new List<Thing>();
+//                                if (OV4_support_optional_views.TryGetValue(thing.place2, out values))
+//                                    if (Allowed_Class("OV-4",(string)thing.value))
+//                                        optional_list.AddRange(values);
+//                            }
+//                            else if (thing.type == "OV-2")
+//                            {
+//                                values = new List<Thing>();
+//                                if (OV2_support_mandatory_views.TryGetValue(thing.place2, out values))
+//                                    if (Allowed_Class("OV-2", (string)thing.value))
+//                                        mandatory_list.AddRange(values);
+//                                values = new List<Thing>();
+//                                if (OV2_support_optional_views.TryGetValue(thing.place2, out values))
+//                                    if (Allowed_Class("OV-2", (string)thing.value))
+//                                        optional_list.AddRange(values);
+//                            }
+//                            else if (thing.type == "AV-1" || thing.type.Contains("PV"))
+//                            {
+//                                if ((string)thing.value == "ProjectType")
+//                                {
+//                                    values = new List<Thing>();
 
-                                    values.Add(new Thing
-                                    {
-                                        type = "typeInstance",
-                                        id = thing.place2 + "_1",
-                                        name = "$none$",
-                                        value = "$none$",
-                                        place1 = thing.id,
-                                        place2 = thing.id + "_2",
-                                        foundation = "typeInstance",
-                                        value_type = "$none$"
-                                    });
+//                                    values.Add(new Thing
+//                                    {
+//                                        type = "typeInstance",
+//                                        id = thing.place2 + "_1",
+//                                        name = "$none$",
+//                                        value = "$none$",
+//                                        place1 = thing.id,
+//                                        place2 = thing.id + "_2",
+//                                        foundation = "typeInstance",
+//                                        value_type = "$none$"
+//                                    });
 
-                                    optional_list.AddRange(values);
+//                                    optional_list.AddRange(values);
 
-                                    values = new List<Thing>();
+//                                    values = new List<Thing>();
 
-                                    values.Add(new Thing
-                                    {
-                                        type = "Project",
-                                        id = thing.place2 + "_2",
-                                        name = thing.place2 + "_Project",
-                                        value = "$none$",
-                                        place1 = "$none$",
-                                        place2 = "$none$",
-                                        foundation = "Individual",
-                                        value_type = "$none$"
-                                    });
+//                                    values.Add(new Thing
+//                                    {
+//                                        type = "Project",
+//                                        id = thing.place2 + "_2",
+//                                        name = thing.place2 + "_Project",
+//                                        value = "$none$",
+//                                        place1 = "$none$",
+//                                        place2 = "$none$",
+//                                        foundation = "Individual",
+//                                        value_type = "$none$"
+//                                    });
 
-                                    mandatory_list.AddRange(values);
+//                                    mandatory_list.AddRange(values);
 
-                                    values = new List<Thing>();
+//                                    values = new List<Thing>();
 
-                                    values.Add(new Thing
-                                    {
-                                        type = "typeInstance",
-                                        id = thing.place2 + "_1",
-                                        name = "$none$",
-                                        value = "$none$",
-                                        place1 = thing.id,
-                                        place2 = thing.id + "_2",
-                                        foundation = "typeInstance",
-                                        value_type = "$none$"
-                                    });
+//                                    values.Add(new Thing
+//                                    {
+//                                        type = "typeInstance",
+//                                        id = thing.place2 + "_1",
+//                                        name = "$none$",
+//                                        value = "$none$",
+//                                        place1 = thing.id,
+//                                        place2 = thing.id + "_2",
+//                                        foundation = "typeInstance",
+//                                        value_type = "$none$"
+//                                    });
 
-                                    values7.AddRange(values);
+//                                    values7.AddRange(values);
 
-                                    values = new List<Thing>();
+//                                    values = new List<Thing>();
 
-                                    values.Add(new Thing
-                                    {
-                                        type = "Project",
-                                        id = thing.place2 + "_2",
-                                        name = thing.place2 + "_Project",
-                                        value = "$none$",
-                                        place1 = "$none$",
-                                        place2 = "$none$",
-                                        foundation = "Individual",
-                                        value_type = "$none$"
-                                    });
+//                                    values.Add(new Thing
+//                                    {
+//                                        type = "Project",
+//                                        id = thing.place2 + "_2",
+//                                        name = thing.place2 + "_Project",
+//                                        value = "$none$",
+//                                        place1 = "$none$",
+//                                        place2 = "$none$",
+//                                        foundation = "Individual",
+//                                        value_type = "$none$"
+//                                    });
 
-                                    values5.AddRange(values);
-                                }
-                                if (thing.type == "PV-1")
-                                {
-                                    if ((string)thing.value == "OrganizationType")
-                                    {
-                                        values = new List<Thing>();
+//                                    values5.AddRange(values);
+//                                }
+//                                if (thing.type == "PV-1")
+//                                {
+//                                    if ((string)thing.value == "OrganizationType")
+//                                    {
+//                                        values = new List<Thing>();
 
-                                        values.Add(new Thing
-                                        {
-                                            type = "typeInstance",
-                                            id = thing.place2 + "_1",
-                                            name = "$none$",
-                                            value = "$none$",
-                                            place1 = thing.id,
-                                            place2 = thing.id + "_2",
-                                            foundation = "typeInstance",
-                                            value_type = "$none$"
-                                        });
+//                                        values.Add(new Thing
+//                                        {
+//                                            type = "typeInstance",
+//                                            id = thing.place2 + "_1",
+//                                            name = "$none$",
+//                                            value = "$none$",
+//                                            place1 = thing.id,
+//                                            place2 = thing.id + "_2",
+//                                            foundation = "typeInstance",
+//                                            value_type = "$none$"
+//                                        });
 
-                                        optional_list.AddRange(values);
+//                                        optional_list.AddRange(values);
 
-                                        values = new List<Thing>();
+//                                        values = new List<Thing>();
 
-                                        values.Add(new Thing
-                                        {
-                                            type = "Organization",
-                                            id = thing.place2 + "_2",
-                                            name = thing.place2 + "_Organization",
-                                            value = "$none$",
-                                            place1 = "$none$",
-                                            place2 = "$none$",
-                                            foundation = "Individual",
-                                            value_type = "$none$"
-                                        });
+//                                        values.Add(new Thing
+//                                        {
+//                                            type = "Organization",
+//                                            id = thing.place2 + "_2",
+//                                            name = thing.place2 + "_Organization",
+//                                            value = "$none$",
+//                                            place1 = "$none$",
+//                                            place2 = "$none$",
+//                                            foundation = "Individual",
+//                                            value_type = "$none$"
+//                                        });
 
-                                        mandatory_list.AddRange(values);
+//                                        mandatory_list.AddRange(values);
 
-                                        values = new List<Thing>();
+//                                        values = new List<Thing>();
 
-                                        values.Add(new Thing
-                                        {
-                                            type = "typeInstance",
-                                            id = thing.place2 + "_1",
-                                            name = "$none$",
-                                            value = "$none$",
-                                            place1 = thing.id,
-                                            place2 = thing.id + "_2",
-                                            foundation = "typeInstance",
-                                            value_type = "$none$"
-                                        });
+//                                        values.Add(new Thing
+//                                        {
+//                                            type = "typeInstance",
+//                                            id = thing.place2 + "_1",
+//                                            name = "$none$",
+//                                            value = "$none$",
+//                                            place1 = thing.id,
+//                                            place2 = thing.id + "_2",
+//                                            foundation = "typeInstance",
+//                                            value_type = "$none$"
+//                                        });
 
-                                        values7.AddRange(values);
+//                                        values7.AddRange(values);
 
-                                        values = new List<Thing>();
+//                                        values = new List<Thing>();
 
-                                        values.Add(new Thing
-                                        {
-                                            type = "Organization",
-                                            id = thing.place2 + "_2",
-                                            name = thing.place2 + "_Organization",
-                                            value = "$none$",
-                                            place1 = "$none$",
-                                            place2 = "$none$",
-                                            foundation = "Individual",
-                                            value_type = "$none$"
-                                        });
+//                                        values.Add(new Thing
+//                                        {
+//                                            type = "Organization",
+//                                            id = thing.place2 + "_2",
+//                                            name = thing.place2 + "_Organization",
+//                                            value = "$none$",
+//                                            place1 = "$none$",
+//                                            place2 = "$none$",
+//                                            foundation = "Individual",
+//                                            value_type = "$none$"
+//                                        });
 
-                                        values5.AddRange(values);
-                                    }
-                                }
-                            }
-                            else if (thing.type == "CV-1")
-                            {
-                                values = new List<Thing>();
-                                if (CV1_mandatory_views.TryGetValue(thing.place2, out values))
-                                    mandatory_list.AddRange(values);
-                                values = new List<Thing>();
-                                if (CV1_optional_views.TryGetValue(thing.place2, out values))
-                                    optional_list.AddRange(values);
-                            }
-                            else if (thing.type == "CV-4")
-                            {
-                                values = new List<Thing>();
-                                if (CV4_mandatory_views.TryGetValue(thing.place2, out values))
-                                    mandatory_list.AddRange(values);
-                                values = new List<Thing>();
-                                if (CV4_optional_views.TryGetValue(thing.place2, out values))
-                                    optional_list.AddRange(values);
-                            }
+//                                        values5.AddRange(values);
+//                                    }
+//                                }
+//                            }
+//                            else if (thing.type == "CV-1")
+//                            {
+//                                values = new List<Thing>();
+//                                if (CV1_mandatory_views.TryGetValue(thing.place2, out values))
+//                                    mandatory_list.AddRange(values);
+//                                values = new List<Thing>();
+//                                if (CV1_optional_views.TryGetValue(thing.place2, out values))
+//                                    optional_list.AddRange(values);
+//                            }
+//                            else if (thing.type == "CV-4")
+//                            {
+//                                values = new List<Thing>();
+//                                if (CV4_mandatory_views.TryGetValue(thing.place2, out values))
+//                                    mandatory_list.AddRange(values);
+//                                values = new List<Thing>();
+//                                if (CV4_optional_views.TryGetValue(thing.place2, out values))
+//                                    optional_list.AddRange(values);
+//                            }
                           
-                        }
-                    }
+//                        }
+//                    }
 
-                    mandatory_list = mandatory_list.GroupBy(x => x.id).Select(grp => grp.First()).ToList();
-                    optional_list = optional_list.GroupBy(x => x.id).Select(grp => grp.First()).ToList();
+//                    mandatory_list = mandatory_list.GroupBy(x => x.id).Select(grp => grp.First()).ToList();
+//                    optional_list = optional_list.GroupBy(x => x.id).Select(grp => grp.First()).ToList();
 
-                    values = new List<Thing>();
-                    if(doc_blocks_views.TryGetValue(view.First().place1, out values))
-                        optional_list.AddRange(values);
+//                    values = new List<Thing>();
+//                    if(doc_blocks_views.TryGetValue(view.First().place1, out values))
+//                        optional_list.AddRange(values);
 
-                    values = new List<Thing>();
-                    if (OV1_pic_views.TryGetValue(view.First().place1, out values))
-                            mandatory_list.AddRange(values);
+//                    values = new List<Thing>();
+//                    if (OV1_pic_views.TryGetValue(view.First().place1, out values))
+//                            mandatory_list.AddRange(values);
 
-                    mandatory_list = mandatory_list.OrderBy(x => x.type).ToList();
-                    optional_list = optional_list.OrderBy(x => x.type).ToList();
+//                    mandatory_list = mandatory_list.OrderBy(x => x.type).ToList();
+//                    optional_list = optional_list.OrderBy(x => x.type).ToList();
 
-                    if (Proper_View(mandatory_list, view.First().name,view.First().type, view.First().place1, ref errors_list))
-                        views.Add(new View { type = view.First().type, id = view.First().place1, name = view.First().name, mandatory = mandatory_list, optional = optional_list });
-                    //else
-                    //{
-                    //    test = false;
-                    //}
-                }
-            }
+//                    if (Proper_View(mandatory_list, view.First().name,view.First().type, view.First().place1, ref errors_list))
+//                        views.Add(new View { type = view.First().type, id = view.First().place1, name = view.First().name, mandatory = mandatory_list, optional = optional_list });
+//                    //else
+//                    //{
+//                    //    test = false;
+//                    //}
+//                }
+//            }
 
-            results_dic = null;
-            mandatory_list = null;
-            optional_list = null;
-            view_holder = null;
+//            results_dic = null;
+//            mandatory_list = null;
+//            optional_list = null;
+//            view_holder = null;
 
-            using (var sw = new Utf8StringWriter())
-            {
-                using (var writer = XmlWriter.Create(sw))
-                {
+//            using (var sw = new Utf8StringWriter())
+//            {
+//                using (var writer = XmlWriter.Create(sw))
+//                {
 
-                    writer.WriteRaw(@"<IdeasEnvelope OriginatingNationISO3166TwoLetterCode=""String"" ism:ownerProducer=""NMTOKEN"" ism:classification=""U""
-                    xsi:schemaLocation=""http://cio.defense.gov/xsd/dm2 DM2_PES_v2.02_Chg_1.XSD""
-                    xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:ism=""urn:us:gov:ic:ism:v2"" xmlns:ideas=""http://www.ideasgroup.org/xsd""
-                    xmlns:dm2=""http://www.ideasgroup.org/dm2""><IdeasData XMLTagsBoundToNamingScheme=""DM2Names"" ontologyVersion=""2.02_Chg_1"" ontology=""DM2"">
-		            <NamingScheme ideas:FoundationCategory=""NamingScheme"" id=""ns1""><ideas:Name namingScheme=""ns1"" id=""NamingScheme"" exemplarText=""DM2Names""/>
-		            </NamingScheme>");
-                    writer.WriteRaw("\n");
-                    if (representation_scheme)
-                    {
-                        writer.WriteRaw(@"<RepresentationScheme ideas:FoundationCategory=""Type"" id=""id_rs1"">
-			            <ideas:Name id=""RepresentationScheme"" namingScheme=""ns1"" exemplarText=""Base64 Encoded Image""/>
-		                </RepresentationScheme>");
-                        writer.WriteRaw("\n");
-                    }
+//                    writer.WriteRaw(@"<IdeasEnvelope OriginatingNationISO3166TwoLetterCode=""String"" ism:ownerProducer=""NMTOKEN"" ism:classification=""U""
+//                    xsi:schemaLocation=""http://cio.defense.gov/xsd/dm2 DM2_PES_v2.02_Chg_1.XSD""
+//                    xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:ism=""urn:us:gov:ic:ism:v2"" xmlns:ideas=""http://www.ideasgroup.org/xsd""
+//                    xmlns:dm2=""http://www.ideasgroup.org/dm2""><IdeasData XMLTagsBoundToNamingScheme=""DM2Names"" ontologyVersion=""2.02_Chg_1"" ontology=""DM2"">
+//		            <NamingScheme ideas:FoundationCategory=""NamingScheme"" id=""ns1""><ideas:Name namingScheme=""ns1"" id=""NamingScheme"" exemplarText=""DM2Names""/>
+//		            </NamingScheme>");
+//                    writer.WriteRaw("\n");
+//                    if (representation_scheme)
+//                    {
+//                        writer.WriteRaw(@"<RepresentationScheme ideas:FoundationCategory=""Type"" id=""id_rs1"">
+//			            <ideas:Name id=""RepresentationScheme"" namingScheme=""ns1"" exemplarText=""Base64 Encoded Image""/>
+//		                </RepresentationScheme>");
+//                        writer.WriteRaw("\n");
+//                    }
 
-                    values = things_dic.Select(kvp => kvp.Value).ToList();
-                    things_dic = null;
-                    foreach (Thing thing in values)
-                        writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id + "\" "
-                            + (((string)thing.value_type).Contains("$") ? "" : thing.value_type + "=\"" + (string)thing.value + "\"") + ">" + "<ideas:Name exemplarText=\"" + thing.name
-                            + "\" namingScheme=\"ns1\" id=\"n" + thing.id + "\"/></" + thing.type + ">\n");
-                    values = null;
+//                    values = things_dic.Select(kvp => kvp.Value).ToList();
+//                    things_dic = null;
+//                    foreach (Thing thing in values)
+//                        writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id + "\" "
+//                            + (((string)thing.value_type).Contains("$") ? "" : thing.value_type + "=\"" + (string)thing.value + "\"") + ">" + "<ideas:Name exemplarText=\"" + thing.name
+//                            + "\" namingScheme=\"ns1\" id=\"n" + thing.id + "\"/></" + thing.type + ">\n");
+//                    values = null;
 
-                    foreach (Thing thing in values5)
-                        writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id + "\" "
-                            + (((string)thing.value_type).Contains("$") ? "" : thing.value_type + "=\"" + (string)thing.value + "\"") + ">" + "<ideas:Name exemplarText=\"" + thing.name
-                            + "\" namingScheme=\"ns1\" id=\"n" + thing.id + "\"/></" + thing.type + ">\n");
-                    values5 = null;
+//                    foreach (Thing thing in values5)
+//                        writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id + "\" "
+//                            + (((string)thing.value_type).Contains("$") ? "" : thing.value_type + "=\"" + (string)thing.value + "\"") + ">" + "<ideas:Name exemplarText=\"" + thing.name
+//                            + "\" namingScheme=\"ns1\" id=\"n" + thing.id + "\"/></" + thing.type + ">\n");
+//                    values5 = null;
 
-                    foreach (Thing thing in values4)
-                        writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id
-                        + "\" place1Type=\"id" + thing.place1 + "\" place2Type=\"id" + thing.place2 + "\""
-                        + (((string)thing.name).Contains("$") ? "/>\n" : ">" + "<ideas:Name exemplarText=\"" + thing.name
-                        + "\" namingScheme=\"ns1\" id=\"n" + thing.id + "\"/></" + thing.type + ">\n"));
-                    values4 = null;
+//                    foreach (Thing thing in values4)
+//                        writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id
+//                        + "\" place1Type=\"id" + thing.place1 + "\" place2Type=\"id" + thing.place2 + "\""
+//                        + (((string)thing.name).Contains("$") ? "/>\n" : ">" + "<ideas:Name exemplarText=\"" + thing.name
+//                        + "\" namingScheme=\"ns1\" id=\"n" + thing.id + "\"/></" + thing.type + ">\n"));
+//                    values4 = null;
 
-                    foreach (Thing thing in values6)
-                        writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id
-                        + "\" place1Type=\"id" + thing.place1 + "\" place2Type=\"id" + thing.place2 + "\""
-                        + (((string)thing.name).Contains("$") ? "/>\n" : ">" + "<ideas:Name exemplarText=\"" + thing.name
-                        + "\" namingScheme=\"ns1\" id=\"n" + thing.id + "\"/></" + thing.type + ">\n"));
-                    values6 = null;
+//                    foreach (Thing thing in values6)
+//                        writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id
+//                        + "\" place1Type=\"id" + thing.place1 + "\" place2Type=\"id" + thing.place2 + "\""
+//                        + (((string)thing.name).Contains("$") ? "/>\n" : ">" + "<ideas:Name exemplarText=\"" + thing.name
+//                        + "\" namingScheme=\"ns1\" id=\"n" + thing.id + "\"/></" + thing.type + ">\n"));
+//                    values6 = null;
 
-                    foreach (Thing thing in values3)
-                        writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id
-                        + "\" tuplePlace1=\"id" + thing.place1 + "\" tuplePlace2=\"id" + thing.place2 + "\""
-                        + (((string)thing.name).Contains("$") ? "/>\n" : ">" + "<ideas:Name exemplarText=\"" + thing.name
-                        + "\" namingScheme=\"ns1\" id=\"n" + thing.id + "\"/></" + thing.type + ">\n"));
-                    values3 = null;
+//                    foreach (Thing thing in values3)
+//                        writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id
+//                        + "\" tuplePlace1=\"id" + thing.place1 + "\" tuplePlace2=\"id" + thing.place2 + "\""
+//                        + (((string)thing.name).Contains("$") ? "/>\n" : ">" + "<ideas:Name exemplarText=\"" + thing.name
+//                        + "\" namingScheme=\"ns1\" id=\"n" + thing.id + "\"/></" + thing.type + ">\n"));
+//                    values3 = null;
 
-                    foreach (Thing thing in values7)
-                        writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id
-                        + "\" tuplePlace1=\"id" + thing.place1 + "\" tuplePlace2=\"id" + thing.place2 + "\""
-                        + (((string)thing.name).Contains("$") ? "/>\n" : ">" + "<ideas:Name exemplarText=\"" + thing.name
-                        + "\" namingScheme=\"ns1\" id=\"n" + thing.id + "\"/></" + thing.type + ">\n"));
-                    values7 = null;
+//                    foreach (Thing thing in values7)
+//                        writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id
+//                        + "\" tuplePlace1=\"id" + thing.place1 + "\" tuplePlace2=\"id" + thing.place2 + "\""
+//                        + (((string)thing.name).Contains("$") ? "/>\n" : ">" + "<ideas:Name exemplarText=\"" + thing.name
+//                        + "\" namingScheme=\"ns1\" id=\"n" + thing.id + "\"/></" + thing.type + ">\n"));
+//                    values7 = null;
 
-                    writer.WriteRaw("</IdeasData>\n");
+//                    writer.WriteRaw("</IdeasData>\n");
 
-                    writer.WriteRaw("<IdeasViews frameworkVersion=\"DM2.02_Chg_1\" framework=\"DoDAF\">\n");
+//                    writer.WriteRaw("<IdeasViews frameworkVersion=\"DM2.02_Chg_1\" framework=\"DoDAF\">\n");
 
-                    foreach (View view in views)
-                    {
-                        writer.WriteRaw("<" + view.type + " id=\"id" + view.id + "\" name=\"" + view.name + "\">\n");
+//                    foreach (View view in views)
+//                    {
+//                        writer.WriteRaw("<" + view.type + " id=\"id" + view.id + "\" name=\"" + view.name + "\">\n");
 
-                        writer.WriteRaw("<MandatoryElements>\n");
+//                        writer.WriteRaw("<MandatoryElements>\n");
 
-                        foreach (Thing thing in view.mandatory)
-                        {
-                            writer.WriteRaw("<" + view.type + "_" + thing.type + " ref=\"id" + thing.id + "\"/>\n");
-                        }
+//                        foreach (Thing thing in view.mandatory)
+//                        {
+//                            writer.WriteRaw("<" + view.type + "_" + thing.type + " ref=\"id" + thing.id + "\"/>\n");
+//                        }
 
-                        writer.WriteRaw("</MandatoryElements>\n");
-                        writer.WriteRaw("<OptionalElements>\n");
+//                        writer.WriteRaw("</MandatoryElements>\n");
+//                        writer.WriteRaw("<OptionalElements>\n");
 
-                        foreach (Thing thing in view.optional)
-                        {
-                            writer.WriteRaw("<" + view.type + "_" + thing.type + " ref=\"id" + thing.id + "\"/>\n");
-                        }
+//                        foreach (Thing thing in view.optional)
+//                        {
+//                            writer.WriteRaw("<" + view.type + "_" + thing.type + " ref=\"id" + thing.id + "\"/>\n");
+//                        }
 
-                        writer.WriteRaw("</OptionalElements>\n");
-                        writer.WriteRaw("</" + view.type + ">\n");
-                    }
+//                        writer.WriteRaw("</OptionalElements>\n");
+//                        writer.WriteRaw("</" + view.type + ">\n");
+//                    }
 
-                    views = null;
+//                    views = null;
 
-                    writer.WriteRaw("</IdeasViews>\n");
+//                    writer.WriteRaw("</IdeasViews>\n");
 
-                    writer.WriteRaw("</IdeasEnvelope>\n");
+//                    writer.WriteRaw("</IdeasEnvelope>\n");
 
-                    writer.Flush();
-                }
+//                    writer.Flush();
+//                }
 
-                output = sw.ToString();
-                errors = string.Join("", errors_list.Distinct().ToArray());
+//                output = sw.ToString();
+//                errors = string.Join("", errors_list.Distinct().ToArray());
 
-                if (errors.Count() > 0)
-                    test = false;
+//                if (errors.Count() > 0)
+//                    test = false;
 
-                return test;
-            }
-        }
+//                return test;
+//            }
+//        }
 
         ////////////////////
         ////////////////////
@@ -5920,6 +5921,7 @@ namespace EAWS.Core.SilverBullet
             XNamespace ns = "http://www.omg.org/spec/UPDM/20121004/UPDM-Profile";
             XNamespace ns2 = "http://www.omg.org/spec/XMI/20131001";
             XNamespace ns3 = "http://www.omg.org/spec/UML/20131001";
+            XNamespace ns4 = "http://www.magicdraw.com/schemas/Events.xmi";
             Thing value;
             Thing value2;
             List<Thing> values3 = new List<Thing>();
@@ -6015,6 +6017,101 @@ namespace EAWS.Core.SilverBullet
                 MergeDictionaries(description_views, results_dic);
             
             }
+
+            //Events
+
+            results =
+               from result in root.Elements(ns4 + "NoneStartEvent")
+               where (string)result.Attribute("id") != null
+               from result2 in root.Descendants().Elements("edge")
+               where (string)result2.Attribute("source") == (string)result.Attribute("base_InitialNode")
+               from result3 in root.Descendants().Elements("node")
+               where (string)result3.Attribute("behavior") != null
+               where (string)result3.Attribute(ns2+"id") == (string)result2.Attribute("target")
+
+               //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+               select new Thing
+               {
+                   type = "Activity",
+                   id = (string)result.Attribute("base_InitialNode"),
+                   name = (string)result.Attribute("id"),//*/ (string)result.FirstAttribute,//Attribute(ns2 + "id"),
+                   value = "$none$",
+                   place1 = (string)result3.Attribute("behavior"),
+                   //place2 = (string)result.LastAttribute,
+                   foundation = "IndividualType",
+                   value_type = "$none$"
+               };
+
+            things = things.Concat(results.ToList());
+
+            values = new List<Thing>();
+
+            foreach (Thing thing in results)
+            {
+                values.Add(new Thing
+                    {
+                        type = "BeforeAfterType",
+                        id = thing.id + thing.place1+"_1",
+                        name = "$none$",
+                        value = (string)thing.id + thing.place1 + "_1",
+                        place1 = thing.id,
+                        place2 = thing.place1,
+                        foundation = "CoupleType",
+                        value_type = "$id$"
+                    });    
+            }
+
+            tuple_types = tuple_types.Concat(values);
+
+            var duplicateKeys1 = things.GroupBy(x => x.id)
+                       .Where(group => group.Count() > 1)
+                       .Select(group => group.Key);
+
+            results =
+                 from result in root.Elements(ns4 + "NoneEndEvent")
+                 where (string)result.Attribute("id") != null
+                 from result2 in root.Descendants().Elements("edge")
+                 where (string)result2.Attribute("target") == (string)result.Attribute("base_ActivityFinalNode")
+                 from result3 in root.Descendants().Elements("node")
+                 where (string)result3.Attribute("behavior") != null
+                 where (string)result3.Attribute(ns2+"id") == (string)result2.Attribute("source")
+
+                 select new Thing
+                 {
+                     type = "Activity",
+                     id = (string)result.Attribute("base_ActivityFinalNode"),
+                     name = (string)result.Attribute("id"),//*/ (string)result.FirstAttribute,//Attribute(ns2 + "id"),
+                     value = "$none$",
+                     place1 = (string)result3.Attribute("behavior"),
+                     //place2 = (string)result.LastAttribute,
+                     foundation = "IndividualType",
+                     value_type = "$none$"
+                 };
+
+            things = things.Concat(results.ToList());
+
+            values = new List<Thing>();
+
+            foreach (Thing thing in results)
+            {
+                values.Add(new Thing
+                {
+                    type = "BeforeAfterType",
+                    id = thing.place1 + thing.id + "_1",
+                    name = "$none$",
+                    value = (string)thing.place1 + thing.id + "_1",
+                    place1 = thing.place1,
+                    place2 = thing.id,
+                    foundation = "CoupleType",
+                    value_type = "$id$"
+                });
+            }
+
+            tuple_types = tuple_types.Concat(values);
+
+            var duplicateKeys2 = things.GroupBy(x => x.id)
+                       .Where(group => group.Count() > 1)
+                       .Select(group => group.Key);
 
             //Regular Relationships
 
@@ -6175,7 +6272,7 @@ namespace EAWS.Core.SilverBullet
 
                {
                    type = "BeforeAfterType",
-                   id = (string)result.Attribute("sendEvent") + (string)result.Attribute("receiveEvent"),
+                   id = (string)result.Attribute("sendEvent") + (string)result.Attribute("receiveEvent") + "_1",
                    name = "$none$",
                    value = "$none$",
                    place1 = (string)result.Attribute("sendEvent"),
@@ -6987,6 +7084,10 @@ namespace EAWS.Core.SilverBullet
             }
 
             //Thing Dictionary
+
+            var duplicateKeys = things.GroupBy(x => x.id)
+                            .Where(group => group.Count() > 1)
+                            .Select(group => group.Key);
 
             things_dic = things.ToDictionary(x => x.id, x => x);
 
@@ -8199,6 +8300,63 @@ namespace EAWS.Core.SilverBullet
             if (sorted_results.First().Count() > 0)
                 views.Add(new View { type = "SV-8", id = "_14", name = "NEAR SV-8", optional = optional_list, mandatory = mandatory_list });
 
+            //SV-5
+
+            mandatory_list = new List<Thing>();
+            values = new List<Thing>();
+            optional_list = new List<Thing>();
+            sorted_results = new List<List<Thing>>();
+
+            results =
+                       from result in root.Elements(ns + "Implements")
+                       //from result3 in root.Elements(ns + "View")
+                       //from result4 in root.Descendants()
+                       from result2 in root.Descendants()
+                       //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+                       //where result2.Attribute("name") != null
+                       where (string)result.LastAttribute == (string)result2.Attribute(ns2 + "id")
+                       //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                       select new Thing
+                       {
+                           type = "OverlapType",
+                           id = (string)result.LastAttribute,
+                           name = "$none$",
+                           value = (string)result2.Element("supplier").Attribute(ns2 + "idref") + (string)result2.Element("client").Attribute(ns2 + "idref"),
+                           place2 = (string)result2.Element("client").Attribute(ns2 + "idref"),
+                           place1 = (string)result2.Element("supplier").Attribute(ns2 + "idref"),
+                           foundation = "CoupleType",
+                           value_type = "$id$"
+                       };
+
+            values_dic = tuple_types.Where(x => x.type == "activityPerformedByPerformer").GroupBy(x => x.place2).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
+
+            foreach (Thing thing in results)
+            {
+                values.Add(new Thing { id = "_14", type = "SV-5a", place2 = thing.place1, value = "Activity", place1 = "_74" });
+                values.Add(new Thing { id = "_14", type = "SV-5a", place2 = thing.place2, value = "Activity", place1 = "_74" });  
+            }
+
+            sorted_results.Add(values);
+
+            sorted_results_new = new List<List<Thing>>();
+            Add_Tuples(ref sorted_results, ref sorted_results_new, tuples.ToList(), ref errors_list);
+            Add_Tuples(ref sorted_results, ref sorted_results_new, tuple_types.ToList(), ref errors_list);
+            sorted_results = sorted_results_new;
+
+            foreach (Thing thing in sorted_results.First())
+            {
+                if ((string)thing.value == "System")
+                    mandatory_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+                else
+                    optional_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+            }
+
+            if (sorted_results.First().Count() > 0)
+                views.Add(new View { type = "SV-5a", id = "_74", name = "NEAR SV-5a", optional = optional_list, mandatory = mandatory_list });
+
+
+            //SvcV-5
+
             //BPMN BeforeAfter
 
             results =
@@ -8217,7 +8375,7 @@ namespace EAWS.Core.SilverBullet
                     select new Thing
                     {
                         type = "BeforeAfterType",
-                        id = (string)result2.Attribute(ns2 + "id") + (string)result6.Attribute(ns2 + "id"),// + "///" +*/ (string)result.LastAttribute,//Attribute("base_Operation"),
+                        id = (string)result.Attribute("base_Activity") + (string)result5.Attribute("base_Activity") + "_1",// + "///" +*/ (string)result.LastAttribute,//Attribute("base_Operation"),
                         name = "$none$",
                         value = "$none$",
                         place1 = (string)result.Attribute("base_Activity"),
