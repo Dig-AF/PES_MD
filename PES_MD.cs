@@ -241,6 +241,18 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"Service", "SvcV-6"},
                             new string[] {"Data", "SvcV-6"},
 
+                            new string[] {"Activity", "SV-5a"},
+                            new string[] {"activityPerformedByPerformer", "SV-5a"},
+                            new string[] {"System", "SV-5a"},
+
+                            new string[] {"Activity", "Std-2"},
+                            new string[] {"activityPerformedByPerformer", "Std-2"},
+                            new string[] {"ruleConstrainsActivity", "Std-2"},
+
+                            new string[] {"Activity", "SvcV-5"},
+                            new string[] {"activityPerformedByPerformer", "SvcV-5"},
+                            new string[] {"Service", "SvcV-5"},
+
                             new string[] {"Activity", "OV-5b"},
                             new string[] {"activityProducesResource", "OV-5b"},
                             new string[] {"activityConsumesResource", "OV-5b"},
@@ -344,6 +356,11 @@ namespace EAWS.Core.SilverBullet
                             };
 
         static string[][] Optional_Lookup = new string[][] { 
+                            new string[] {"PersonRole", "Std-2"},
+                            new string[] {"OrganizationType", "Std-2"},
+                            new string[] {"Performer", "Std-2"},
+                            new string[] {"System", "Std-2"},
+
                             new string[] {"Measure", "SvcV-7"},
                             new string[] {"MeasureType", "SvcV-7"},
                             new string[] {"measureOfTypeResource", "SvcV-7"},
@@ -5943,14 +5960,14 @@ namespace EAWS.Core.SilverBullet
             {
 
                 results =
-                    from result in root.Elements(ns + current_lookup[1])
                     //from result3 in root.Elements(ns + "View")
                     //from result4 in root.Descendants()
                     from result2 in root.Descendants()
                     //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
                     //where result2.Attribute("name") != null
-                    where (string)result.Attribute(current_lookup[3]) == (string)result2.Attribute(ns2 + "id")
                     where (string)result2.Attribute("name") != null
+                    from result in root.Elements(ns + current_lookup[1])
+                    where (string)result.Attribute(current_lookup[3]) == (string)result2.Attribute(ns2 + "id")
                     //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
                     select new Thing
                     {
@@ -5971,11 +5988,12 @@ namespace EAWS.Core.SilverBullet
                 //Regular Descriptions
 
                 results_dic =
-                            (from result in root.Elements(ns + current_lookup[1])
+                            (
                              from result2 in root.Descendants().Elements("ownedComment")
                              where (string)result2.Parent.Attribute(ns2 + "id") != null
-                             where (string)result.Attribute(current_lookup[3]) == (string)result2.Parent.Attribute(ns2 + "id")
                              where (string)result2.Parent.Attribute("name") != null
+                             from result in root.Elements(ns + current_lookup[1])
+                             where (string)result.Attribute(current_lookup[3]) == (string)result2.Parent.Attribute(ns2 + "id")
                              select new
                              {
                                  key = (string)result.Attribute(current_lookup[3]),
@@ -6176,10 +6194,10 @@ namespace EAWS.Core.SilverBullet
 
             results =
                 from result in root.Descendants().Elements("node")
-                from result2 in root.Descendants().Elements("node")
-                where (string)result.Attribute(ns2 + "idref") == (string)result2.Attribute(ns2 + "id")
-                where (string)result2.Attribute("behavior") != null
                 where (string)result.Parent.Attribute("represents") != null
+                from result2 in root.Descendants().Elements("node")
+                where (string)result2.Attribute("behavior") != null
+                where (string)result.Attribute(ns2 + "idref") == (string)result2.Attribute(ns2 + "id")
                 //from result3 in root.Descendants().Elements("covered")
                 //where (string)result3.Attribute(ns2 + "idref") == (string)result.Attribute(ns2 + "id")
                 //where (string)result3.Parent.Attribute("message") != null
@@ -6209,8 +6227,8 @@ namespace EAWS.Core.SilverBullet
             results =
                    from result in root.Descendants().Elements("fragment")
                    from result2 in root.Descendants().Elements("message")
-                   where (string)result.Attribute("message") == (string)result2.Attribute(ns2 + "id")
                    where (string)result2.Attribute("name") != null
+                   where (string)result.Attribute("message") == (string)result2.Attribute(ns2 + "id")
 
                    select new Thing
                    {
@@ -6229,8 +6247,9 @@ namespace EAWS.Core.SilverBullet
             results =
                 from result in root.Descendants().Elements("coveredBy")
                 from result2 in root.Descendants().Elements("ownedAttribute")
-                where (string)result.Parent.Attribute("represents") == (string)result2.Attribute(ns2 + "id")
                 where (string)result2.Attribute("type") != null
+                where (string)result.Parent.Attribute("represents") == (string)result2.Attribute(ns2 + "id")
+                
                 //from result3 in root.Descendants().Elements("covered")
                 //where (string)result3.Attribute(ns2 + "idref") == (string)result.Attribute(ns2 + "id")
                 //where (string)result3.Parent.Attribute("message") != null
@@ -6490,12 +6509,12 @@ namespace EAWS.Core.SilverBullet
                         where (string)result.LastAttribute == (string)result2.Attribute(ns2 + "id")
                         //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
                         from result3 in root.Descendants().Elements("ownedAttribute")
-                        where (string)result3.Attribute(ns2 + "id") == (string)result2.Element("supplier").Attribute(ns2 + "idref")
                         where (string)result3.Attribute("type") != null
+                        where (string)result3.Attribute(ns2 + "id") == (string)result2.Element("supplier").Attribute(ns2 + "idref")
                         from result4 in root.Descendants().Elements("ownedAttribute")
-                        where (string)result4.Attribute(ns2 + "id") == (string)result2.Element("client").Attribute(ns2 + "idref")
                         where (string)result4.Attribute("type") != null
-
+                        where (string)result4.Attribute(ns2 + "id") == (string)result2.Element("client").Attribute(ns2 + "idref")
+                        
                         select new Thing
                         {
                             type = "OverlapType",
@@ -6781,307 +6800,307 @@ namespace EAWS.Core.SilverBullet
 
             //Diagramming
 
-            foreach (Thing thing in things)
-            {
-                results_loc =
-                    from result in root.Descendants().Elements("mdElement").Elements("elementID")
-                    //from result3 in root.Elements(ns + "View")
-                    //from result4 in root.Descendants()
-                    //from result2 in root.Descendants()
-                    //from result2 in result.Elements("layoutConstraint")
-                    //where result2.Attribute("name") != null
-                    //where (string)result.Attribute(ns2 + "idref") == thing.id
-                    //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
-                    where (string)result.Attribute(ns2 + "idref") == thing.id 
-                    where ((string)result.Parent.Element("geometry").Value).Contains(";") == false
+            //foreach (Thing thing in things)
+            //{
+            //    results_loc =
+            //        from result in root.Descendants().Elements("mdElement").Elements("elementID")
+            //        //from result3 in root.Elements(ns + "View")
+            //        //from result4 in root.Descendants()
+            //        //from result2 in root.Descendants()
+            //        //from result2 in result.Elements("layoutConstraint")
+            //        //where result2.Attribute("name") != null
+            //        //where (string)result.Attribute(ns2 + "idref") == thing.id
+            //        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+            //        where (string)result.Attribute(ns2 + "idref") == thing.id 
+            //        where ((string)result.Parent.Element("geometry").Value).Contains(";") == false
                     
-                    select new Location
-                    {
-                        id = (string)result.Parent.Attribute(ns2 + "id"),
-                        top_left_x = (string)result.Parent.Element("geometry"),//.Value).Split(',')[0],
-                        //top_left_y = ((string)result.Parent.Element("geometry").Value).Split(',')[1],
-                        //bottom_right_x = ((string)result.Parent.Element("geometry").Value).Split(',')[2],
-                        //bottom_right_y = ((string)result.Parent.Element("geometry").Value).Split(',')[3],
-                        element_id = (string)result.Attribute(ns2 + "idref")
-                    };
+            //        select new Location
+            //        {
+            //            id = (string)result.Parent.Attribute(ns2 + "id"),
+            //            top_left_x = (string)result.Parent.Element("geometry"),//.Value).Split(',')[0],
+            //            //top_left_y = ((string)result.Parent.Element("geometry").Value).Split(',')[1],
+            //            //bottom_right_x = ((string)result.Parent.Element("geometry").Value).Split(',')[2],
+            //            //bottom_right_y = ((string)result.Parent.Element("geometry").Value).Split(',')[3],
+            //            element_id = (string)result.Attribute(ns2 + "idref")
+            //        };
 
-                locations = locations.Concat(results_loc.ToList());
-            }
+            //    locations = locations.Concat(results_loc.ToList());
+            //}
 
-            foreach (Location location in locations)
-            {
-                string[] s = location.top_left_x.Split(',');
-                location.top_left_x = s[0];
-                location.top_left_y = s[1];
-                location.bottom_right_x = s[2];
-                location.bottom_right_y = s[3];
+            //foreach (Location location in locations)
+            //{
+            //    string[] s = location.top_left_x.Split(',');
+            //    location.top_left_x = s[0];
+            //    location.top_left_y = s[1];
+            //    location.bottom_right_x = s[2];
+            //    location.bottom_right_y = s[3];
 
-            }
-
-
-            foreach (Location location in locations)
-            {
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "Information",
-                    id = location.id + "_12",
-                    name = "Diagramming Information",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "Point",
-                    id = location.id + "_16",
-                    name = "Top Left Location",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "PointType",
-                    id = location.id + "_14",
-                    name = "Top Left LocationType",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "Point",
-                    id = location.id + "_26",
-                    name = "Bottome Right Location",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "PointType",
-                    id = location.id + "_24",
-                    name = "Bottome Right LocationType",
-                    value = "$none$",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_18",
-                    name = "Top Left X Location",
-                    value = location.top_left_x,
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_20",
-                    name = "Top Left Y Location",
-                    value = location.top_left_y,
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_22",
-                    name = "Top Left Z Location",
-                    value = "0",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_28",
-                    name = "Bottom Right X Location",
-                    value = location.bottom_right_x,
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_30",
-                    name = "Bottom Right Y Location",
-                    value = location.bottom_right_y,
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "SpatialMeasure",
-                    id = location.id + "_32",
-                    name = "Bottom Right Z Location",
-                    value = "0",
-                    place1 = "$none$",
-                    place2 = "$none$",
-                    foundation = "IndividualType",
-                    value_type = "numericValue"
-                });
-
-                things = things.Concat(values);
-
-                values = new List<Thing>();
-
-                values.Add(new Thing
-                {
-                    type = "describedBy",
-                    id = location.id + "_11",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.element_id,
-                    place2 = location.id + "_12",
-                    foundation = "namedBy"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "typeInstance",
-                    id = location.id + "_15",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_14",
-                    place2 = location.id + "_16",
-                    foundation = "typeInstance"
-                });
-
-                values.Add(new Thing
-                {
-                    type = "typeInstance",
-                    id = location.id + "_25",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_24",
-                    place2 = location.id + "_26",
-                    foundation = "typeInstance"
-                });
+            //}
 
 
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_17",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_18",
-                    place2 = location.id + "_16",
-                    foundation = "typeInstance"
-                });
+            //foreach (Location location in locations)
+            //{
+            //    values = new List<Thing>();
 
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_19",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_20",
-                    place2 = location.id + "_16",
-                    foundation = "typeInstance"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "Information",
+            //        id = location.id + "_12",
+            //        name = "Diagramming Information",
+            //        value = "$none$",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_21",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_22",
-                    place2 = location.id + "_16",
-                    foundation = "typeInstance"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "Point",
+            //        id = location.id + "_16",
+            //        name = "Top Left Location",
+            //        value = "$none$",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_27",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_28",
-                    place2 = location.id + "_26",
-                    foundation = "typeInstance"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "PointType",
+            //        id = location.id + "_14",
+            //        name = "Top Left LocationType",
+            //        value = "$none$",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_29",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_30",
-                    place2 = location.id + "_26",
-                    foundation = "typeInstance"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "Point",
+            //        id = location.id + "_26",
+            //        name = "Bottome Right Location",
+            //        value = "$none$",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "measureOfIndividualPoint",
-                    id = location.id + "_31",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_32",
-                    place2 = location.id + "_26",
-                    foundation = "typeInstance"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "PointType",
+            //        id = location.id + "_24",
+            //        name = "Bottome Right LocationType",
+            //        value = "$none$",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType"
+            //    });
 
-                tuples = tuples.Concat(values);
+            //    values.Add(new Thing
+            //    {
+            //        type = "SpatialMeasure",
+            //        id = location.id + "_18",
+            //        name = "Top Left X Location",
+            //        value = location.top_left_x,
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "numericValue"
+            //    });
 
-                values = new List<Thing>();
+            //    values.Add(new Thing
+            //    {
+            //        type = "SpatialMeasure",
+            //        id = location.id + "_20",
+            //        name = "Top Left Y Location",
+            //        value = location.top_left_y,
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "numericValue"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "resourceInLocationType",
-                    id = location.id + "_13",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_12",
-                    place2 = location.id + "_14",
-                    foundation = "CoupleType"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "SpatialMeasure",
+            //        id = location.id + "_22",
+            //        name = "Top Left Z Location",
+            //        value = "0",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "numericValue"
+            //    });
 
-                values.Add(new Thing
-                {
-                    type = "resourceInLocationType",
-                    id = location.id + "_23",
-                    name = "$none$",
-                    value = "$none$",
-                    place1 = location.id + "_12",
-                    place2 = location.id + "_24",
-                    foundation = "CoupleType"
-                });
+            //    values.Add(new Thing
+            //    {
+            //        type = "SpatialMeasure",
+            //        id = location.id + "_28",
+            //        name = "Bottom Right X Location",
+            //        value = location.bottom_right_x,
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "numericValue"
+            //    });
 
-                tuple_types = tuple_types.Concat(values);
-            }
+            //    values.Add(new Thing
+            //    {
+            //        type = "SpatialMeasure",
+            //        id = location.id + "_30",
+            //        name = "Bottom Right Y Location",
+            //        value = location.bottom_right_y,
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "numericValue"
+            //    });
+
+            //    values.Add(new Thing
+            //    {
+            //        type = "SpatialMeasure",
+            //        id = location.id + "_32",
+            //        name = "Bottom Right Z Location",
+            //        value = "0",
+            //        place1 = "$none$",
+            //        place2 = "$none$",
+            //        foundation = "IndividualType",
+            //        value_type = "numericValue"
+            //    });
+
+            //    things = things.Concat(values);
+
+            //    values = new List<Thing>();
+
+            //    values.Add(new Thing
+            //    {
+            //        type = "describedBy",
+            //        id = location.id + "_11",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.element_id,
+            //        place2 = location.id + "_12",
+            //        foundation = "namedBy"
+            //    });
+
+            //    values.Add(new Thing
+            //    {
+            //        type = "typeInstance",
+            //        id = location.id + "_15",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_14",
+            //        place2 = location.id + "_16",
+            //        foundation = "typeInstance"
+            //    });
+
+            //    values.Add(new Thing
+            //    {
+            //        type = "typeInstance",
+            //        id = location.id + "_25",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_24",
+            //        place2 = location.id + "_26",
+            //        foundation = "typeInstance"
+            //    });
+
+
+            //    values.Add(new Thing
+            //    {
+            //        type = "measureOfIndividualPoint",
+            //        id = location.id + "_17",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_18",
+            //        place2 = location.id + "_16",
+            //        foundation = "typeInstance"
+            //    });
+
+            //    values.Add(new Thing
+            //    {
+            //        type = "measureOfIndividualPoint",
+            //        id = location.id + "_19",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_20",
+            //        place2 = location.id + "_16",
+            //        foundation = "typeInstance"
+            //    });
+
+            //    values.Add(new Thing
+            //    {
+            //        type = "measureOfIndividualPoint",
+            //        id = location.id + "_21",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_22",
+            //        place2 = location.id + "_16",
+            //        foundation = "typeInstance"
+            //    });
+
+            //    values.Add(new Thing
+            //    {
+            //        type = "measureOfIndividualPoint",
+            //        id = location.id + "_27",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_28",
+            //        place2 = location.id + "_26",
+            //        foundation = "typeInstance"
+            //    });
+
+            //    values.Add(new Thing
+            //    {
+            //        type = "measureOfIndividualPoint",
+            //        id = location.id + "_29",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_30",
+            //        place2 = location.id + "_26",
+            //        foundation = "typeInstance"
+            //    });
+
+            //    values.Add(new Thing
+            //    {
+            //        type = "measureOfIndividualPoint",
+            //        id = location.id + "_31",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_32",
+            //        place2 = location.id + "_26",
+            //        foundation = "typeInstance"
+            //    });
+
+            //    tuples = tuples.Concat(values);
+
+            //    values = new List<Thing>();
+
+            //    values.Add(new Thing
+            //    {
+            //        type = "resourceInLocationType",
+            //        id = location.id + "_13",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_12",
+            //        place2 = location.id + "_14",
+            //        foundation = "CoupleType"
+            //    });
+
+            //    values.Add(new Thing
+            //    {
+            //        type = "resourceInLocationType",
+            //        id = location.id + "_23",
+            //        name = "$none$",
+            //        value = "$none$",
+            //        place1 = location.id + "_12",
+            //        place2 = location.id + "_24",
+            //        foundation = "CoupleType"
+            //    });
+
+            //    tuple_types = tuple_types.Concat(values);
+            //}
 
             //Thing Dictionary
 
@@ -8304,6 +8323,7 @@ namespace EAWS.Core.SilverBullet
 
             mandatory_list = new List<Thing>();
             values = new List<Thing>();
+            values2 = new List<Thing>();
             optional_list = new List<Thing>();
             sorted_results = new List<List<Thing>>();
 
@@ -8328,12 +8348,20 @@ namespace EAWS.Core.SilverBullet
                            value_type = "$id$"
                        };
 
-            values_dic = tuple_types.Where(x => x.type == "activityPerformedByPerformer").GroupBy(x => x.place2).Select(grp => grp.First()).ToDictionary(x => x.place2, x => x);
+            results_dic = tuple_types.Where(x => x.type == "activityPerformedByPerformer").GroupBy(x => x.place2).ToDictionary(x => x.Key, x => x.ToList());
 
             foreach (Thing thing in results)
             {
-                values.Add(new Thing { id = "_14", type = "SV-5a", place2 = thing.place1, value = "Activity", place1 = "_74" });
-                values.Add(new Thing { id = "_14", type = "SV-5a", place2 = thing.place2, value = "Activity", place1 = "_74" });  
+                if (results_dic.TryGetValue(thing.place2, out values2))
+                {
+                    foreach (Thing element in values2)
+                    {
+                        if(things_dic[element.place1].type == "System")
+                            values.Add(new Thing { id = "_74", type = "SV-5a", place2 = element.place1, value = "System", place1 = "_74" });
+                    }
+                }
+                values.Add(new Thing { id = "_74", type = "SV-5a", place2 = thing.place1, value = "Activity", place1 = "_74" });
+                values.Add(new Thing { id = "_74", type = "SV-5a", place2 = thing.place2, value = "Activity", place1 = "_74" });  
             }
 
             sorted_results.Add(values);
@@ -8345,11 +8373,14 @@ namespace EAWS.Core.SilverBullet
 
             foreach (Thing thing in sorted_results.First())
             {
-                if ((string)thing.value == "System")
+                if ((string)thing.value == "System" || (string)thing.value == "Activity" || (string)thing.value == "activityPerformedByPerfomer")
                     mandatory_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
                 else
                     optional_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
             }
+
+            mandatory_list = mandatory_list.OrderBy(x => x.type).ToList();
+            optional_list = optional_list.OrderBy(x => x.type).ToList();
 
             if (sorted_results.First().Count() > 0)
                 views.Add(new View { type = "SV-5a", id = "_74", name = "NEAR SV-5a", optional = optional_list, mandatory = mandatory_list });
@@ -8357,16 +8388,281 @@ namespace EAWS.Core.SilverBullet
 
             //SvcV-5
 
+            mandatory_list = new List<Thing>();
+            values = new List<Thing>();
+            values2 = new List<Thing>();
+            optional_list = new List<Thing>();
+            sorted_results = new List<List<Thing>>();
+
+            results =
+                       from result in root.Elements(ns + "Implements")
+                       //from result3 in root.Elements(ns + "View")
+                       //from result4 in root.Descendants()
+                       from result2 in root.Descendants()
+                       //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+                       //where result2.Attribute("name") != null
+                       where (string)result.LastAttribute == (string)result2.Attribute(ns2 + "id")
+                       //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+                       select new Thing
+                       {
+                           type = "OverlapType",
+                           id = (string)result.LastAttribute,
+                           name = "$none$",
+                           value = (string)result2.Element("supplier").Attribute(ns2 + "idref") + (string)result2.Element("client").Attribute(ns2 + "idref"),
+                           place2 = (string)result2.Element("client").Attribute(ns2 + "idref"),
+                           place1 = (string)result2.Element("supplier").Attribute(ns2 + "idref"),
+                           foundation = "CoupleType",
+                           value_type = "$id$"
+                       };
+
+            results_dic = tuple_types.Where(x => x.type == "activityPerformedByPerformer").GroupBy(x => x.place2).ToDictionary(x => x.Key, x => x.ToList());
+
+            foreach (Thing thing in results)
+            {
+                if (results_dic.TryGetValue(thing.place2, out values2))
+                {
+                    foreach (Thing element in values2)
+                    {
+                        if (things_dic[element.place1].type == "Service")
+                            values.Add(new Thing { id = "_75", type = "SvcV-5", place2 = element.place1, value = "Service", place1 = "_75" });
+                    }
+                }
+                values.Add(new Thing { id = "_75", type = "SvcV-5", place2 = thing.place1, value = "Activity", place1 = "_75" });
+                values.Add(new Thing { id = "_75", type = "SvcV-5", place2 = thing.place2, value = "Activity", place1 = "_75" });
+            }
+
+            sorted_results.Add(values);
+
+            sorted_results_new = new List<List<Thing>>();
+            Add_Tuples(ref sorted_results, ref sorted_results_new, tuples.ToList(), ref errors_list);
+            Add_Tuples(ref sorted_results, ref sorted_results_new, tuple_types.ToList(), ref errors_list);
+            sorted_results = sorted_results_new;
+
+            foreach (Thing thing in sorted_results.First())
+            {
+                if ((string)thing.value == "Service" || (string)thing.value == "Activity" || (string)thing.value == "activityPerformedByPerfomer")
+                    mandatory_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+                else
+                    optional_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+
+                if ((string)thing.value == "Service")
+                {
+                    values = new List<Thing>();
+
+                    values.Add(new Thing
+                    {
+                        type = "ServiceDescription",
+                        id = thing.place2 + "_2",
+                        name = thing.place2 + "_Description",
+                        value = "$none$",
+                        place1 = "$none$",
+                        place2 = "$none$",
+                        foundation = "Individual",
+                        value_type = "$none$"
+                    });
+
+                    values.Add(new Thing
+                    {
+                        type = "serviceDescribedBy",
+                        id = thing.place2 + "_1",
+                        name = "$none$",
+                        value = "$none$",
+                        place1 = thing.id,
+                        place2 = thing.id + "_2",
+                        foundation = "namedBy",
+                        value_type = "$none$"
+                    });
+
+                    mandatory_list.AddRange(values);
+
+                    values = new List<Thing>();
+
+                    values.Add(new Thing
+                    {
+                        type = "ServiceDescription",
+                        id = thing.place2 + "_2",
+                        name = thing.place2 + "_Description",
+                        value = "$none$",
+                        place1 = "$none$",
+                        place2 = "$none$",
+                        foundation = "Individual",
+                        value_type = "$none$"
+                    });
+
+                    things = things.Concat(values);
+
+                    values = new List<Thing>();
+
+                    values.Add(new Thing
+                    {
+                        type = "serviceDescribedBy",
+                        id = thing.place2 + "_1",
+                        name = "$none$",
+                        value = "$none$",
+                        place1 = thing.id,
+                        place2 = thing.id + "_2",
+                        foundation = "namedBy",
+                        value_type = "$none$"
+                    });
+
+                    tuples = tuples.Concat(values);
+                }
+            }
+
+            mandatory_list = mandatory_list.OrderBy(x => x.type).ToList();
+            optional_list = optional_list.OrderBy(x => x.type).ToList();
+
+            if (sorted_results.First().Count() > 0)
+                views.Add(new View { type = "SvcV-5", id = "_75", name = "NEAR SvcV-5", optional = optional_list, mandatory = mandatory_list });
+
+            //Std-2
+
+            mandatory_list = new List<Thing>();
+            values = new List<Thing>();
+            values2 = new List<Thing>();
+            optional_list = new List<Thing>();
+            sorted_results = new List<List<Thing>>();
+
+            results_dic = tuple_types.Where(x => x.type == "activityPerformedByPerformer").GroupBy(x => x.place2).ToDictionary(x => x.Key, x => x.ToList());
+
+            results =
+                 from result in root.Elements(ns + "OperationalActivity")
+                 where (string)result.Attribute("conformsTo") != null
+                 from result2 in root.Descendants()
+                 where (string)result.Attribute("conformsTo") == (string)result2.Attribute(ns2 + "id")
+                 where (string)result2.Attribute("name") != null
+
+                 select new Thing
+                 {
+                     type = "ruleConstrainsActivity",
+                     id = (string)result.Attribute("base_Activity")+"_77",
+                     name = (string)result2.Attribute("name"),
+                     value = (string)result.Attribute("base_Activity"),
+                     place1 = (string)result.Attribute("conformsTo"),
+                     place2 = (string)result.Attribute("base_Activity"),
+                     foundation = "CoupleType",
+                     value_type = "$id$"
+                 };
+
+            tuple_types = tuple_types.Concat(results);
+
+            values3 = new List<Thing>();
+            foreach (Thing thing in results)
+            {
+                values3.Add(
+                     new Thing
+                     {
+                         type = "Rule",
+                         id = (string)thing.value + "_78",
+                         name = thing.name,
+                         value = "$none$",
+                         place1 = "$none$",
+                         place2 = "$none$",
+                         foundation = "IndividualType",
+                         value_type = "$none$"
+                     }
+                 );
+
+                if (results_dic.TryGetValue(thing.place2, out values2))
+                {
+                    foreach (Thing element in values2)
+                    {
+                        values.Add(new Thing { id = "_84", type = "Std-2", place2 = element.place1, value = things_dic[element.place1].type, place1 = "_84" });
+                    }
+                }
+
+                values.Add(new Thing { id = "_84", type = "Std-2", place2 = thing.place1, value = "Rule", place1 = "_84" });
+                values.Add(new Thing { id = "_84", type = "Std-2", place2 = thing.place2, value = "Activity", place1 = "_84" });
+
+            }
+
+            things = things.Concat(values3);
+
+            results =
+                 from result in root.Elements(ns + "Function")
+                 where (string)result.Attribute("conformsTo") != null
+                 from result2 in root.Descendants()
+                 where (string)result.Attribute("conformsTo") == (string)result2.Attribute(ns2 + "id")
+                 where (string)result2.Attribute("name") != null
+
+                 select new Thing
+                 {
+                     type = "ruleConstrainsActivity",
+                     id = (string)result.Attribute("base_Activity") + "_77",
+                     name = (string)result2.Attribute("name"),
+                     value = (string)result.Attribute("base_Activity"),
+                     place1 = (string)result.Attribute("conformsTo"),
+                     place2 = (string)result.Attribute("base_Activity"),
+                     foundation = "CoupleType",
+                     value_type = "$id$"
+                 };
+
+            tuple_types = tuple_types.Concat(results);
+
+            values3 = new List<Thing>();
+            foreach (Thing thing in results)
+            {
+                values3.Add(
+                     new Thing
+                     {
+                         type = "Rule",
+                         id = (string)thing.value + "_78",
+                         name = thing.name,
+                         value = "$none$",
+                         place1 = "$none$",
+                         place2 = "$none$",
+                         foundation = "IndividualType",
+                         value_type = "$none$"
+                     }
+                 );
+
+                if (results_dic.TryGetValue(thing.place2, out values2))
+                {
+                    foreach (Thing element in values2)
+                    {
+                        values.Add(new Thing { id = "_84", type = "Std-2", place2 = element.place1, value = things_dic[element.place1].type, place1 = "_84" });
+                    }
+                }
+
+                values.Add(new Thing { id = "_84", type = "Std-2", place2 = thing.place1, value = "Rule", place1 = "_84" });
+                values.Add(new Thing { id = "_84", type = "Std-2", place2 = thing.place2, value = "Activity", place1 = "_84" });
+
+            }
+
+            things = things.Concat(values3);
+
+            sorted_results.Add(values);
+
+            sorted_results_new = new List<List<Thing>>();
+            Add_Tuples(ref sorted_results, ref sorted_results_new, tuples.ToList(), ref errors_list);
+            Add_Tuples(ref sorted_results, ref sorted_results_new, tuple_types.ToList(), ref errors_list);
+            sorted_results = sorted_results_new;
+
+            foreach (Thing thing in sorted_results.First())
+            {
+                if ((string)thing.value == "Activity" || (string)thing.value == "ruleConstrainsActivity" || (string)thing.value == "activityPerformedByPerformer")
+                    mandatory_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+                else
+                    optional_list.Add(new Thing { id = thing.place2, type = (string)thing.value, value = "$none$", value_type = "$none$" });
+            }
+
+            mandatory_list = mandatory_list.OrderBy(x => x.type).ToList();
+            optional_list = optional_list.OrderBy(x => x.type).ToList();
+
+            if (sorted_results.First().Count() > 0)
+                views.Add(new View { type = "Std-2", id = "_84", name = "NEAR Std-2", optional = optional_list, mandatory = mandatory_list });
+
+
             //BPMN BeforeAfter
 
             results =
                     from result3 in root.Descendants().Elements("edge")
                     from result2 in root.Descendants().Elements("node")
-                    where (string)result3.Attribute("source") == (string)result2.Attribute(ns2 + "id")
                     where (string)result2.Attribute("behavior") != null
+                    where (string)result3.Attribute("source") == (string)result2.Attribute(ns2 + "id")
                     from result6 in root.Descendants().Elements("node")
-                    where (string)result3.Attribute("target") == (string)result6.Attribute(ns2 + "id")
                     where (string)result6.Attribute("behavior") != null
+                    where (string)result3.Attribute("target") == (string)result6.Attribute(ns2 + "id")
                     from result in root.Elements(ns + "OperationalActivity")                    
                     where (string)result.Attribute("base_Activity") == (string)result2.Attribute("behavior")
                     from result5 in root.Elements(ns + "OperationalActivity")
