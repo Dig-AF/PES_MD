@@ -6458,8 +6458,8 @@ namespace EAWS.Core.SilverBullet
                     id = (string)result.Parent.Attribute(ns2 + "id") + (string)result.Attribute("type"),
                     name = "$none$",
                     value = "$none$",
-                    place1 = (string)result.Parent.Attribute(ns2 + "id"),
-                    place2 = (string)result.Attribute("type"),
+                    place1 = (string)result.Attribute("type"),
+                    place2 = (string)result.Parent.Attribute(ns2 + "id"),
                     foundation = "WholePartType",
                     value_type = "$none$"
                 };
