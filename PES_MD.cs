@@ -811,7 +811,8 @@ namespace EAWS.Core.SilverBullet
         private class Location
         {
             public string id;
-            public string element_id; 
+            public string element_id;
+            public string diagram_id;
             public string top_left_x;
             public string top_left_y;
             public string top_left_z;
@@ -2368,22 +2369,26 @@ namespace EAWS.Core.SilverBullet
                     from result in root.Descendants().Elements("mdElement").Elements("elementID")
                     //from result3 in root.Elements(ns + "View")
                     //from result4 in root.Descendants()
-                    //from result2 in root.Descendants()
                     //from result2 in result.Elements("layoutConstraint")
                     //where result2.Attribute("name") != null
                     //where (string)result.Attribute(ns2 + "idref") == thing.id
                     //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
                     where (string)result.Attribute(ns2 + "idref") == thing.id
                     where ((string)result.Parent.Element("geometry").Value).Contains(";") == false
+                    from result2 in result.Parent.Parent.Elements("mdElement").Elements("elementID")
+                    where (string)result2.Parent.Attribute("elementClass") == "DiagramFrame"
+                    where (string)result2.Attribute(ns2 + "idref") != null
+                    
 
                     select new Location
                     {
-                        id = (string)result.Parent.Attribute(ns2 + "id"),
+                        id = (string)result.Attribute(ns2 + "idref") + (string)result2.Attribute(ns2 + "idref"),
                         top_left_x = (string)result.Parent.Element("geometry"),//.Value).Split(',')[0],
                         //top_left_y = ((string)result.Parent.Element("geometry").Value).Split(',')[1],
                         //bottom_right_x = ((string)result.Parent.Element("geometry").Value).Split(',')[2],
                         //bottom_right_y = ((string)result.Parent.Element("geometry").Value).Split(',')[3],
-                        element_id = (string)result.Attribute(ns2 + "idref")
+                        element_id = (string)result.Attribute(ns2 + "idref"),
+                        diagram_id = (string)result2.Attribute(ns2 + "idref")
                     };
 
                 locations = locations.Concat(results_loc.ToList());
@@ -2409,10 +2414,11 @@ namespace EAWS.Core.SilverBullet
                     type = "Information",
                     id = location.id + "_12",
                     name = "Diagramming Information",
-                    value = "$none$",
+                    value = (string)location.diagram_id,
                     place1 = "$none$",
                     place2 = "$none$",
-                    foundation = "IndividualType"
+                    foundation = "IndividualType",
+                    value_type="exemplar"
                 });
 
                 values.Add(new Thing
@@ -4872,7 +4878,9 @@ namespace EAWS.Core.SilverBullet
             List<List<Thing>> sorted_results;
             Dictionary<string, Location> location_dic = new Dictionary<string, Location>();
             List<View> views = new List<View>();
-
+            List<Thing> values;
+            Thing value;
+            Location location;
             //  Things
 
             foreach (string[] current_lookup in MD_Element_Lookup)
@@ -5116,7 +5124,8 @@ namespace EAWS.Core.SilverBullet
 
                             foreach (Thing thing in view.mandatory)
                             {
-                                writer.WriteRaw("<packagedElement xmi:type='uml:Class' xmi:id='" + thing.id + "' name='" + thing.name + "'/>");
+                                if (things.TryGetValue(thing.id, out value))
+                                    writer.WriteRaw("<packagedElement xmi:type='uml:Class' xmi:id='" + thing.id + "' name='" + value.name + "'/>");
                             };
                         }
 
@@ -5133,10 +5142,14 @@ namespace EAWS.Core.SilverBullet
 //									<diagram:DiagramRepresentationObject ID='_18_1_6b3022e_1437587696707_2048_87921' diagramProperties='3c 3f 78 6d 6c 20 76 65 72 73 69 6f 6e 3d 27 31 2e 30 27 20 65 6e 63 6f 64 69 6e 67 3d 27 55 54 46 2d 38 27 3f 3e a a 3c 50 72 6f 70 65 72 74 79 56 69 73 69 74 6f 72 41 63 63 65 70 74 6f 72 3e a 9 3c 6d 64 45 6c 65 6d 65 6e 74 20 65 6c 65 6d 65 6e 74 43 6c 61 73 73 3d 27 50 72 6f 70 65 72 74 79 4d 61 6e 61 67 65 72 27 3e a 9 9 3c 70 72 6f 70 65 72 74 79 4d 61 6e 61 67 65 72 49 44 3e 5f 31 38 5f 32 5f 36 62 33 30 32 32 65 5f 31 34 34 36 35 30 33 35 30 37 32 35 35 5f 35 35 33 30 37 31 5f 39 35 38 33 32 3c 2f 70 72 6f 70 65 72 74 79 4d 61 6e 61 67 65 72 49 44 3e a 9 9 3c 6d 64 45 6c 65 6d 65 6e 74 20 65 6c 65 6d 65 6e 74 43 6c 61 73 73 3d 27 42 6f 6f 6c 65 61 6e 50 72 6f 70 65 72 74 79 27 3e a 9 9 9 3c 70 72 6f 70 65 72 74 79 49 44 3e 41 55 54 4f 53 49 5a 45 3c 2f 70 72 6f 70 65 72 74 79 49 44 3e a 9 9 9 3c 70 72 6f 70 65 72 74 79 47 72 6f 75 70 3e 44 49 41 47 52 41 4d 5f 46 52 41 4d 45 3c 2f 70 72 6f 70 65 72 74 79 47 72 6f 75 70 3e a 9 9 9 3c 70 72 6f 70 65 72 74 79 44 65 73 63 72 69 70 74 69 6f 6e 49 44 3e 41 55 54 4f 53 49 5a 45 5f 44 45 53 43 52 49 50 54 49 4f 4e 3c 2f 70 72 6f 70 65 72 74 79 44 65 73 63 72 69 70 74 69 6f 6e 49 44 3e a 9 9 3c 2f 6d 64 45 6c 65 6d 65 6e 74 3e a 9 3c 2f 6d 64 45 6c 65 6d 65 6e 74 3e a 3c 2f 50 72 6f 70 65 72 74 79 56 69 73 69 74 6f 72 41 63 63 65 70 74 6f 72 3e ' diagramStyleID='_18_2_6b3022e_1446502821232_769328_95049' initialFrameSizeSet='true' requiredFeature='UPDMPlugin#UPDM;UPDM_Customization.mdzip;UML_Standard_Profile.mdzip' type='DIV-2 Logical Data Model' umlType='Class Diagram' xmi:id='_tjGuGWwfEeCAM4cInhh4Pw' xmi:version='2.0' xmlns:binary='http://www.nomagic.com/ns/cameo/client/binary/1.0' xmlns:diagram='http://www.nomagic.com/ns/magicdraw/core/diagram/1.0' xmlns:xmi='http://www.omg.org/XMI' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
 //										<diagramContents contentHash='6de753ab-416d-408a-acc7-3e9379fa04ae' exporterName='MagicDraw UML' exporterVersion='18.2' xmi:id='_tjHVIGwfEeCAM4cInhh4Pw'>
 //											<binaryObject streamContentID='BINARY-7037a543-8885-4897-8277-051414632cb3' xmi:id='_tjHVIWwfEeCAM4cInhh4Pw' xsi:type='binary:StreamIdentityBinaryObject'/>");
+
                             
+                            Dictionary<string, List<Thing>> wholeparts1 = tuple_types.Where(x => x.type == "WholePartType").GroupBy(x=>x.place1).ToDictionary(x => x.First().place1, x => x.ToList());
+                            Dictionary<string, List<Thing>> wholeparts2 = tuple_types.Where(x => x.type == "WholePartType").GroupBy(x => x.place2).ToDictionary(x => x.First().place2, x => x.ToList());
+
                             foreach (Thing thing in view.mandatory)
                             {
-                                writer.WriteRaw("<usedObjects href='#" + thing.id + "'/>");
+                                writer.WriteRaw("<usedObjects href='#" + thing.id + "'/>");   
                             };
 
                             foreach (Thing thing in view.mandatory)
@@ -5155,8 +5168,25 @@ namespace EAWS.Core.SilverBullet
 
                             foreach (Thing thing in view.mandatory)
                             {
-                                writer.WriteRaw("<packagedElement xmi:type='uml:Class' xmi:id='" + thing.id + "' name='" + thing.name + "'/>");
+                                if (things.TryGetValue(thing.id, out value))
+                                {
+                                    if (wholeparts2.TryGetValue(thing.id, out values))
+                                        continue;
+
+                                    if (wholeparts1.TryGetValue(thing.id, out values))
+                                    {
+                                        writer.WriteRaw("<packagedElement xmi:type='uml:Class' xmi:id='" + thing.id + "' name='" + value.name + "'>");
+                                        foreach (Thing part in values)
+                                        {
+                                            writer.WriteRaw("<ownedAttribute xmi:type='uml:Property' xmi:id='" + part.place2 + "' name='" + things[part.place2].name + "' visibility='private' isReadOnly='true' aggregation='composite' />");
+                                        }
+                                        writer.WriteRaw("</packagedElement>");
+                                    }
+                                    else
+                                        writer.WriteRaw("<packagedElement xmi:type='uml:Class' xmi:id='" + thing.id + "' name='" + value.name + "'/>");
+                                }
                             };
+
                         }
 
                         if (view.type == "OV-6c")
@@ -5192,7 +5222,8 @@ namespace EAWS.Core.SilverBullet
                             ");
                             foreach (Thing thing in view.mandatory)
                             {
-                                writer.WriteRaw("<packagedElement xmi:type='uml:Class' xmi:id='" + thing.id + "' name='" + thing.name + "'/>");
+                                if (things.TryGetValue(thing.id, out value))
+                                    writer.WriteRaw("<packagedElement xmi:type='uml:Class' xmi:id='" + thing.id + "' name='" + value.name + "'/>");
                             };
                         }
                     }
@@ -5224,6 +5255,7 @@ namespace EAWS.Core.SilverBullet
 			                    <tag name='UPDM_Profile:ArchitecturalDescription:views' tagID='_16_9_8f40297_1283326877526_786530_4513' tagURI='local:/PROJECT-7936f19224e87ef3c7be1f94c42c516?resource=com.nomagic.magicdraw.uml_umodel.shared_umodel#_16_9_8f40297_1283326877526_786530_4513'/>
 		                    </stereotypesHREFS>
 	                    </xmi:Extension>
+                        <!--added-->
                         ");
 
                     foreach (View view in views)
@@ -5235,13 +5267,7 @@ namespace EAWS.Core.SilverBullet
                     }
 
                     writer.WriteRaw(@"
-                    <!--added-->	
-                    <UPDM_Profile:CapabilityConfiguration xmi:id='_18_2_6b3022e_1447047307133_396562_78006' base_Class='_18_2_6b3022e_1447047307132_159217_78005'/>
-	                    <MagicDraw_Profile:DiagramInfo xmi:id='_18_2_6b3022e_1447047197549_223501_77949' base_Diagram='_18_2_6b3022e_1447047197331_457597_77937' Creation_date='11/8/15 11:33 PM' Modification_date='11/8/15 11:33 PM' Author='txmoe' Last_modified_by='txmoe'/>	
-                    <UPDM_Profile:Performer xmi:id='_18_2_6b3022e_1447047219974_781916_77974' base_Class='_18_2_6b3022e_1447047219974_101175_77973'/>
-                    <!--added-->
-                        ");
-                    writer.WriteRaw(@"
+                        <!--added-->
 	                    <UPDM_Profile:ArchitecturalDescription xmi:id='_18_2_6b3022e_1447046478021_211787_77935' base_Package='eee_1045467100313_135436_1' toBe='true'/>
 	                    <xmi:Extension extender='MagicDraw UML 18.2'>
 		                    <filePart name='proxy.local__PROJECT$h877558e9224f114d50dea1f39a1c119_resource_com$dnomagic$dci$dmetamodel$dproject$dsnapshot' type='XML' header='&lt;?xml version=&quot;1.0&quot; encoding=&quot;ASCII&quot;?&gt;'>
@@ -7644,20 +7670,46 @@ namespace EAWS.Core.SilverBullet
 		                    <filePart name='personal-Binaries.properties' type='BINARY'>H4sIAAAAAAAAAFPm5VIOLs1T8MsvUzCwUDAytjIysjI0VnAODlEwMjA05eUCANRw3BgiAAAA</filePart>
 	                    </xmi:Extension>
                         ");
-                    writer.WriteRaw(@"
+                    foreach (View view in views)
+                    {
+                        //foreach (Thing thing in view.mandatory)
+                        //    {
+                        //        if (things.TryGetValue(thing.id, out value))
+                        //        {
+                        //            if (wholeparts2.TryGetValue(thing.id, out values))
+                        //                continue;
+
+                        //            if (wholeparts1.TryGetValue(thing.id, out values))
+                        //            {
+                        //                writer.WriteRaw("<packagedElement xmi:type='uml:Class' xmi:id='" + thing.id + "' name='" + value.name + "'>");
+                        //                foreach (Thing part in values)
+                        //                {
+                        //                    writer.WriteRaw("<ownedAttribute xmi:type='uml:Property' xmi:id='" + part.place2 + "' name='" + things[part.place2].name + "' visibility='private' isReadOnly='true' aggregation='composite' />");
+                        //                }
+                        //                writer.WriteRaw("</packagedElement>");
+                        //            }
+                        //            else
+                        //                writer.WriteRaw("<packagedElement xmi:type='uml:Class' xmi:id='" + thing.id + "' name='" + value.name + "'/>");
+                        //        }
+
+                        writer.WriteRaw(@"
                     <!--added-->	
                     <xmi:Extension extender='MagicDraw UML 18.2'>
 		                    <filePart name='BINARY-c64803cb-aea0-4d2f-9f36-2dbbabcdbeb1' type='XML' header='&lt;?xml version=&#39;1.0&#39; encoding=&#39;UTF-8&#39;?&gt;'>
 	                    <mdOwnedViews>
-	                    <mdElement elementClass='DiagramFrame' xmi:id='_18_2_6b3022e_1447047197558_378996_77959'>
-		                    <elementID xmi:idref='_18_2_6b3022e_1447047197331_457597_77937'/>
-		                    <geometry>5, 5, 828, 471</geometry>
-		                    <compartment compartmentID='TAGGED_VALUES'/>
+	                    <mdElement elementClass='DiagramFrame' xmi:id='_18_2_6b3022e_1447047197558_378996_77959'>");
+                        writer.WriteRaw("<elementID xmi:idref='" + view.id + "'/>");
+                        writer.WriteRaw("<geometry>5, 5, 828, 471</geometry>");
+                        writer.WriteRaw(@"<compartment compartmentID='TAGGED_VALUES'/>
 		                    <mdOwnedViews/>
-	                    </mdElement>
-	                    <mdElement elementClass='Class' xmi:id='_18_2_6b3022e_1447047219987_486570_77975'>
-		                    <elementID xmi:idref='_18_2_6b3022e_1447047219974_101175_77973'/>
-		                    <properties>
+	                    </mdElement>");
+
+                        foreach (Thing thing in view.mandatory)
+                        {
+                            writer.WriteRaw(@"
+	                    <mdElement elementClass='Class' xmi:id='_18_2_6b3022e_1447047219987_486570_77975'>");
+                            writer.WriteRaw("<elementID xmi:idref='"+thing.id+"'/>");
+                            writer.WriteRaw(@"<properties>
 			                    <mdElement elementClass='ColorProperty'>
 				                    <propertyID>FILL_COLOR</propertyID>
 				                    <propertyDescriptionID>FILL_COLOR_DESCRIPTION</propertyDescriptionID>
@@ -7748,15 +7800,21 @@ namespace EAWS.Core.SilverBullet
 				                    <propertyGroup>RECEPTIONS</propertyGroup>
 				                    <propertyDescriptionID>SHOW_RECEPTIONS_COMPARTMENT_NAME_DESCRIPTION</propertyDescriptionID>
 			                    </mdElement>
-		                    </properties>
-		                    <geometry>308, 133, 115, 33</geometry>
-		                    <compartment compartmentID='TAGGED_VALUES'/>
+		                    </properties>");
+                            if(location_dic.TryGetValue(thing.id+view.id, out location))
+                                writer.WriteRaw("<geometry>" + location.top_left_x + "," + location.top_left_y + "," + location.bottom_right_x + "," + location.bottom_right_y + "</geometry>");
+                            
+                            writer.WriteRaw(@"<compartment compartmentID='TAGGED_VALUES'/>
 		                    <mdOwnedViews/>
 	                    </mdElement>
+                        ");
+                        }
+                            writer.WriteRaw(@"
 	                    </mdOwnedViews></filePart>
 	                    </xmi:Extension>
 	                    <!--added-->
                         ");
+                    }
                     writer.WriteRaw(@"
 	                    <xmi:Extension extender='MagicDraw UML 18.2'>
 		                    <filePart name='PROJECT-1ae77b9a-e027-4a90-9c2b-84193849977b' type='BINARY'>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</filePart>
