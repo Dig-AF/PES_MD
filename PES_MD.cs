@@ -356,6 +356,10 @@ namespace EAWS.Core.SilverBullet
                             };
 
         static string[][] Optional_Lookup = new string[][] { 
+
+                            new string[] {"OrganizationType", "SV-5a"},
+                            new string[] {"OrganizationType", "SvcV-5"},
+
                             new string[] {"PersonRole", "Std-2"},
                             new string[] {"OrganizationType", "Std-2"},
                             new string[] {"Performer", "Std-2"},
@@ -365,6 +369,9 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"MeasureType", "SvcV-7"},
                             new string[] {"measureOfTypeResource", "SvcV-7"},
                             new string[] {"typeInstance", "SvcV-7"},
+                            new string[] {"OrganizationType", "SvcV-7"},
+
+                            new string[] {"OrganizationType", "SV-7"},
                             new string[] {"Measure", "SV-7"},
                             new string[] {"MeasureType", "SV-7"},
                             new string[] {"measureOfTypeResource", "SV-7"},
@@ -410,7 +417,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"Location", "CV-4"},
                             new string[] {"Performer", "CV-4"},
                             new string[] {"PersonRole", "CV-4"},
-                            new string[] {"OrganizationType", "CV-4"},
+                            //new string[] {"OrganizationType", "CV-4"},
                             new string[] {"Resource", "CV-4"},
                             new string[] {"Rule", "CV-4"}, 
                             new string[] {"System", "CV-4"},
@@ -430,7 +437,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"Location", "CV-6"},
                             new string[] {"Performer", "CV-6"},
                             new string[] {"PersonRole", "CV-6"},
-                            new string[] {"OrganizationType", "CV-6"},
+                            //new string[] {"OrganizationType", "CV-6"},
                             new string[] {"Resource", "CV-6"},
                             new string[] {"Rule", "CV-6"}, 
                             new string[] {"System", "CV-6"},
@@ -468,7 +475,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"Rule", "OV-1"}, 
                             new string[] {"superSubtype", "OV-1"}, 
                             new string[] {"WholePartType", "OV-1"},
-                            new string[] {"OverlapType", "OV-1"},
+                            //new string[] {"OverlapType", "OV-1"},
                             new string[] {"representationSchemeInstance", "OV-1"},
                             new string[] {"Condition", "OV-2"},
                             new string[] {"Information", "OV-2"},
@@ -512,7 +519,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"Rule", "OV-4"}, 
                             new string[] {"superSubtype", "OV-4"}, 
                             new string[] {"WholePartType", "OV-4"},
-                            new string[] {"OverlapType", "OV-4"},
+                            //new string[] {"OverlapType", "OV-4"},
                             new string[] {"Condition", "OV-5a"},
                             new string[] {"Information", "OV-5a"},
                             new string[] {"Location", "OV-5a"},
@@ -532,11 +539,11 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"superSubtype", "OV-5b"}, 
                             new string[] {"WholePartType", "OV-5b"},
                             new string[] {"activityPerformedByPerformer", "OV-5b"},
-                            new string[] {"OverlapType", "OV-5b"},
+                            //new string[] {"OverlapType", "OV-6b"},
                             new string[] {"Condition", "OV-6b"},
                             new string[] {"Information", "OV-6b"},
                             new string[] {"Location", "OV-6b"},
-                            new string[] {"OrganizationType", "OV-6b"},
+                            //new string[] {"OrganizationType", "OV-6b"},
                             new string[] {"Performer", "OV-6b"},
                             new string[] {"PersonRole", "OV-6b"},
                             new string[] {"Resource", "OV-6b"},
@@ -557,6 +564,8 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"superSubtype", "OV-6c"}, 
                             new string[] {"WholePartType", "OV-6c"},
                             new string[] {"activityPerformedByPerformer", "OV-6c"},
+                            new string[] {"Duration", "OV-6c"},
+                            new string[] {"measureOfTypeActivity", "OV-6c"},
                             new string[] {"Condition", "OV-6a"},
                             new string[] {"Information", "OV-6a"},
                             new string[] {"Location", "OV-6a"},
@@ -574,7 +583,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"Guidance", "AV-1"},
                             new string[] {"Information", "AV-1"},
                             new string[] {"Location", "AV-1"},
-                            new string[] {"OrganizationType", "AV-1"},
+                            //new string[] {"OrganizationType", "AV-1"},
                             new string[] {"Performer", "AV-1"},
                             new string[] {"RealProperty", "AV-1"}, 
                             new string[] {"Resource", "AV-1"},
@@ -753,6 +762,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"superSubtype", "PV-2"}, 
                             new string[] {"WholePartType", "PV-2"}, 
                             new string[] {"activityPerformedByPerformer", "PV-2"},
+                            new string[] {"OrganizationType", "PV-2"},
                             new string[] {"Activity", "AV-2"},
                             new string[] {"ArchitecturalDescription", "AV-2"},
                             new string[] {"Capability", "AV-2"},
@@ -764,7 +774,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"Location", "AV-2"},
                             new string[] {"MeasureOfDesire", "AV-2"},
                             new string[] {"MeasureOfEffect", "AV-2"},
-                            new string[] {"OrganizationType", "AV-2"},
+                            //new string[] {"OrganizationType", "AV-2"},
                             new string[] {"Performer", "AV-2"},
                             new string[] {"PersonRole", "AV-2"},
                             new string[] {"ProjectType", "AV-2"},
@@ -1614,8 +1624,8 @@ namespace EAWS.Core.SilverBullet
                 });
             }
 
-            if (values.Count() > 0)
-            {
+            //if (values.Count() > 0)
+            //{
                 things = things.Concat(new List<Thing>() {new Thing
                {
                    type = "Duration",
@@ -1627,7 +1637,7 @@ namespace EAWS.Core.SilverBullet
                    foundation = "IndividualType",
                    value_type = "numericValue"
                }});
-            }
+            //}
 
             tuple_types = tuple_types.Concat(values);
 
@@ -2061,37 +2071,37 @@ namespace EAWS.Core.SilverBullet
 
             tuple_types = tuple_types.Concat(results.ToList());
 
-            //OverlapType - Arbitrary
+            ////OverlapType - Arbitrary
 
-            results =
-                        from result in root.Elements(ns + "ArbitraryConnector")
-                        //from result3 in root.Elements(ns + "View")
-                        //from result4 in root.Descendants()
-                        from result2 in root.Descendants()
-                        //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
-                        //where result2.Attribute("name") != null
-                        where (string)result.LastAttribute == (string)result2.Attribute(ns2 + "id")
-                        //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
-                        from result3 in root.Descendants().Elements("ownedAttribute")
-                        where (string)result3.Attribute("type") != null
-                        where (string)result3.Attribute(ns2 + "id") == (string)result2.Element("supplier").Attribute(ns2 + "idref")
-                        from result4 in root.Descendants().Elements("ownedAttribute")
-                        where (string)result4.Attribute("type") != null
-                        where (string)result4.Attribute(ns2 + "id") == (string)result2.Element("client").Attribute(ns2 + "idref")
+            //results =
+            //            from result in root.Elements(ns + "ArbitraryConnector")
+            //            //from result3 in root.Elements(ns + "View")
+            //            //from result4 in root.Descendants()
+            //            from result2 in root.Descendants()
+            //            //from result2 in root.Elements(ns3 + "Package").Elements("packagedElement")
+            //            //where result2.Attribute("name") != null
+            //            where (string)result.LastAttribute == (string)result2.Attribute(ns2 + "id")
+            //            //where (string)result3.LastAttribute == (string)result4.Attribute(ns2 + "id")
+            //            from result3 in root.Descendants().Elements("ownedAttribute")
+            //            where (string)result3.Attribute("type") != null
+            //            where (string)result3.Attribute(ns2 + "id") == (string)result2.Element("supplier").Attribute(ns2 + "idref")
+            //            from result4 in root.Descendants().Elements("ownedAttribute")
+            //            where (string)result4.Attribute("type") != null
+            //            where (string)result4.Attribute(ns2 + "id") == (string)result2.Element("client").Attribute(ns2 + "idref")
 
-                        select new Thing
-                        {
-                            type = "OverlapType",
-                            id = (string)result.LastAttribute,
-                            name = "$none$",
-                            value = (string)result2.Element("supplier").Attribute(ns2 + "idref") + (string)result2.Element("client").Attribute(ns2 + "idref"),
-                            place2 = (string)result4.Attribute("type"),
-                            place1 = (string)result3.Attribute("type"),
-                            foundation = "CoupleType",
-                            value_type = "$id$"
-                        };
+            //            select new Thing
+            //            {
+            //                type = "OverlapType",
+            //                id = (string)result.LastAttribute,
+            //                name = "$none$",
+            //                value = (string)result2.Element("supplier").Attribute(ns2 + "idref") + (string)result2.Element("client").Attribute(ns2 + "idref"),
+            //                place2 = (string)result4.Attribute("type"),
+            //                place1 = (string)result3.Attribute("type"),
+            //                foundation = "CoupleType",
+            //                value_type = "$id$"
+            //            };
 
-            tuple_types = tuple_types.Concat(results.ToList());
+            //tuple_types = tuple_types.Concat(results.ToList());
 
             //Overlap - informationAssociation
 
@@ -4555,6 +4565,8 @@ namespace EAWS.Core.SilverBullet
                 view_holder.Add(results.ToList());
             }
 
+            bool once = true;
+
             foreach (List<Thing> view_elements in view_holder)
             {
                 //foreach (Thing thing in values)
@@ -4630,6 +4642,23 @@ namespace EAWS.Core.SilverBullet
                             }
 
                         }
+
+                    if (thing.type == "OV-6c" && once == true)
+                    {
+                                view_elements.Add(new Thing
+                                {
+                                    type = thing.type,
+                                    id = thing.place1 + "_d001",
+                                    name = thing.name,
+                                    value = "Duration",
+                                    place1 = thing.place1,
+                                    place2 = "_d001",
+                                    foundation = thing.foundation,
+                                    value_type = thing.value_type
+                                });
+                                once = false;
+                                max++;
+                    }
 
                     if (thing.place2 != null)
                     {
