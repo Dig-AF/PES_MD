@@ -536,6 +536,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"PersonRole", "OV-5b"},
                             new string[] {"Resource", "OV-5b"},
                             new string[] {"Rule", "OV-5b"}, 
+                            new string[] {"Data", "OV-5b"},
                             new string[] {"superSubtype", "OV-5b"}, 
                             new string[] {"WholePartType", "OV-5b"},
                             new string[] {"activityPerformedByPerformer", "OV-5b"},
@@ -602,6 +603,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"Resource", "SV-1"},
                             new string[] {"Rule", "SV-1"}, 
                             new string[] {"superSubtype", "SV-1"}, 
+                            new string[] {"Data", "SV-1"},
                             new string[] {"WholePartType", "SV-1"},
                             new string[] {"OverlapType", "SV-1"},
                             new string[] {"Condition", "SV-10b"},
@@ -631,6 +633,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"OrganizationType", "SV-2"},
                             new string[] {"Performer", "SV-2"},
                             new string[] {"PersonRole", "SV-2"},
+                            new string[] {"Data", "SV-2"},
                             new string[] {"Resource", "SV-2"},
                             new string[] {"Rule", "SV-2"}, 
                             new string[] {"superSubtype", "SV-2"}, 
@@ -644,6 +647,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"PersonRole", "SvcV-1"},
                             new string[] {"Resource", "SvcV-1"},
                             new string[] {"Rule", "SvcV-1"}, 
+                            new string[] {"Data", "SvcV-1"},
                             new string[] {"System", "SvcV-1"}, 
                             new string[] {"superSubtype", "SvcV-1"}, 
                             new string[] {"WholePartType", "SvcV-1"},
@@ -672,6 +676,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"superSubtype", "SvcV-10c"}, 
                             new string[] {"WholePartType", "SvcV-10c"},
                             new string[] {"Condition", "SV-4"},
+                            new string[] {"Data", "SV-4"},
                             new string[] {"Information", "SV-4"},
                             new string[] {"Location", "SV-4"},
                             new string[] {"OrganizationType", "SV-4"},
@@ -698,6 +703,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"HappensInType", "SV-8"},
                             new string[] {"PeriodType", "SV-8"},
                             new string[] {"Condition", "SvcV-4"},
+                            new string[] {"Data", "SvcV-4"},
                             new string[] {"Information", "SvcV-4"},
                             new string[] {"Location", "SvcV-4"},
                             new string[] {"OrganizationType", "SvcV-4"},
@@ -718,6 +724,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"Resource", "SvcV-2"},
                             new string[] {"Rule", "SvcV-2"}, 
                             new string[] {"System", "SvcV-2"}, 
+                            new string[] {"Data", "SvcV-2"},
                             new string[] {"superSubtype", "SvcV-2"}, 
                             new string[] {"WholePartType", "SvcV-2"},
                             new string[] {"OverlapType", "SvcV-2"},
@@ -1376,6 +1383,7 @@ namespace EAWS.Core.SilverBullet
             Dictionary<string, Thing> values_dic3;
             Dictionary<string, Thing> values_dic4;
             Dictionary<string, List<Thing>> description_views = new Dictionary<string, List<Thing>>();
+            Dictionary<string, List<Thing>> sv7_measures_dic = new Dictionary<string, List<Thing>>();
             XElement root = XElement.Load(new MemoryStream(input));
             List<List<Thing>> sorted_results = new List<List<Thing>>();
             List<List<Thing>> sorted_results_new = new List<List<Thing>>();
@@ -2372,6 +2380,315 @@ namespace EAWS.Core.SilverBullet
                 things = things.Concat(OV1_pic_views.SelectMany(x => x.Value));
             }
 
+            //Thing Dictionary
+
+            //var duplicateKeys = things.GroupBy(x => x.id)
+            //                .Where(group => group.Count() > 1)
+            //                .Select(group => group.Key);
+
+            things_dic = things.ToDictionary(x => x.id, x => x);
+
+            //ACR, APR
+
+            results =
+                    from result in root.Descendants().Elements("conveyed")
+                    //
+                    from result2 in root.Descendants().Elements("informationSource")
+                    where (string)result.Parent.Attribute(ns2 + "id") == (string)result2.Parent.Attribute(ns2 + "id")
+                    from result3 in root.Descendants().Elements("informationTarget")
+                    where (string)result3.Parent.Attribute(ns2 + "id") == (string)result.Parent.Attribute(ns2 + "id")
+                    //
+                    from result4 in root.Descendants().Elements("realizingActivityEdge")
+
+                    where (string)result.Parent.Attribute(ns2 + "id") == (string)result4.Parent.Attribute(ns2 + "id")
+                    from result5 in root.Descendants().Elements("outgoing")
+                    where (string)result5.Parent.Attribute("behavior") != null
+                    where (string)result4.Attribute(ns2 + "idref") == (string)result5.Attribute(ns2 + "idref")
+
+                    from result6 in root.Descendants().Elements("incoming")
+                    where (string)result6.Parent.Attribute("behavior") != null
+                    where (string)result4.Attribute(ns2 + "idref") == (string)result6.Attribute(ns2 + "idref")
+
+
+                    select new Thing
+                    {
+                        type = (string)result.Attribute(ns2 + "idref"),
+                        id = (string)result2.Attribute(ns2 + "idref"),
+                        name = (result.Parent.Attribute("name") == null ? "none" : (string)result.Parent.Attribute("name")),
+                        value = (string)result3.Attribute(ns2 + "idref"),
+                        place1 = (string)result5.Parent.Attribute("behavior"),
+                        place2 = (string)result6.Parent.Attribute("behavior"),
+                        value_type = "$performer$"
+                    };
+
+            foreach (Thing thing in results)
+            {
+                tuple_types = tuple_types.Concat(new List<Thing>(){
+                        new Thing
+                        {
+                            type = "activityProducesResource",
+                            id = thing.place1 + thing.type + "_d1" + "_1",
+                            name = thing.name,
+                            value = "$none$",
+                            place1 = thing.place1,
+                            place2 = thing.type + "_d1",
+                            foundation = "CoupleType",
+                            value_type = "$none$"
+                        }
+                    });
+
+                tuple_types = tuple_types.Concat(new List<Thing>(){
+                        new Thing
+                        {
+                            type = "OverlapType",
+                            id = thing.place1 + thing.place2 + "_OT1",
+                            name = thing.name,
+                            value = "$none$",
+                            place1 = thing.place1,
+                            place2 = thing.place2,
+                            foundation = "CoupleType",
+                            value_type = "$none$"
+                        }
+                    });
+
+                tuple_types = tuple_types.Concat(new List<Thing>(){
+                        new Thing
+                        {
+                            type = "activityConsumesResource",
+                            id = thing.type + "_d1" + thing.place2 + "_2",
+                            name = thing.name,
+                            value = "$none$",
+                            place1 = thing.type + "_d1",
+                            place2 = thing.place2,
+                            foundation = "CoupleType",
+                            value_type = "$none$"
+                        }
+                    });
+
+                tuple_types = tuple_types.Concat(new List<Thing>(){
+                        new Thing
+                        {
+                            type = "activityProducesResource",
+                            id = thing.place1 + thing.type + "_3",
+                            name = thing.name,
+                            value = "$none$",
+                            place1 = thing.place1,
+                            place2 = thing.type,
+                            foundation = "CoupleType",
+                            value_type = "$none$"
+                        }
+                    });
+
+                tuple_types = tuple_types.Concat(new List<Thing>(){
+                        new Thing
+                        {
+                            type = "activityConsumesResource",
+                            id = thing.type + thing.place2 + "_4",
+                            name = thing.name,
+                            value = "$none$",
+                            place1 = thing.type,
+                            place2 = thing.place2,
+                            foundation = "CoupleType",
+                            value_type = "$none$"
+                        }
+                    });
+
+                if (!things_dic.TryGetValue(thing.type + "_d1", out value2))
+                    if (things_dic.TryGetValue(thing.type, out value))
+                    {
+
+                        things = things.Concat(new List<Thing>(){
+                        new Thing
+                            {
+                                type = "Data",
+                                id = value.id + "_d1",
+                                name = value.name,
+                                value = "$none$",
+                                place1 = "$none$",
+                                place2 = "$none$",
+                                foundation = "IndividualType",
+                                value_type = "$none$"
+                            }
+                        });
+
+                        things_dic.Add(value.id + "_d1", new Thing
+                        {
+                            type = "Data",
+                            id = value.id + "_d1",
+                            name = value.name,
+                            value = "$none$",
+                            place1 = "$none$",
+                            place2 = "$none$",
+                            foundation = "IndividualType",
+                            value_type = "$none$"
+                        });
+                    }
+
+            }
+
+            tuple_types = tuple_types.GroupBy(x => x.id).Select(grp => grp.First());
+            //things_dic = things.ToDictionary(x => x.id, x => x);
+
+            ////Need line
+
+            //results_dic2 = new Dictionary<string, List<Thing>>();
+            //results_dic3 = new Dictionary<string, List<Thing>>();
+            //results_dic = tuple_types.Where(x => x.type == "activityPerformedByPerformer").GroupBy(x => x.place1).ToDictionary(x => x.Key, x => x.ToList());
+            //aro = tuple_types.Where(x => x.type == "activityConsumesResource").GroupBy(x => x.place2).ToDictionary(x => x.Key, x => x.ToList());
+
+            //results =
+            //                        from result in root.Elements(ns + "Performer")
+            //                        from result2 in root.Descendants().Elements("supplier")
+            //                        where (string)result.Attribute("base_Class") == (string)result2.Attribute(ns2 + "idref")
+            //                        from result3 in root.Descendants().Elements("client")
+            //                        where (string)result3.Parent.Attribute(ns2 + "id") == (string)result2.Parent.Attribute(ns2 + "id")
+            //                        from result4 in root.Elements(ns + "Performer")
+            //                        where (string)result4.Attribute("base_Class") == (string)result3.Attribute(ns2 + "idref")
+
+            //        select new Thing
+            //        {
+            //            type = "Resource Flow",
+            //            id = (string)result.Parent.Parent.Attribute("SAObjId"),
+            //            name = "none",
+            //            value = (string)result.Parent.Attribute("SAPrpName") + "_" + (string)result.Parent.Parent.Attribute("SAObjMinorTypeName"),
+            //            place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
+            //            place2 = (string)result.Attribute("SALinkIdentity"),
+            //            foundation = "CoupleType",
+            //            value_type = "$none$"
+            //        };
+
+            //foreach (Thing thing in results.ToList())
+            //{
+            //    if (results_dic.TryGetValue(thing.place2, out values))
+            //    {
+            //        values2 = new List<Thing>();
+            //        values4 = new List<Thing>();
+            //        add = true;
+            //        foreach (Thing app in values)
+            //        {
+            //            if (aro.TryGetValue(app.place2, out values3))
+            //            {
+            //                add = false;
+            //                //break;
+            //                values4.Add(app);
+            //                values2.AddRange(values3);
+            //            }
+            //        }
+            //        if (add)
+            //            errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: activityConsumesResource\r\n");
+            //    }
+            //    else
+            //    {
+            //        errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: activityPerformedByPerformer\r\n");
+            //    }
+
+            //    results_dic3.Add(thing.id, values4);
+            //    results_dic2.Add(thing.id, values2);
+
+            //}
+
+            //if (results_dic2.Count > 0)
+            //{
+            //    aro2 = tuple_types.Where(x => x.type == "activityProducesResource").GroupBy(x => x.place1).ToDictionary(x => x.Key, x => x.ToList());
+
+            //    results =
+            //            from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
+            //            where (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") != "System Exchange (DM2rx)" && (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") != "Operational Exchange (DM2rx)"
+            //                && (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") != "System Data Flow (DM2rx)" && (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") != "Service Data Flow (DM2rx)"
+            //            where (string)result.Parent.Attribute("SAPrpName") == "performerSource" || (string)result.Parent.Attribute("SAPrpName") == "Source"
+            //            from result2 in root.Elements("Class").Elements("SADefinition")
+            //            where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
+            //            select new Thing
+            //            {
+            //                type = "Resource Flow",
+            //                id = (string)result.Parent.Parent.Attribute("SAObjId"),
+            //                name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
+            //                value = (string)result.Parent.Attribute("SAPrpName") + "_" + (string)result.Parent.Parent.Attribute("SAObjMinorTypeName"),
+            //                place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
+            //                place2 = (string)result.Attribute("SALinkIdentity"),
+            //                foundation = "CoupleType",
+            //                value_type = "$none$"
+            //            };
+
+            //    foreach (Thing thing in results.ToList())
+            //    {
+            //        results_dic2.TryGetValue(thing.id, out values4);
+            //        if (values4 == null)
+            //            continue;
+            //        values_dic = values4.ToDictionary(x => "_" + x.id.Split('_')[1], x => x);
+            //        if (results_dic.TryGetValue(thing.place2, out values))
+            //        {
+            //            add = true;
+            //            values2 = new List<Thing>();
+            //            values7 = new List<Thing>();
+            //            foreach (Thing app in values)
+            //            {
+            //                if (aro2.TryGetValue(app.place2, out values3))
+            //                {
+            //                    foreach (Thing apr in values3)
+            //                    {
+            //                        if (values_dic.TryGetValue("_" + apr.id.Split('_')[1], out value))
+            //                        {
+            //                            add = false;
+            //                            //break;
+            //                            values2.Add(value);
+            //                            values7.Add(things_dic[value.place1]);
+            //                            values2.Add(things_dic[value.place2]);
+            //                            values2.Add(app);
+            //                            value2 = things_dic[app.place1];
+            //                            if (value2.type == "Performer")
+            //                                values7.Add(value2);
+            //                            else
+            //                                values2.Add(value2);
+            //                            values2.Add(apr);
+            //                            values2.Add(things_dic[apr.place1]);
+            //                            results_dic3.TryGetValue(thing.id, out values5);
+            //                            values6 = values5.Where(x => x.place2 == value.place2).ToList();
+            //                            values2.AddRange(values6);
+            //                            foreach (Thing app2 in values6)
+            //                            {
+            //                                value2 = things_dic[app2.place1];
+            //                                if (value2.type == "Performer")
+            //                                    values7.Add(value2);
+            //                                else
+            //                                    values2.Add(value2);
+
+            //                                tuple_types = tuple_types.Concat(new List<Thing>()
+            //                                {
+            //                                    new Thing
+            //                                    {
+            //                                        type = "OverlapType",
+            //                                        id = thing.id,
+            //                                        name = thing.name,
+            //                                        value = "$none$",
+            //                                        place1 = app.place1,
+            //                                        place2 = app2.place1,
+            //                                        foundation = "CoupleType",
+            //                                        value_type = "$none$"
+            //                                    }
+            //                                });
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //            }
+            //            if (add)
+            //                errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: activityProducesResource\r\n");
+            //        }
+            //        else
+            //        {
+            //            errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: activityPerformedByPerformer\r\n");
+            //        }
+
+            //        if (values2.Count > 0)
+            //            needline_mandatory_views.Add(thing.id, values2);
+
+            //        if (values7.Count > 0)
+            //            needline_optional_views.Add(thing.id, values7);
+
+            //    }
+            //}
+
             //Diagramming
 
             foreach (Thing thing in things)
@@ -2681,315 +2998,6 @@ namespace EAWS.Core.SilverBullet
                 tuple_types = tuple_types.Concat(values);
             }
 
-            //Thing Dictionary
-
-            var duplicateKeys = things.GroupBy(x => x.id)
-                            .Where(group => group.Count() > 1)
-                            .Select(group => group.Key);
-
-            things_dic = things.ToDictionary(x => x.id, x => x);
-
-            //ACR, APR
-
-            results =
-                    from result in root.Descendants().Elements("conveyed")
-                    //
-                    from result2 in root.Descendants().Elements("informationSource")
-                    where (string)result.Parent.Attribute(ns2 + "id") == (string)result2.Parent.Attribute(ns2 + "id")
-                    from result3 in root.Descendants().Elements("informationTarget")
-                    where (string)result3.Parent.Attribute(ns2 + "id") == (string)result.Parent.Attribute(ns2 + "id")
-                    //
-                    from result4 in root.Descendants().Elements("realizingActivityEdge")
-
-                    where (string)result.Parent.Attribute(ns2 + "id") == (string)result4.Parent.Attribute(ns2 + "id")
-                    from result5 in root.Descendants().Elements("outgoing")
-                    where (string)result5.Parent.Attribute("behavior") != null
-                    where (string)result4.Attribute(ns2 + "idref") == (string)result5.Attribute(ns2 + "idref")
-
-                    from result6 in root.Descendants().Elements("incoming")
-                    where (string)result6.Parent.Attribute("behavior") != null
-                    where (string)result4.Attribute(ns2 + "idref") == (string)result6.Attribute(ns2 + "idref")
-
-
-                    select new Thing
-                    {
-                        type = (string)result.Attribute(ns2 + "idref"),
-                        id = (string)result2.Attribute(ns2 + "idref"),
-                        name = (result.Parent.Attribute("name") == null ? "none" : (string)result.Parent.Attribute("name")),
-                        value = (string)result3.Attribute(ns2 + "idref"),
-                        place1 = (string)result5.Parent.Attribute("behavior"),
-                        place2 = (string)result6.Parent.Attribute("behavior"),
-                        value_type = "$performer$"
-                    };
-
-            foreach (Thing thing in results)
-            {
-                tuple_types = tuple_types.Concat(new List<Thing>(){
-                        new Thing
-                        {
-                            type = "activityProducesResource",
-                            id = thing.place1 + thing.type + "_d1" + "_1",
-                            name = thing.name,
-                            value = "$none$",
-                            place1 = thing.place1,
-                            place2 = thing.type + "_d1",
-                            foundation = "CoupleType",
-                            value_type = "$none$"
-                        }
-                    });
-
-                tuple_types = tuple_types.Concat(new List<Thing>(){
-                        new Thing
-                        {
-                            type = "OverlapType",
-                            id = thing.place1 + thing.place2 + "_OT1",
-                            name = thing.name,
-                            value = "$none$",
-                            place1 = thing.place1,
-                            place2 = thing.place2,
-                            foundation = "CoupleType",
-                            value_type = "$none$"
-                        }
-                    });
-
-                tuple_types = tuple_types.Concat(new List<Thing>(){
-                        new Thing
-                        {
-                            type = "activityConsumesResource",
-                            id = thing.type + "_d1" + thing.place2 + "_2",
-                            name = thing.name,
-                            value = "$none$",
-                            place1 = thing.type + "_d1",
-                            place2 = thing.place2,
-                            foundation = "CoupleType",
-                            value_type = "$none$"
-                        }
-                    });
-
-                tuple_types = tuple_types.Concat(new List<Thing>(){
-                        new Thing
-                        {
-                            type = "activityProducesResource",
-                            id = thing.place1 + thing.type + "_3",
-                            name = thing.name,
-                            value = "$none$",
-                            place1 = thing.place1,
-                            place2 = thing.type,
-                            foundation = "CoupleType",
-                            value_type = "$none$"
-                        }
-                    });
-
-                tuple_types = tuple_types.Concat(new List<Thing>(){
-                        new Thing
-                        {
-                            type = "activityConsumesResource",
-                            id = thing.type + thing.place2 + "_4",
-                            name = thing.name,
-                            value = "$none$",
-                            place1 = thing.type,
-                            place2 = thing.place2,
-                            foundation = "CoupleType",
-                            value_type = "$none$"
-                        }
-                    });
-
-                if (!things_dic.TryGetValue(thing.type + "_d1", out value2))
-                    if (things_dic.TryGetValue(thing.type, out value))
-                    {
-
-                        things = things.Concat(new List<Thing>(){
-                        new Thing
-                            {
-                                type = "Data",
-                                id = value.id + "_d1",
-                                name = value.name,
-                                value = "$none$",
-                                place1 = "$none$",
-                                place2 = "$none$",
-                                foundation = "IndividualType",
-                                value_type = "$none$"
-                            }
-                        });
-
-                        things_dic.Add(value.id + "_d1", new Thing
-                        {
-                            type = "Data",
-                            id = value.id + "_d1",
-                            name = value.name,
-                            value = "$none$",
-                            place1 = "$none$",
-                            place2 = "$none$",
-                            foundation = "IndividualType",
-                            value_type = "$none$"
-                        });
-                    }
-
-            }
-
-            tuple_types = tuple_types.GroupBy(x => x.id).Select(grp => grp.First());
-            things_dic = things.ToDictionary(x => x.id, x => x);
-
-            ////Need line
-
-            //results_dic2 = new Dictionary<string, List<Thing>>();
-            //results_dic3 = new Dictionary<string, List<Thing>>();
-            //results_dic = tuple_types.Where(x => x.type == "activityPerformedByPerformer").GroupBy(x => x.place1).ToDictionary(x => x.Key, x => x.ToList());
-            //aro = tuple_types.Where(x => x.type == "activityConsumesResource").GroupBy(x => x.place2).ToDictionary(x => x.Key, x => x.ToList());
-
-            //results =
-            //                        from result in root.Elements(ns + "Performer")
-            //                        from result2 in root.Descendants().Elements("supplier")
-            //                        where (string)result.Attribute("base_Class") == (string)result2.Attribute(ns2 + "idref")
-            //                        from result3 in root.Descendants().Elements("client")
-            //                        where (string)result3.Parent.Attribute(ns2 + "id") == (string)result2.Parent.Attribute(ns2 + "id")
-            //                        from result4 in root.Elements(ns + "Performer")
-            //                        where (string)result4.Attribute("base_Class") == (string)result3.Attribute(ns2 + "idref")
-
-            //        select new Thing
-            //        {
-            //            type = "Resource Flow",
-            //            id = (string)result.Parent.Parent.Attribute("SAObjId"),
-            //            name = "none",
-            //            value = (string)result.Parent.Attribute("SAPrpName") + "_" + (string)result.Parent.Parent.Attribute("SAObjMinorTypeName"),
-            //            place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
-            //            place2 = (string)result.Attribute("SALinkIdentity"),
-            //            foundation = "CoupleType",
-            //            value_type = "$none$"
-            //        };
-
-            //foreach (Thing thing in results.ToList())
-            //{
-            //    if (results_dic.TryGetValue(thing.place2, out values))
-            //    {
-            //        values2 = new List<Thing>();
-            //        values4 = new List<Thing>();
-            //        add = true;
-            //        foreach (Thing app in values)
-            //        {
-            //            if (aro.TryGetValue(app.place2, out values3))
-            //            {
-            //                add = false;
-            //                //break;
-            //                values4.Add(app);
-            //                values2.AddRange(values3);
-            //            }
-            //        }
-            //        if (add)
-            //            errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: activityConsumesResource\r\n");
-            //    }
-            //    else
-            //    {
-            //        errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: activityPerformedByPerformer\r\n");
-            //    }
-
-            //    results_dic3.Add(thing.id, values4);
-            //    results_dic2.Add(thing.id, values2);
-
-            //}
-
-            //if (results_dic2.Count > 0)
-            //{
-            //    aro2 = tuple_types.Where(x => x.type == "activityProducesResource").GroupBy(x => x.place1).ToDictionary(x => x.Key, x => x.ToList());
-
-            //    results =
-            //            from result in root.Elements("Class").Elements("SADefinition").Elements("SAProperty").Elements("SALink")
-            //            where (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") != "System Exchange (DM2rx)" && (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") != "Operational Exchange (DM2rx)"
-            //                && (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") != "System Data Flow (DM2rx)" && (string)result.Parent.Parent.Attribute("SAObjMinorTypeName") != "Service Data Flow (DM2rx)"
-            //            where (string)result.Parent.Attribute("SAPrpName") == "performerSource" || (string)result.Parent.Attribute("SAPrpName") == "Source"
-            //            from result2 in root.Elements("Class").Elements("SADefinition")
-            //            where (string)result.Attribute("SALinkIdentity") == (string)result2.Attribute("SAObjId")
-            //            select new Thing
-            //            {
-            //                type = "Resource Flow",
-            //                id = (string)result.Parent.Parent.Attribute("SAObjId"),
-            //                name = ((string)result.Parent.Parent.Attribute("SAObjName")).Replace("&", " And "),
-            //                value = (string)result.Parent.Attribute("SAPrpName") + "_" + (string)result.Parent.Parent.Attribute("SAObjMinorTypeName"),
-            //                place1 = (string)result.Parent.Parent.Attribute("SAObjId"),
-            //                place2 = (string)result.Attribute("SALinkIdentity"),
-            //                foundation = "CoupleType",
-            //                value_type = "$none$"
-            //            };
-
-            //    foreach (Thing thing in results.ToList())
-            //    {
-            //        results_dic2.TryGetValue(thing.id, out values4);
-            //        if (values4 == null)
-            //            continue;
-            //        values_dic = values4.ToDictionary(x => "_" + x.id.Split('_')[1], x => x);
-            //        if (results_dic.TryGetValue(thing.place2, out values))
-            //        {
-            //            add = true;
-            //            values2 = new List<Thing>();
-            //            values7 = new List<Thing>();
-            //            foreach (Thing app in values)
-            //            {
-            //                if (aro2.TryGetValue(app.place2, out values3))
-            //                {
-            //                    foreach (Thing apr in values3)
-            //                    {
-            //                        if (values_dic.TryGetValue("_" + apr.id.Split('_')[1], out value))
-            //                        {
-            //                            add = false;
-            //                            //break;
-            //                            values2.Add(value);
-            //                            values7.Add(things_dic[value.place1]);
-            //                            values2.Add(things_dic[value.place2]);
-            //                            values2.Add(app);
-            //                            value2 = things_dic[app.place1];
-            //                            if (value2.type == "Performer")
-            //                                values7.Add(value2);
-            //                            else
-            //                                values2.Add(value2);
-            //                            values2.Add(apr);
-            //                            values2.Add(things_dic[apr.place1]);
-            //                            results_dic3.TryGetValue(thing.id, out values5);
-            //                            values6 = values5.Where(x => x.place2 == value.place2).ToList();
-            //                            values2.AddRange(values6);
-            //                            foreach (Thing app2 in values6)
-            //                            {
-            //                                value2 = things_dic[app2.place1];
-            //                                if (value2.type == "Performer")
-            //                                    values7.Add(value2);
-            //                                else
-            //                                    values2.Add(value2);
-
-            //                                tuple_types = tuple_types.Concat(new List<Thing>()
-            //                                {
-            //                                    new Thing
-            //                                    {
-            //                                        type = "OverlapType",
-            //                                        id = thing.id,
-            //                                        name = thing.name,
-            //                                        value = "$none$",
-            //                                        place1 = app.place1,
-            //                                        place2 = app2.place1,
-            //                                        foundation = "CoupleType",
-            //                                        value_type = "$none$"
-            //                                    }
-            //                                });
-            //                            }
-            //                        }
-            //                    }
-            //                }
-            //            }
-            //            if (add)
-            //                errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: activityProducesResource\r\n");
-            //        }
-            //        else
-            //        {
-            //            errors_list.Add("Definition error," + thing.id + "," + thing.name + "," + thing.type + ",Missing Mandatory Element: activityPerformedByPerformer\r\n");
-            //        }
-
-            //        if (values2.Count > 0)
-            //            needline_mandatory_views.Add(thing.id, values2);
-
-            //        if (values7.Count > 0)
-            //            needline_optional_views.Add(thing.id, values7);
-
-            //    }
-            //}
-
             //SV-7 / SvcV-7
 
             results =
@@ -2999,9 +3007,9 @@ namespace EAWS.Core.SilverBullet
                 where (string)result.Attribute(ns2 + "id") != null
                 from result3 in root.Elements(ns + "Measurement")
                 where (string)result3.Attribute("base_Property") == (string)result.Attribute(ns2 + "id")
-                //from result2 in root.Descendants()
-                //where (string)result2.Attribute("propertySet") != null
-                //where (string)result2.Attribute("propertySet") == (string)result.Parent.Attribute(ns2 + "id")
+                from result2 in root.Descendants().Elements("packagedElement")
+                where (string)result2.Attribute(ns2 + "id") != null
+                where (string)result2.Attribute(ns2 + "id") == (string)result.Attribute("type")
                 //where (string)result2.Attribute("base_Class") != null
 
 
@@ -3010,11 +3018,11 @@ namespace EAWS.Core.SilverBullet
                     type = "typeInstance",
                     id = (string)result.Parent.Attribute(ns2 + "id") + (string)result.Attribute(ns2 + "id"),
                     name = "$none$",
-                    value = "$none$",
+                    value = (string)result2.Attribute("name"),
                     place1 = (string)result.Parent.Attribute(ns2 + "id"),
                     place2 = (string)result.Attribute(ns2 + "id"),
                     foundation = "typeInstance",
-                    value_type = "$none$"
+                    value_type = "$type$"
                 };
 
             tuples = tuples.Concat(results.ToList());
@@ -3025,6 +3033,64 @@ namespace EAWS.Core.SilverBullet
                 if (lookup.TryGetValue(thing.place1, out values))
                 {
                     values2 = new List<Thing>();
+                    values2.Add(new Thing
+                    {
+                        type = "typeInstance",
+                        id = thing.id + "_MTUOM1",
+                        name = "$none$",
+                        value = thing.id,
+                        place1 = thing.id + "_MTUOM2",
+                        place2 = thing.place2,
+                        foundation = "typeInstance",
+                        value_type = "$id$"
+                    });
+                    tuples = tuples.Concat(values2);
+
+                    values2 = new List<Thing>();
+                    values2.Add(new Thing
+                    {
+                        type = "MeasureTypeUnitsOfMeasure",
+                        id = thing.id + "_MTUOM2",
+                        name = (string)thing.value,
+                        value = (string)thing.value,
+                        place1 = "$none$",
+                        place2 = "$none$",
+                        foundation = "IndividualTypeType",
+                        value_type = "units"
+                    });
+                    things = things.Concat(values2);
+
+                    values2 = new List<Thing>();
+                    values2.Add(new Thing
+                    {
+                        type = "typeInstance",
+                        id = thing.id + "_MTUOM1",
+                        name = "$none$",
+                        value = thing.id,
+                        place1 = thing.id + "_MTUOM2",
+                        place2 = thing.place2,
+                        foundation = "typeInstance",
+                        value_type = "$id$"
+                    });
+
+                    values2.Add(new Thing
+                    {
+                        type = "MeasureTypeUnitsOfMeasure",
+                        id = thing.id + "_MTUOM2",
+                        name = (string)thing.value,
+                        value = (string)thing.value,
+                        place1 = "$none$",
+                        place2 = "$none$",
+                        foundation = "$none$",
+                        value_type = "units"
+                    });
+
+                    sv7_measures_dic.TryGetValue(thing.place1, out values3);
+                    sv7_measures_dic.Remove(thing.place1);
+                    values2.AddRange(values3);
+                    sv7_measures_dic.Add(thing.place1, values2);
+
+                    values2 = new List<Thing>();
                     values2.AddRange(values);
                     values2.Add(things_dic[thing.place2]);
                     lookup.Remove(thing.place1);
@@ -3032,10 +3098,64 @@ namespace EAWS.Core.SilverBullet
                 }
                 else
                 {
-                    values = new List<Thing>();
-                    values.Add(things_dic[thing.place1]);
-                    values.Add(things_dic[thing.place2]);
-                    lookup.Add(thing.place1, values);
+                    values2 = new List<Thing>();
+                    values2.Add(new Thing
+                    {
+                        type = "typeInstance",
+                        id = thing.id + "_MTUOM1",
+                        name = "$none$",
+                        value = "$none$",
+                        place1 = thing.id + "_MTUOM2",
+                        place2 = thing.place2,
+                        foundation = "typeInstance",
+                        value_type = "$none$"
+                    });
+                    tuples = tuples.Concat(values2);
+
+                    values2 = new List<Thing>();
+                    values2.Add(new Thing
+                    {
+                        type = "MeasureTypeUnitsOfMeasure",
+                        id = thing.id + "_MTUOM2",
+                        name = (string)thing.value,
+                        value = (string)thing.value,
+                        place1 = "$none$",
+                        place2 = "$none$",
+                        foundation = "IndividualTypeType",
+                        value_type = "units"
+                    });
+                    things = things.Concat(values2);
+
+                    values2 = new List<Thing>();
+                    values2.Add(new Thing
+                    {
+                        type = "typeInstance",
+                        id = thing.id + "_MTUOM1",
+                        name = "$none$",
+                        value = "$none$",
+                        place1 = thing.id + "_MTUOM2",
+                        place2 = thing.place2,
+                        foundation = "typeInstance",
+                        value_type = "$none$"
+                    });
+
+                    values2.Add(new Thing
+                    {
+                        type = "MeasureTypeUnitsOfMeasure",
+                        id = thing.id + "_MTUOM2",
+                        name = (string)thing.value,
+                        value = (string)thing.value,
+                        place1 = "$none$",
+                        place2 = "$none$",
+                        foundation = "$none$",
+                        value_type = "units"
+                    });
+                    sv7_measures_dic.Add(thing.place1, values2);
+
+                    values2 = new List<Thing>();
+                    values2.Add(things_dic[thing.place1]);
+                    values2.Add(things_dic[thing.place2]);
+                    lookup.Add(thing.place1, values2);
                 }
             }
 
@@ -4537,6 +4657,29 @@ namespace EAWS.Core.SilverBullet
 
             tuple_types = tuple_types.GroupBy(x => x.id).Select(grp => grp.First());
 
+            //
+
+            div2_dic2 = null;
+            div3_dic2 = null;
+            results_dic = null;
+            results_dic2 = null;
+            results_dic3 = null;
+            aro = null;
+            aro2 = null;
+            diagrams = null;
+            values3 = null;
+            values4 = null;
+            values5 = null;
+            values6 = null;
+            values7 = null;
+            locations = null;
+            results_loc = null;
+            things = things.ToList();
+            tuple_types = tuple_types.ToList();
+            tuples = tuples.ToList();
+
+            //
+
             //Views
 
             foreach (string[] current_lookup in MD_View_Lookup)
@@ -4696,6 +4839,10 @@ namespace EAWS.Core.SilverBullet
                             }
 
                             values = new List<Thing>();
+                            
+                            if (sv7_measures_dic.TryGetValue(thing.place2, out values))
+                                optional_list.AddRange(values);
+
                             //if (sv8_dic.TryGetValue(thing.place2, out values))
                             //    optional_list.AddRange(values);
 
