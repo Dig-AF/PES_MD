@@ -17,10 +17,10 @@ namespace ConsoleApplication
             string errors = "";
             bool test;
 
-            input = @"C:\GitHub\test\MD_TEST_DATA_Sprint15_2015-12-11.xml";
-            //input = @"C:\Github\test\MD_out.xml";
-            test = EAWS.Core.SilverBullet.PES_MD.MD2PES(File.ReadAllBytes(input), ref output, ref errors);
-            //test = EAWS.Core.SilverBullet.PES_MD.PES2MD(File.ReadAllBytes(input), ref output, ref errors);
+            //input = @"C:\GitHub\test\MD_TEST_DATA_2016-01-26.xml";
+            input = @"C:\Github\test\MD_out.xml";
+            //test = EAWS.Core.SilverBullet.PES_MD.MD2PES(File.ReadAllBytes(input), ref output, ref errors);
+            test = EAWS.Core.SilverBullet.PES_MD.PES2MD(File.ReadAllBytes(input), ref output, ref errors);
             if (!test)
                 System.IO.File.WriteAllText(@"C:\GitHub\test\error.csv", errors);
                 
