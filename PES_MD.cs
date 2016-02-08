@@ -5131,13 +5131,26 @@ namespace EAWS.Core.SilverBullet
                             + (((string)thing.value == "$none$") ? "" : thing.value_type + "=\"" + (string)thing.value + "\"") + ">" + "<ideas:Name exemplarText=\"" + thing.name
                             + "\" namingScheme=\"ns1\" id=\"n" + thing.id + "\"/></" + thing.type + ">");
 
+                    //foreach (Thing thing in tuple_types)
+                    //    writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id
+                    //    + "\" place1Type=\"id" + thing.place1 + "\" place2Type=\"id" + thing.place2 + "\"/>");
+
                     foreach (Thing thing in tuple_types)
                         writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id
-                        + "\" place1Type=\"id" + thing.place1 + "\" place2Type=\"id" + thing.place2 + "\"/>");
+                        + "\" place1Type=\"id" + thing.place1 + "\" place2Type=\"id" + thing.place2 + "\""
+                        + (((string)thing.name).Contains("$") ? "/>\n" : ">" + "<ideas:Name exemplarText=\"" + thing.name
+                        + "\" namingScheme=\"ns1\" id=\"n" + thing.id + "\"/></" + thing.type + ">\n"));
+
+
+                    //foreach (Thing thing in tuples)
+                    //    writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id
+                    //    + "\" tuplePlace1=\"id" + thing.place1 + "\" tuplePlace2=\"id" + thing.place2 + "\"/>");
 
                     foreach (Thing thing in tuples)
                         writer.WriteRaw("<" + thing.type + " ideas:FoundationCategory=\"" + thing.foundation + "\" id=\"id" + thing.id
-                        + "\" tuplePlace1=\"id" + thing.place1 + "\" tuplePlace2=\"id" + thing.place2 + "\"/>");
+                        + "\" place1Type=\"id" + thing.place1 + "\" place2Type=\"id" + thing.place2 + "\""
+                        + (((string)thing.name).Contains("$") ? "/>\n" : ">" + "<ideas:Name exemplarText=\"" + thing.name
+                        + "\" namingScheme=\"ns1\" id=\"n" + thing.id + "\"/></" + thing.type + ">\n"));
 
                     writer.WriteRaw(@"</IdeasData>");
 
