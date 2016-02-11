@@ -174,46 +174,45 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"SvcV-4", "SvcV-4 Services Functionality Description"},
                             };
 
-        static string[][] View_Lookup = new string[][] {  
-                            new string[] {"AV-1", "AV-01 Overview and Summary (DM2)", "289", "default"}, 
-                            new string[] {"CV-1", "CV-01 Vision (DM2)", "290", "default"},
-                            new string[] {"CV-2", "CV-02 Capability Taxonomy (DM2)", "305", "default"}, //1st
-                            new string[] {"CV-4", "CV-04 Capability Dependencies (DM2)", "341", "default"},
-                            new string[] {"DIV-2", "DIV-02 Logical Data Model (Entity Relation) (DM2)", "4", "default"},
-                            new string[] {"DIV-2", "DIV-02 Logical Data Model (IDEF1X) (DM2)", "23", "default"},
-                            new string[] {"DIV-3", "DIV-03 Physical Data Model (DM2)", "26", "default"},
-                            new string[] {"OV-1", "OV-01 High Level Operational Concept (DM2)", "280", "default"}, //1st
-                            new string[] {"OV-2", "OV-02 Operational Resource Flow (DM2)", "281", "default"},
-                            new string[] {"OV-2", "OV-02 Operational Resource Flow Alternative (DM2)", "282", "extra"},
-                            new string[] {"OV-4", "OV-04 Organizational Relationships (DM2)", "283", "default"},
-                            new string[] {"OV-5a", "OV-05a Operational Activity Decomposition (DM2)", "284", "default"}, //1st
-                            new string[] {"OV-5b", "OV-05b Operational Activity Model (DM2)", "285", "default"},
-                            new string[] {"OV-6a", "OV-06a Operational Rules Model (DM2)", "286", "default"},
-                            new string[] {"OV-6b", "OV-06b State Transition (DM2)", "339", "default"},
-                            new string[] {"OV-6b", "OV-06b State Transition Alternative (DM2)", "287", "extra"},
-                            new string[] {"OV-6c", "OV-06c Performers Event-Trace (DM2)", "340", "extra"},
-                            new string[] {"OV-6c", "OV-06c Activities Event-Trace (DM2)", "288", "default"},
-                            new string[] {"PV-1", "PV-01 Project Portfolio Relationships (DM2)", "342", "default"},
-                            new string[] {"PV-1", "PV-01 Project Portfolio Relationships At Time (DM2)", "343", "extra"},
-                            new string[] {"PV-2", "PV-02 Project Timelines (DM2)", "346", "default"},
-                            new string[] {"SV-1", "SV-01 Systems Interface Description Alternative (DM2)", "291", "default"},
-                            new string[] {"SV-2", "SV-02 Systems Resource Flow Description Alternative (DM2)", "292", "default"},
-                            new string[] {"SV-4", "SV-04 Systems Functionality Description (DM2)", "311", "default"},
-                            new string[] {"SV-4", "SV-04 Systems Functionality Decomposition (DM2)", "300", "extra"},
-                            new string[] {"SV-4", "SV-04 Systems Functionality Description Alternative (DM2)", "293", "extra"},
-                            new string[] {"SV-8", "SV-08 Systems Evolution Description (DM2)", "365", "default"},
-                            new string[] {"SV-10b", "SV-10b Systems State Transition Description (DM2)", "344", "default"},
-                            new string[] {"SV-10c", "SV-10c Performer-Role Event-Trace (DM2x)", "134", "default"},
-                            new string[] {"SvcV-1", "SvcV-01 Services Context Description Alternative (DM2)", "301", "default"},
-                            new string[] {"SvcV-2", "SvcV-02 Services Resource Flow Description Alternative (DM2)", "302", "default"},
-                            new string[] {"SvcV-4", "SvcV-04 Services Functionality Description (DM2)", "314", "default"},
-                            new string[] {"SvcV-10b", "SvcV-10b Services State Transition Description (DM2)", "345", "default"},
-                            new string[] {"SvcV-10c", "SvcV-10c Performer-Role Event-Trace (DM2x)", "138", "default"},
-                            };
-
         static string[][] Not_Processed_View_Lookup = new string[][] {  
-                            new string[] {"SV-1", "SV-01 Systems Interface Description (DM2)", "309", "default"}, 
-                            new string[] {"SV-10c", "SV-10c Systems Event-Trace (DM2)", "335", "default"},
+                            new string[] {"OV-6a", "DODAF2_OV-6a", "309", "default"}, 
+                            new string[] {"OV-6b", "OV-6b Operational State Transition Description", "335", "default"},
+                            new string[] {"OV-3", "DODAF2_OV-3", "335", "default"},
+                            new string[] {"OV-3", "OV-3 Role-based Operational Resource Flow Matrix", "335", "default"},
+                            new string[] {"StdV-1", "DODAF2_StdV-1", "335", "default"},
+                            new string[] {"StdV-2", "DODAF2_StdV-2", "335", "default"},
+                            new string[] {"PV-1", "PV-1 Project Portfolio Relationships", "335", "default"},
+                            new string[] {"PV-2", "PV-2", "335", "default"},
+                            new string[] {"PV-3", "PV-3 Project to Capability Mapping", "335", "default"},
+                            new string[] {"CV-1", "CV-1 Vision", "335", "default"},
+                            new string[] {"CV-4", "CV-4 Capability Dependencies", "335", "default"},
+                            new string[] {"CV-7", "CV-7 Capability to Services Mapping", "335", "default"},
+                            new string[] {"SV-5b", "SV-5b Operational Activity to Systems Traceability Matrix", "335", "default"},
+                            new string[] {"SvcV-3a", "SvcV-3a Systems-Services Matrix", "335", "default"},
+                            new string[] {"SV-3", "SV-3 Systems-Systems Matrix", "335", "default"},
+                            new string[] {"SV-10b", "SV-10b Systems State Transition Description", "335", "default"},
+                            new string[] {"SvcV-10b", "SvcV-10b Services State Transition Description", "335", "default"},
+                            new string[] {"SvcV-10c", "SvcV-10c Services Event-Trace Description", "335", "default"},
+                            new string[] {"SV-10c", "SV-10c Systems Event-Trace Description", "335", "default"},
+                            new string[] {"SV-6", "DODAF2_SV-6", "335", "default"},
+                            new string[] {"SV-9", "DODAF2_SV-9", "335", "default"},
+                            new string[] {"SV-10a", "DODAF2_SV-10a", "335", "default"},
+                            new string[] {"SvcV-9", "DODAF2_SVCV-9", "335", "default"},
+                            new string[] {"SvcV-6", "SvcV-6 Services Resource Flow Matrix", "335", "default"},
+                            new string[] {"SvcV-8", "GC SvcV-8 Services Evolution Description", "335", "default"},
+                            new string[] {"AV-2", "AV-2 Integrated Dictionary", "335", "default"},
+                            new string[] {"SvcV-4", "SvcV-4 Services Functionality Flow Description", "335", "default"},
+                            new string[] {"SvcV-10a", "DODAF2_ScvV-10a", "335", "default"},
+                            new string[] {"SvcV-5", "SvcV-5 Operational Activity to Services Traceability Matrix", "335", "default"},
+                            new string[] {"Sv-6", "SV-6 Role-based Systems Resource Flow Matrix", "335", "default"},
+                            new string[] {"SV-8", "GC SV-8 Systems Evolution Description", "335", "default"},
+                            new string[] {"SV-4", "SV-4 Systems Functionality Flow Description", "335", "default"},
+                            new string[] {"SV-5a", "SV-5a Operational Activity to Systems Function Traceability Matrix", "335", "default"},
+                            new string[] {"CV-3", "CV-3", "335", "default"},
+                            new string[] {"CV-5", "DODAF2_CV-5", "335", "default"},
+                            new string[] {"CV-6", "CV-6 Capability to Operational Activities Mapping", "335", "default"},
+                            new string[] {"OV-5", "OV-5 Operational Activity Flow Model", "335", "default"},
+                            
                             };
 
         static string[][] Mandatory_Lookup = new string[][] { 
@@ -1030,7 +1029,7 @@ namespace EAWS.Core.SilverBullet
         private static string Find_DM2_View(string input)
         {
 
-            foreach (string[] current_lookup in View_Lookup)
+            foreach (string[] current_lookup in MD_View_Lookup)
             {
                 if (input == current_lookup[1])
                     return current_lookup[0];
@@ -1041,7 +1040,7 @@ namespace EAWS.Core.SilverBullet
         private static string Find_View_MD_Minor_Type(string input)
         {
 
-            foreach (string[] current_lookup in View_Lookup)
+            foreach (string[] current_lookup in MD_View_Lookup)
             {
                 if (input == current_lookup[1])
                     return current_lookup[2];
@@ -1415,6 +1414,7 @@ namespace EAWS.Core.SilverBullet
             int count2 = 0;
             bool add = false;
             Dictionary<string, string> diagrams;
+            Dictionary<string, string> not_processed_diagrams;
 
             //Diagram Type error
 
@@ -1432,16 +1432,40 @@ namespace EAWS.Core.SilverBullet
                     value_type = "$none$"
                 };
 
-            diagrams = MD_View_Lookup.ToDictionary(x => x[1], x => x[0]);
+            //
+            //diagrams = MD_View_Lookup.ToDictionary(x => x[1], x => x[0]);
 
+            //foreach (Thing thing in results)
+            //{
+            //    if (!diagrams.TryGetValue(thing.type, out temp))
+            //    {
+            //        if (thing.type != "Content Diagram")
+            //            errors_list.Add("Diagram error," + thing.id + "," + thing.name + "," + thing.type + ", Type Not Allowed - Diagram Ignored: " + thing.type + "\r\n");
+            //    }
+            //}
+            //
+
+            //
+            diagrams = MD_View_Lookup.ToDictionary(x => x[1], x => x[0]);
+            not_processed_diagrams = Not_Processed_View_Lookup.ToDictionary(x => x[1], x => x[0]);
             foreach (Thing thing in results)
             {
+                if (thing.type == "Content Diagram")
+                    continue;
+
                 if (!diagrams.TryGetValue(thing.type, out temp))
                 {
-                    if (thing.type != "Content Diagram")
-                        errors_list.Add("Diagram error," + thing.id + "," + thing.name + "," + thing.type + ", Type Not Allowed - Diagram Ignored: " + thing.type + "\r\n");
+                    if (not_processed_diagrams.TryGetValue(thing.type, out temp))
+                    {
+                        errors_list.Add("Diagram error," + thing.id + "," + thing.name + "," + temp + ", Type Not Allowed - Diagram Ignored: " + thing.type + "\r\n");
+                    }
+                    else
+                    {
+                        errors_list.Add("Diagram error," + thing.id + "," + thing.name + ",Unknown, Type Not Allowed - Diagram Ignored: " + thing.type + "\r\n");
+                    }
                 }
             }
+            //
 
             //Regular Things
 
