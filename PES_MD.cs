@@ -163,7 +163,7 @@ namespace EAWS.Core.SilverBullet
                             new string[] {"OV-5a", "OV-5a Operational Activity Decomposition Tree"},
                             new string[] {"OV-5b", "OV-5b Operational Activity Model"},
                             new string[] {"OV-6c", "OV-6c Operational Event-Trace Description (BPD)"},
-                            //new string[] {"OV-6c", "OV-6c Operational Event-Trace Description"}, 
+                            new string[] {"OV-6c", "OV-6c Operational Event-Trace Description"}, 
                             new string[] {"SV-7", "DODAF2_SV-7Typical"},
                             new string[] {"SvcV-7", "DODAF2_SvcV-7Typical"},
                             new string[] {"SV-1", "SV-1 Systems Interface Description"},
@@ -1358,7 +1358,7 @@ namespace EAWS.Core.SilverBullet
         ////////////////////
         ////////////////////
 
-        public static bool MD2PES(byte[] input, ref string output, ref string errors)
+        public static bool MD2PES(byte[] input, ref string output, ref string errors, bool all_view_flag)
         {
             IEnumerable<Location> locations = new List<Location>();
             IEnumerable<Thing> things = new List<Thing>();
@@ -5128,9 +5128,14 @@ namespace EAWS.Core.SilverBullet
 
                     mandatory_list = mandatory_list.OrderBy(x => x.type).ToList();
                     optional_list = optional_list.OrderBy(x => x.type).ToList();
-
+                    if (all_view_flag)
+                    {
+                        views.Add(new View { type = view.First().type, id = view.First().place1, name = view.First().name, mandatory = mandatory_list, optional = optional_list });
+                    }
+                    else{
                     if (Proper_View(mandatory_list, view.First().name, view.First().type, view.First().place1, ref errors_list))
                         views.Add(new View { type = view.First().type, id = view.First().place1, name = view.First().name, mandatory = mandatory_list, optional = optional_list });
+                    }
                 }
             }
 
